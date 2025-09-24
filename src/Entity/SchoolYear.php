@@ -31,19 +31,19 @@ class SchoolYear
     /**
      * @var Collection<int, Classroom>
      */
-    #[ORM\OneToMany(targetEntity: Classroom::class, mappedBy: 'schoolyear')]
+    #[ORM\OneToMany(targetEntity: Classroom::class, mappedBy: 'schoolYear')]
     private Collection $classrooms;
 
     /**
      * @var Collection<int, Period>
      */
-    #[ORM\OneToMany(targetEntity: Period::class, mappedBy: 'schoolyear')]
+    #[ORM\OneToMany(targetEntity: Period::class, mappedBy: 'schoolYear')]
     private Collection $periods;
 
     /**
      * @var Collection<int, TermsAcceptance>
      */
-    #[ORM\OneToMany(targetEntity: TermsAcceptance::class, mappedBy: 'schoolyear')]
+    #[ORM\OneToMany(targetEntity: TermsAcceptance::class, mappedBy: 'schoolYear')]
     private Collection $termsAcceptances;
 
     public function __construct()
@@ -114,7 +114,7 @@ class SchoolYear
     {
         if (!$this->classrooms->contains($classroom)) {
             $this->classrooms->add($classroom);
-            $classroom->setSchoolyear($this);
+            $classroom->setSchoolYear($this);
         }
 
         return $this;
@@ -123,8 +123,8 @@ class SchoolYear
     public function removeClassroom(Classroom $classroom): static
     {
         if ($this->classrooms->removeElement($classroom)) {
-            if ($classroom->getSchoolyear() === $this) {
-                $classroom->setSchoolyear(null);
+            if ($classroom->getSchoolYear() === $this) {
+                $classroom->setSchoolYear(null);
             }
         }
 
@@ -143,7 +143,7 @@ class SchoolYear
     {
         if (!$this->periods->contains($period)) {
             $this->periods->add($period);
-            $period->setSchoolyear($this);
+            $period->setSchoolYear($this);
         }
 
         return $this;
@@ -152,8 +152,8 @@ class SchoolYear
     public function removePeriod(Period $period): static
     {
         if ($this->periods->removeElement($period)) {
-            if ($period->getSchoolyear() === $this) {
-                $period->setSchoolyear(null);
+            if ($period->getSchoolYear() === $this) {
+                $period->setSchoolYear(null);
             }
         }
 
@@ -172,7 +172,7 @@ class SchoolYear
     {
         if (!$this->termsAcceptances->contains($termsAcceptance)) {
             $this->termsAcceptances->add($termsAcceptance);
-            $termsAcceptance->setSchoolyear($this);
+            $termsAcceptance->setSchoolYear($this);
         }
 
         return $this;
@@ -181,8 +181,8 @@ class SchoolYear
     public function removeTermsAcceptance(TermsAcceptance $termsAcceptance): static
     {
         if ($this->termsAcceptances->removeElement($termsAcceptance)) {
-            if ($termsAcceptance->getSchoolyear() === $this) {
-                $termsAcceptance->setSchoolyear(null);
+            if ($termsAcceptance->getSchoolYear() === $this) {
+                $termsAcceptance->setSchoolYear(null);
             }
         }
 

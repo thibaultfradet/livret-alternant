@@ -1,0 +1,51 @@
+{% extends 'empty.html.twig' %}
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <!-- Colonne gauche : logo -->
+        <div class="col-md-6 d-flex justify-content-center align-items-center bg-light">
+            <img src="{{ asset('images/logo_bleu.png') }}" alt="Logo" class="img-fluid" style="max-width: 350px;">
+        </div>
+
+        <!-- Colonne droite : formulaire -->
+        <div class="col-md-6 d-flex justify-content-center align-items-center">
+            <div class="card shadow-sm border-0 w-75">
+                <div class="card-body m-3">
+                    <h5 class="card-title mb-4 text-center">Connectez-vous à votre compte</h5>
+
+                   <form method="post">
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label">Email</label>
+                            <input type="email" id="inputEmail" name="email" class="form-control" required autofocus>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputPassword" class="form-label">Mot de passe</label>
+                            <input type="password" id="inputPassword" name="password" class="form-control" required>
+                        </div>
+
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                        <div class="d-grid mb-3">
+                            <button class="btn btn-primary" type="submit">Se connecter</button>
+                        </div>
+                    </form>
+
+
+                    <!-- Séparateur -->
+                    <hr class="my-3">
+
+                    <!-- Bouton mot de passe oublié -->
+                    <div class="d-grid">
+                        <a href="{{ path('app_forgot_password_request') }}" class="btn btn-outline-secondary">
+                            Mot de passe oublié
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

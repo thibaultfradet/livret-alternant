@@ -23,7 +23,7 @@ class StudentEvaluation
     #[ORM\ManyToOne(inversedBy: 'studentEvaluations')]
     private ?User $student = null;
 
-    #[ORM\ManyToOne(targetEntity: Period::class)]
+    #[ORM\ManyToOne(targetEntity: Period::class, inversedBy: 'studentEvaluations')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Period $period = null;
 
