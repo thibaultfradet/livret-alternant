@@ -13,17 +13,18 @@ class TutorEvaluationSkill
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: TutorEvaluation::class, inversedBy: "skills")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: TutorEvaluation::class, inversedBy: "skillEvaluation")]
     private ?TutorEvaluation $tutorEvaluation = null;
+
 
     #[ORM\ManyToOne(targetEntity: SkillCriteria::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?SkillCriteria $skillCriteria = null;
 
-    #[ORM\ManyToOne(targetEntity: SkillLevel::class)]
+    #[ORM\ManyToOne(targetEntity: SkillLevel::class, inversedBy: "tutorEvaluationSkills")]
     #[ORM\JoinColumn(nullable: false)]
     private ?SkillLevel $skillLevel = null;
+
 
     public function getId(): ?int
     {

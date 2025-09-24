@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Évaluation de l'alternant{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">Évaluation de l'alternant <b>{{ student.firstname }} {{ student.lastname }}</b></h1>
+    <h3 class="text-center">Période numéro {{period.periodNumber}}</h3>
+
+    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': ''}}) }}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Comportement</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {# {% for behavior_entry in form.behaviorEvaluation %}
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 200px;">
+                                {{ behavior_entry.vars.data.behaviorCriteria.label }}
+                            </span>
+                            {{ form_widget(behavior_entry.behaviorLevel, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                        {{ form_errors(behavior_entry.behaviorLevel) }}
+                        <div class="d-none">
+                            {{ form_widget(behavior_entry.behaviorCriteria) }}
+                        </div>
+                    </div>
+                {% endfor %} #}
+
+
+                {% for behavior_entry in form.behaviorEvaluation %}
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 200px;">
+                                {{ behavior_entry.vars.data.behaviorCriteria.label }}
+                            </span>
+                            <select class="form-select" name="{{ behavior_entry.behaviorLevel.vars.full_name }}">
+                                {% for level in behavior_entry.vars.data.availableLevels %}
+                                    <option value="{{ level.id }}"
+                                        {% if behavior_entry.behaviorLevel.vars.value == level.id %}selected{% endif %}>
+                                        {{ level.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {{ form_errors(behavior_entry.behaviorLevel) }}
+                        <div class="d-none">
+                            {{ form_widget(behavior_entry.behaviorCriteria) }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+    {% set grouped_skills = {} %}
+    {% for skill_entry in form.skillEvaluation %}
+        {% set category = skill_entry.vars.data.skillCriteria.skillGroup.label|default('Autres Compétences') %}
+        {% set grouped_skills = grouped_skills|merge({ (category): (grouped_skills[category]|default([])|merge([skill_entry])) }) %}
+    {% endfor %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Compétences</h5>
+        </div>
+        <div class="card-body">
+            {% for category, skills in grouped_skills %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">{{ category }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for skill_entry in skills %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text" style="width: 200px;">
+                                            {{ skill_entry.vars.data.skillCriteria.label }}
+                                        </span>
+                                        {{ form_widget(skill_entry.skillLevel, {'attr': {'class': 'form-select'}}) }}
+                                    </div>
+                                    {{ form_errors(skill_entry.skillLevel) }}
+                                    <div class="d-none">
+                                        {{ form_widget(skill_entry.skillCriteria) }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Remarques et commentaires</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                {{ form_row(form.strengths, {'label': 'Points forts', 'attr': {'rows': 4, 'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.weaknesses, {'label': 'Points faibles', 'attr': {'rows': 4, 'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.goals, {'label': 'Objectifs à atteindre à la prochaine visite', 'attr': {'rows': 4, 'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.remarks, {'label': 'Remarque du tuteur et attendus', 'attr': {'rows': 4, 'class': 'form-control'}}) }}
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="d-flex justify-content-center mt-4">
+        <button class="btn btn-primary btn-lg px-5">{{ button_label|default('Valider mon évaluation') }}</button>
+    </div>
+
+    {# CSRF token seulement, pas le reste #}
+    {{ form_widget(form._token) }}
+
+    {{ form_end(form, {'render_rest': false}) }}
+</div>
+{% endblock %}
