@@ -34,6 +34,8 @@ security:
         # Route publique
         - { path: ^/login, roles: PUBLIC_ACCESS}
         - { path: ^/reset-password, roles: PUBLIC_ACCESS}
+        - { path: ^/terms-acceptance, roles: PUBLIC_ACCESS}
+
         # Route protégée
         - { path: ^/, roles: ROLE_USER }
 

@@ -16,6 +16,17 @@ class SchoolYearRepository extends ServiceEntityRepository
         parent::__construct($registry, SchoolYear::class);
     }
 
+
+    public function findActive(): ?SchoolYear
+    {
+        return $this->createQueryBuilder('sy')
+            ->andWhere('sy.active = :active')
+            ->setParameter('active', true)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return SchoolYear[] Returns an array of SchoolYear objects
     //     */
