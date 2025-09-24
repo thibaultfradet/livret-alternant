@@ -14,7 +14,7 @@ class TTMClassroom
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    private ?string $role = null;
+    private ?string $label = null;
 
     #[ORM\ManyToOne(inversedBy: 'ttmClassrooms')]
     private ?User $ttm = null;
@@ -27,14 +27,14 @@ class TTMClassroom
         return $this->id;
     }
 
-    public function getRole(): ?string
+    public function getLabel(): ?string
     {
-        return $this->role;
+        return $this->label;
     }
 
-    public function setRole(string $role): static
+    public function setLabel(string $label): static
     {
-        $this->role = $role;
+        $this->label = $label;
         return $this;
     }
 

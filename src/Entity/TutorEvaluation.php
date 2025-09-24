@@ -17,17 +17,8 @@ class TutorEvaluation
     #[ORM\Column]
     private ?\DateTimeImmutable $validationDate = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $strengths = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $weaknesses = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $goals = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $remarks = null;
+    #[ORM\Column]
+    private array $contents = [];
 
     #[ORM\ManyToOne(inversedBy: 'tutorEvaluationsGiven')]
     private ?User $tutor = null;
@@ -61,49 +52,18 @@ class TutorEvaluation
         return $this;
     }
 
-    public function getStrengths(): ?string
+
+    public function getContents(): array
     {
-        return $this->strengths;
+        return array_unique($this->contents);
     }
 
-    public function setStrengths(string $strengths): static
+    public function setContents(array $contents): static
     {
-        $this->strengths = $strengths;
+        $this->contents = $contents;
         return $this;
     }
 
-    public function getWeaknesses(): ?string
-    {
-        return $this->weaknesses;
-    }
-
-    public function setWeaknesses(string $weaknesses): static
-    {
-        $this->weaknesses = $weaknesses;
-        return $this;
-    }
-
-    public function getGoals(): ?string
-    {
-        return $this->goals;
-    }
-
-    public function setGoals(string $goals): static
-    {
-        $this->goals = $goals;
-        return $this;
-    }
-
-    public function getRemarks(): ?string
-    {
-        return $this->remarks;
-    }
-
-    public function setRemarks(string $remarks): static
-    {
-        $this->remarks = $remarks;
-        return $this;
-    }
 
     public function getTutor(): ?User
     {

@@ -15,11 +15,6 @@ class Classroom
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $planning = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $calendar = null;
 
     /**
      * @var Collection<int, User>
@@ -48,28 +43,6 @@ class Classroom
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getPlanning(): ?string
-    {
-        return $this->planning;
-    }
-
-    public function setPlanning(string $planning): static
-    {
-        $this->planning = $planning;
-        return $this;
-    }
-
-    public function getCalendar(): ?string
-    {
-        return $this->calendar;
-    }
-
-    public function setCalendar(string $calendar): static
-    {
-        $this->calendar = $calendar;
-        return $this;
     }
 
     /** @return Collection<int, User> */
