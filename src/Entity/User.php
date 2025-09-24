@@ -40,29 +40,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $disabledAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
+    #[ORM\ManyToOne(inversedBy: 'students')]
     private ?Classroom $classroom = null;
 
-    // 🔹 TutorStudent : en tant que tuteur
     #[ORM\OneToMany(targetEntity: TutorStudent::class, mappedBy: 'tutor')]
     private Collection $tutorContracts;
 
-    // 🔹 TutorStudent : en tant qu’étudiant
     #[ORM\OneToMany(targetEntity: TutorStudent::class, mappedBy: 'student')]
     private Collection $studentContracts;
 
-    // 🔹 TTMClassroom
     #[ORM\OneToMany(targetEntity: TTMClassroom::class, mappedBy: 'ttm')]
     private Collection $ttmClassrooms;
 
-    // 🔹 Evaluations (à valider quand on aura les entités correspondantes)
     #[ORM\OneToMany(targetEntity: TutorEvaluation::class, mappedBy: 'tutor')]
     private Collection $tutorEvaluationsGiven;
 
     #[ORM\OneToMany(targetEntity: TutorEvaluation::class, mappedBy: 'student')]
     private Collection $tutorEvaluationsReceived;
 
-    #[ORM\OneToMany(targetEntity: TTMEvaluation::class, mappedBy: 'users')]
+    #[ORM\OneToMany(targetEntity: TTMEvaluation::class, mappedBy: 'ttm')]
     private Collection $ttmEvaluationsGiven;
 
     #[ORM\OneToMany(targetEntity: TTMEvaluation::class, mappedBy: 'student')]

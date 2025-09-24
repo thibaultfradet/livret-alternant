@@ -108,18 +108,6 @@ class Period
         $this->disabledAt = $disabledAt;
         return $this;
     }
-
-    public function getSchoolyear(): ?SchoolYear
-    {
-        return $this->schoolYear;
-    }
-
-    public function setSchoolyear(?SchoolYear $schoolYear): static
-    {
-        $this->schoolYear = $schoolYear;
-        return $this;
-    }
-
     /**
      * @return Collection<int, TutorEvaluation>
      */
@@ -198,6 +186,18 @@ class Period
                 $ttmEvaluation->setPeriod(null);
             }
         }
+        return $this;
+    }
+
+    public function getSchoolYear(): ?SchoolYear
+    {
+        return $this->schoolYear;
+    }
+
+    public function setSchoolYear(?SchoolYear $schoolYear): static
+    {
+        $this->schoolYear = $schoolYear;
+
         return $this;
     }
 }
