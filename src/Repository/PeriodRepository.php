@@ -16,6 +16,18 @@ class PeriodRepository extends ServiceEntityRepository
         parent::__construct($registry, Period::class);
     }
 
+    public function getActivePeriod(): ?Period
+    {
+        $now = new \DateTimeImmutable();
+        return $this->createQueryBuilder('p')
+            ->where('p.endDate >= :now')
+            ->setParameter('now', $now)
+            ->orderBy('p.startDate', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Period[] Returns an array of Period objects
     //     */
