@@ -130,8 +130,19 @@ final class EvaluationController extends AbstractController
 
         $this->denyAccessUnlessGranted('ROLE_STUDENT');
 
-        // check for the existence of an evaluation in the same period
         $student = $this->getUser();
+        // required tutor evaluation
+        $alreadyTutorEvaluation = $em->getRepository(TutorEvaluation::class)->findOneBy([
+            'student' => $student,
+            'period' => $period,
+        ]);
+
+        if (!$alreadyTutorEvaluation) {
+            $this->addFlash('warning', 'Vous ne pouvez pas encore faire votre auto-évaluation, votre tuteur doit d’abord évaluer votre période.');
+            return $this->redirectToRoute('app_home');
+        }
+
+        // check for the existence of an evaluation in the same period
         $existingEvaluation = $em->getRepository(StudentEvaluation::class)->findOneBy([
             'student' => $student,
             'period'  => $period,
@@ -144,7 +155,6 @@ final class EvaluationController extends AbstractController
 
         // set data based on context
         $evaluation = new StudentEvaluation();
-        $student = $this->getUser();
 
         $evaluation->setStudent($student);
         $evaluation->setPeriod($period);
@@ -184,6 +194,7 @@ final class EvaluationController extends AbstractController
 
         $this->denyAccessUnlessGranted('ROLE_TTM');
 
+        // check for existing evaluation
         $existingEvaluation = $em->getRepository(TTMEvaluation::class)->findOneBy([
             'student' => $student,
             'period'  => $period,
@@ -193,6 +204,24 @@ final class EvaluationController extends AbstractController
             $this->addFlash('warning', 'Une évaluation TTM a déjà été réalisée pour cet étudiant et cette période par un membre de l’équipe pédagogique.');
             return $this->redirectToRoute('app_home');
         }
+
+        // required tutor && student evaluation
+        $tutorEvaluation = $em->getRepository(TutorEvaluation::class)->findOneBy([
+            'student' => $student,
+            'period' => $period,
+        ]);
+
+        $studentEvaluation = $em->getRepository(StudentEvaluation::class)->findOneBy([
+            'student' => $student,
+            'period' => $period,
+        ]);
+
+        if (!$tutorEvaluation || !$studentEvaluation) {
+            $this->addFlash('warning', 'Le TTM ne peut pas encore évaluer cet étudiant car le tuteur et/ou l’étudiant n’ont pas encore rempli leurs évaluations.');
+            return $this->redirectToRoute('app_home');
+        }
+
+
 
         // fill object using context
         $evaluation = new TTMEvaluation();

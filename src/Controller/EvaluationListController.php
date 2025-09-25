@@ -35,7 +35,6 @@ final class EvaluationListController extends AbstractController
         $tutor = $security->getUser();
 
 
-
         // active school year
         $activeSchoolYear = $schoolYearRepo->findOneBy(['active' => true]);
 
@@ -108,7 +107,6 @@ final class EvaluationListController extends AbstractController
         EntityManagerInterface $em,
         Request $request
     ): Response {
-        $user = $security->getUser();
         $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // période par défaut
@@ -119,19 +117,30 @@ final class EvaluationListController extends AbstractController
         $evaluations = [];
         $diplomas = [];
 
-        // Récupérer les étudiants de mes classes
-        $qb = $userRepo->createQueryBuilder('u')
-            ->join('u.classroom', 'c')
+
+        $ttm = $this->getUser();
+        $qb = $userRepo->createQueryBuilder('s')
+            ->join('s.classroom', 'c')
             ->join('c.ttmClassrooms', 'tc')
-            ->join('c.diploma', 'd')
+            ->leftJoin('s.tutorEvaluationsReceived', 'te', 'WITH', 'te.period = :period')
+            ->leftJoin('s.studentEvaluations', 'se', 'WITH', 'se.period = :period')
             ->where('tc.ttm = :ttm')
-            ->setParameter('ttm', $user);
+            // required tutor evaluation to see it
+            ->andWhere('te.id IS NOT NULL')
+            // required student evaluation to see it
+            ->andWhere('se.id IS NOT NULL')
+            ->setParameter('ttm', $ttm)
+            ->setParameter('period', $period);
 
         if ($diplomaId) {
-            $qb->andWhere('d.id = :diploma')->setParameter('diploma', $diplomaId);
+            $qb->join('c.diploma', 'd')
+                ->andWhere('d.id = :diploma')
+                ->setParameter('diploma', $diplomaId);
         }
 
-        $students = $qb->getQuery()->getResult();
+        $students = $qb->orderBy('s.lastName', 'ASC')->getQuery()->getResult();
+
+
 
         foreach ($students as $student) {
             $already = $em->getRepository(TTMEvaluation::class)->findOneBy([
