@@ -21,30 +21,6 @@ final class EvaluationListController extends AbstractController
 {
 
 
-    #[Route('/api/tutor/students', name: 'api_tutor_students', methods: ['GET'])]
-    public function getAllTutorStudents(UserRepository $userRepo, Security $security): JsonResponse
-    {
-        $tutor = $this->getUser();
-
-
-        // Récupère tous les étudiants liés au tuteur via tutorContracts
-        $students = $tutor->getTutorContracts()->map(fn($ts) => $ts->getStudent())->toArray();
-
-        // Préparer un tableau simple pour JSON (éviter de renvoyer des objets Doctrine)
-        $data = array_map(function ($student) {
-            return [
-                'id' => $student->getId(),
-                'firstName' => $student->getFirstName(),
-                'lastName' => $student->getLastName(),
-                'email' => $student->getEmail(),
-                'classroom' => $student->getClassroom()?->getDiploma()->getLabel() ?? null,
-            ];
-        }, $students);
-
-        return $this->json($data);
-    }
-
-
     #[Route('/evaluations/tutor', name: 'app_evaluation_list_tutor')]
     public function tutorList(
         Security $security,
