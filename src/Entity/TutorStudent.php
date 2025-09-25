@@ -15,10 +15,10 @@ class TutorStudent
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeImmutable $dateDebutContract = null;
+    private ?\DateTime $dateDebutContract = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeImmutable $dateFinContract = null;
+    private ?\DateTime $dateFinContract = null;
 
     #[ORM\ManyToOne(inversedBy: 'tutorContracts')]
     private ?User $tutor = null;
@@ -31,23 +31,23 @@ class TutorStudent
         return $this->id;
     }
 
-    public function getDateDebutContract(): ?\DateTimeImmutable
+    public function getDateDebutContract(): ?\DateTime
     {
         return $this->dateDebutContract;
     }
 
-    public function setDateDebutContract(\DateTimeImmutable $dateDebutContract): static
+    public function setDateDebutContract(\DateTime $dateDebutContract): static
     {
         $this->dateDebutContract = $dateDebutContract;
         return $this;
     }
 
-    public function getDateFinContract(): ?\DateTimeImmutable
+    public function getDateFinContract(): ?\DateTime
     {
         return $this->dateFinContract;
     }
 
-    public function setDateFinContract(\DateTimeImmutable $dateFinContract): static
+    public function setDateFinContract(\DateTime $dateFinContract): static
     {
         $this->dateFinContract = $dateFinContract;
         return $this;

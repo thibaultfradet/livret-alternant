@@ -17,8 +17,8 @@ class StudentEvaluation
     #[ORM\Column]
     private ?\DateTimeImmutable $validationDate = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $remarks = null;
+    #[ORM\Column]
+    private array $contents = [];
 
     #[ORM\ManyToOne(inversedBy: 'studentEvaluations')]
     private ?User $student = null;
@@ -49,14 +49,28 @@ class StudentEvaluation
         return $this;
     }
 
-    public function getRemarks(): ?string
+
+    public function getContents(): array
     {
-        return $this->remarks;
+        return array_unique($this->contents);
     }
 
-    public function setRemarks(string $remarks): static
+    public function setContents(array $contents): static
     {
-        $this->remarks = $remarks;
+        $this->contents = $contents;
+        return $this;
+    }
+
+
+    // content field replacement 
+    public function getRemarks(): ?string
+    {
+        return $this->contents[0] ?? null;
+    }
+
+    public function setRemarks(?string $remarks): self
+    {
+        $this->contents[0] = $remarks;
         return $this;
     }
 

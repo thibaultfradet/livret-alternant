@@ -13,8 +13,7 @@ class TutorEvaluationBehavior
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: TutorEvaluation::class, inversedBy: "behaviors")]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: TutorEvaluation::class, inversedBy: "behaviorEvaluation")]
     private ?TutorEvaluation $tutorEvaluation = null;
 
     #[ORM\ManyToOne(targetEntity: BehaviorCriteria::class)]
@@ -24,6 +23,21 @@ class TutorEvaluationBehavior
     #[ORM\ManyToOne(targetEntity: BehaviorLevel::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?BehaviorLevel $behaviorLevel = null;
+
+
+    //Temporary list for available levele of criteria
+    private ?iterable $availableLevels = null;
+
+    public function getAvailableLevels(): ?iterable
+    {
+        return $this->availableLevels;
+    }
+
+    public function setAvailableLevels(iterable $levels): self
+    {
+        $this->availableLevels = $levels;
+        return $this;
+    }
 
     public function getId(): ?int
     {

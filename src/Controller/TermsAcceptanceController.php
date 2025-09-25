@@ -28,7 +28,6 @@ final class TermsAcceptanceController extends AbstractController
                 $em->persist($terms);
                 $em->flush();
             } catch (\Exception $e) {
-                dump($e);
             }
             return $this->redirectToRoute('app_home');
         }
