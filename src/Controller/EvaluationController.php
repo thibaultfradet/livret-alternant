@@ -13,11 +13,7 @@ use App\Form\StudentEvaluationFormType;
 use App\Form\TTMEvaluationFormType;
 use App\Form\TutorEvaluationFormType;
 use App\Repository\BehaviorCriteriaRepository;
-use App\Repository\BehaviorLevelRepository;
-use App\Repository\PeriodRepository;
 use App\Repository\SkillCriteriaRepository;
-use App\Repository\SkillLevelRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -38,6 +34,23 @@ final class EvaluationController extends AbstractController
         SkillCriteriaRepository $SCRepo,
         BehaviorCriteriaRepository $BCRepo
     ): Response {
+
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+        $tutor = $this->getUser();
+
+        // verify if there is no already evaluation on period, tutor && student
+        $existingEvaluation = $em->getRepository(TutorEvaluation::class)->findOneBy([
+            'student' => $student,
+            'tutor'   => $tutor,
+            'period'  => $period,
+        ]);
+
+        if ($existingEvaluation) {
+            $this->addFlash('warning', 'Une évaluation existe déjà pour cet étudiant et cette période.');
+            return $this->redirectToRoute('app_home');
+        }
+
+
         // get && set context
         $evaluation = new TutorEvaluation();
         $evaluation->setStudent($student);
@@ -114,6 +127,21 @@ final class EvaluationController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
     ): Response {
+
+        $this->denyAccessUnlessGranted('ROLE_STUDENT');
+
+        // check for the existence of an evaluation in the same period
+        $student = $this->getUser();
+        $existingEvaluation = $em->getRepository(StudentEvaluation::class)->findOneBy([
+            'student' => $student,
+            'period'  => $period,
+        ]);
+
+        if ($existingEvaluation) {
+            $this->addFlash('warning', 'Vous avez déjà rempli votre auto-évaluation pour cette période.');
+            return $this->redirectToRoute('app_home');
+        }
+
         // set data based on context
         $evaluation = new StudentEvaluation();
         $student = $this->getUser();
@@ -124,7 +152,7 @@ final class EvaluationController extends AbstractController
         // create form
         $form = $this->createForm(StudentEvaluationFormType::class, $evaluation);
         $form->handleRequest($request);
-        dump("test");
+
         // handle submit
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -153,6 +181,19 @@ final class EvaluationController extends AbstractController
         EntityManagerInterface $em,
         Security $security
     ): Response {
+
+        $this->denyAccessUnlessGranted('ROLE_TTM');
+
+        $existingEvaluation = $em->getRepository(TTMEvaluation::class)->findOneBy([
+            'student' => $student,
+            'period'  => $period,
+        ]);
+
+        if ($existingEvaluation) {
+            $this->addFlash('warning', 'Une évaluation TTM a déjà été réalisée pour cet étudiant et cette période par un membre de l’équipe pédagogique.');
+            return $this->redirectToRoute('app_home');
+        }
+
         // fill object using context
         $evaluation = new TTMEvaluation();
         $ttm = $security->getUser();
