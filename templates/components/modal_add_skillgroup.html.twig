@@ -1,0 +1,23 @@
+{# templates/components/modal_add_skillgroup.html.twig #}
+<div class="modal fade" id="modalAddSkillGroup" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Créer un groupe de compétences</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-add-group">
+          <div class="mb-3">
+            <label for="group-label" class="form-label">Libellé du groupe</label>
+            <input type="text" class="form-control" id="group-label" name="label" placeholder="Nom du groupe">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-warning" id="btn-save-group">Créer</button>
+      </div>
+    </div>
+  </div>
+</div>

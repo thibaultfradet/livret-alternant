@@ -22,6 +22,9 @@ class SkillGroup
     #[ORM\OneToMany(mappedBy: 'skillGroup', targetEntity: SkillCriteria::class)]
     private Collection $skillCriteria;
 
+    #[ORM\ManyToOne(inversedBy: 'skillGroups')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Diploma $diploma = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
@@ -60,6 +63,17 @@ class SkillGroup
         return $this;
     }
 
+    public function getDiploma(): ?Diploma
+    {
+        return $this->diploma;
+    }
+
+    public function setDiploma(?Diploma $diploma): static
+    {
+        $this->diploma = $diploma;
+        return $this;
+    }
+
     /**
      * @return Collection<int, SkillCriteria>
      */
@@ -81,7 +95,6 @@ class SkillGroup
     public function removeSkillCriterion(SkillCriteria $skillCriterion): static
     {
         if ($this->skillCriteria->removeElement($skillCriterion)) {
-            // set the owning side to null (unless already changed)
             if ($skillCriterion->getSkillGroup() === $this) {
                 $skillCriterion->setSkillGroup(null);
             }
