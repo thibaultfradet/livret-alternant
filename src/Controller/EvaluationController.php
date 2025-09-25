@@ -10,6 +10,7 @@ use App\Entity\TutorEvaluationBehavior;
 use App\Entity\TutorEvaluationSkill;
 use App\Entity\User;
 use App\Form\StudentEvaluationFormType;
+use App\Form\TTMEvaluationFormType;
 use App\Form\TutorEvaluationFormType;
 use App\Repository\BehaviorCriteriaRepository;
 use App\Repository\BehaviorLevelRepository;
@@ -139,6 +140,49 @@ final class EvaluationController extends AbstractController
             'form' => $form->createView(),
             'student' => $student,
             'period' => $period,
+        ]);
+    }
+
+
+
+    #[Route('/evaluation/ttm/{student}/{period}', name: 'app_create_ttm_evaluation')]
+    public function ttm(
+        User $student,
+        Period $period,
+        Request $request,
+        EntityManagerInterface $em,
+        Security $security
+    ): Response {
+        // fill object using context
+        $evaluation = new TTMEvaluation();
+        $ttm = $security->getUser();
+
+        $evaluation->setStudent($student);
+        $evaluation->setTtm($ttm);
+        $evaluation->setPeriod($period);
+
+
+        // create form using the form type
+        $form = $this->createForm(TTMEvaluationFormType::class, $evaluation);
+        $form->handleRequest($request);
+
+        // handle submit
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $em->persist($evaluation);
+            $em->flush();
+
+            $this->addFlash('success', 'Évaluation TTM enregistrée avec succès !');
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        // Rend la même vue Twig que l'évaluation étudiant
+        return $this->render('evaluation/ttm.html.twig', [
+            'form' => $form->createView(),
+            'student' => $student,
+            'period' => $period,
+            'button_label' => 'Valider mon évaluation TTM'
         ]);
     }
 }
