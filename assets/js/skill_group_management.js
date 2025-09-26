@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    // --- Fonction centrale pour AJAX ---
+    // deal with ajax request
     function sendAjax(url, payload, successCallback, errorCallback) {
         $.ajax({
             url: url,
@@ -11,7 +11,7 @@ $(document).ready(function () {
         });
     }
 
-    // --- Ajout d'un groupe ---
+    // add a group
     $('#btn-save-group').on('click', function () {
         const label = $('#group-label').val().trim();
         const diplomaId = $('#btn-create-group').data('diploma-id');
@@ -73,7 +73,7 @@ $(document).ready(function () {
         );
     });
 
-    // --- Ajout d'une compétence ---
+    // add a skill button
     $('#btn-save-skill').on('click', function () {
         const label = $('#skill-label').val().trim();
         const groupId = $('#modalAddSkill').data('group-id');
@@ -106,7 +106,7 @@ $(document).ready(function () {
         );
     });
 
-    // --- Toggle compétence ---
+    // toggle a skill
     $(document).on('change', '.js-toggle-status', function () {
         const $chk = $(this);
         const id = $chk.data('id');
@@ -127,7 +127,7 @@ $(document).ready(function () {
         });
     });
 
-    // --- Toggle groupe ---
+    // toggle group
     $(document).on('change', '.js-toggle-group-status', function () {
         const $chk = $(this);
         const id = $chk.data('id');
@@ -149,7 +149,7 @@ $(document).ready(function () {
         });
     });
 
-    // --- Préparer modal Add Skill ---
+    // prepare modal add skill
     $(document).on('click', 'button[data-bs-target="#modalAddSkill"]', function () {
         const groupId = $(this).data('group-id');
         const groupLabel = $(this).data('group-label');
