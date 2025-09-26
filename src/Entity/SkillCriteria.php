@@ -22,12 +22,7 @@ class SkillCriteria
 
     #[ORM\ManyToOne(inversedBy: 'skillCriteria')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Diploma $diploma = null;
-
-    #[ORM\ManyToOne(inversedBy: 'skillCriteria')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?SkillGroup $skillGroup = null;
-
 
     public function getId(): ?int
     {
@@ -53,17 +48,6 @@ class SkillCriteria
     public function setDisabledAt(?\DateTime $disabledAt): static
     {
         $this->disabledAt = $disabledAt;
-        return $this;
-    }
-
-    public function getDiploma(): ?Diploma
-    {
-        return $this->diploma;
-    }
-
-    public function setDiploma(?Diploma $diploma): static
-    {
-        $this->diploma = $diploma;
         return $this;
     }
 

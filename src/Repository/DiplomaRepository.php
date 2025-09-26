@@ -16,6 +16,21 @@ class DiplomaRepository extends ServiceEntityRepository
         parent::__construct($registry, Diploma::class);
     }
 
+
+    public function findWithSkills(int $id): ?Diploma
+    {
+        return $this->createQueryBuilder('d')
+            ->leftJoin('d.skillGroups', 'g', 'WITH', 'g.disabledAt IS NULL')
+            ->addSelect('g')
+            ->leftJoin('g.skillCriteria', 's', 'WITH', 's.disabledAt IS NULL')
+            ->addSelect('s')
+            ->where('d.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+
     //    /**
     //     * @return Diploma[] Returns an array of Diploma objects
     //     */

@@ -25,15 +25,15 @@ class Diploma
     private Collection $classrooms;
 
     /**
-     * @var Collection<int, SkillCriteria>
+     * @var Collection<int, SkillGroup>
      */
-    #[ORM\OneToMany(targetEntity: SkillCriteria::class, mappedBy: 'diploma')]
-    private Collection $skillCriteria;
+    #[ORM\OneToMany(targetEntity: SkillGroup::class, mappedBy: 'diploma')]
+    private Collection $skillGroups;
 
     public function __construct()
     {
         $this->classrooms = new ArrayCollection();
-        $this->skillCriteria = new ArrayCollection();
+        $this->skillGroups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,29 +84,29 @@ class Diploma
     }
 
     /**
-     * @return Collection<int, SkillCriteria>
+     * @return Collection<int, SkillGroup>
      */
-    public function getSkillCriteria(): Collection
+    public function getSkillGroups(): Collection
     {
-        return $this->skillCriteria;
+        return $this->skillGroups;
     }
 
-    public function addSkillCriterion(SkillCriteria $skillCriterion): static
+    public function addSkillGroup(SkillGroup $skillGroup): static
     {
-        if (!$this->skillCriteria->contains($skillCriterion)) {
-            $this->skillCriteria->add($skillCriterion);
-            $skillCriterion->setDiploma($this);
+        if (!$this->skillGroups->contains($skillGroup)) {
+            $this->skillGroups->add($skillGroup);
+            $skillGroup->setDiploma($this);
         }
 
         return $this;
     }
 
-    public function removeSkillCriterion(SkillCriteria $skillCriterion): static
+    public function removeSkillGroup(SkillGroup $skillGroup): static
     {
-        if ($this->skillCriteria->removeElement($skillCriterion)) {
+        if ($this->skillGroups->removeElement($skillGroup)) {
             // set the owning side to null (unless already changed)
-            if ($skillCriterion->getDiploma() === $this) {
-                $skillCriterion->setDiploma(null);
+            if ($skillGroup->getDiploma() === $this) {
+                $skillGroup->setDiploma(null);
             }
         }
 
