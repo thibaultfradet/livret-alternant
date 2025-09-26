@@ -20,6 +20,8 @@ class SkillManageAjaxController extends AbstractController
     #[Route('/skill/{id}/toggle', name: 'ajax_skill_toggle', methods: ['POST'])]
     public function toggleSkill(SkillCriteria $skill, EntityManagerInterface $em): JsonResponse
     {
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+
         if ($skill->getDisabledAt()) {
             $skill->setDisabledAt(null);
             $message = 'Criteria enable.';
@@ -35,6 +37,9 @@ class SkillManageAjaxController extends AbstractController
     #[Route('/skill/save/{skillGroup}', name: 'ajax_skill_criteria_save', methods: ['POST'])]
     public function saveSkillCriteria(SkillGroup $skillGroup, Request $request, EntityManagerInterface $em): JsonResponse
     {
+
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+
         $data = json_decode($request->getContent(), true);
         if (empty($data['label'])) {
             return new JsonResponse(['success' => false, 'message' => 'Le libellé est manquant.'], 400);
@@ -58,6 +63,9 @@ class SkillManageAjaxController extends AbstractController
     #[Route('/group/{id}/toggle', name: 'ajax_skill_group_toggle', methods: ['POST'])]
     public function toggleGroupStatus(SkillGroup $skillGroup, EntityManagerInterface $em): JsonResponse
     {
+
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+
         if ($skillGroup->getDisabledAt()) {
             $skillGroup->setDisabledAt(null);
             $message = 'Group enable.';
@@ -73,6 +81,9 @@ class SkillManageAjaxController extends AbstractController
     #[Route('/group/save/{diploma}', name: 'ajax_skill_group_save', methods: ['POST'])]
     public function saveSkillGroup(Diploma $diploma, Request $request, EntityManagerInterface $em): JsonResponse
     {
+
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+
         $data = json_decode($request->getContent(), true);
         if (empty($data['label'])) {
             return new JsonResponse(['success' => false, 'message' => 'Le libellé est manquant.'], 400);
@@ -100,6 +111,9 @@ class SkillManageAjaxController extends AbstractController
         SkillLevelRepository $levelRepository,
         EntityManagerInterface $em
     ): JsonResponse {
+
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['label']) || empty(trim($data['label']))) {
@@ -142,6 +156,9 @@ class SkillManageAjaxController extends AbstractController
     #[Route('/level/{id}/toggle', name: 'ajax_skill_level_toggle', methods: ['POST'])]
     public function toggleLevelStatus(SkillLevel $skillLevel, EntityManagerInterface $em): JsonResponse
     {
+
+        $this->denyAccessUnlessGranted('ROLE_TUTOR');
+
         if ($skillLevel->getDisabledAt()) {
             $skillLevel->setDisabledAt(null);
             $message = 'Level enable.';
