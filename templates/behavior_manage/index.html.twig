@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des comportements{% endblock %}
+
+{% block body %}
+<div class="container mt-4 text-primary">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Gestion des critères et niveaux de comportement</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#behaviorModal">
+            <i class="bi bi-plus"></i> Ajouter comportement
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped-columns table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Libellé</th>
+                        <th scope="col">Niveau 1</th>
+                        <th scope="col">Niveau 2</th>
+                        <th scope="col">Niveau 3</th>
+                        <th scope="col">Niveau 4</th>
+                        <th scope="col">Niveau 5</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for behavior in behaviors %}
+                        <tr>
+                            <td><strong>{{ behavior.label }}</strong></td>
+                            {% set levels = {} %}
+                            {% for level in behavior.behaviorLevels %}
+                                {% if level.disabledAt is null %}
+                                    {% set levels = levels|merge({
+                                        (level.levelNumber): {
+                                            'id': level.id,
+                                            'label': level.label
+                                        }
+                                    }) %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% for i in 0..4 %}
+                                <td>
+                                    {{- levels[i] is defined ? levels[i].label : '-' -}}
+                                    
+                                    {# edit button #}
+                                    <span
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editLevelModal" 
+                                        data-level-id="{{ levels[i] is defined ? levels[i].id : '' }}"
+                                        data-level-label="{{ levels[i] is defined ? levels[i].label : '' }}"
+                                        data-level-number="{{ i }}"
+                                        class="cursor-pointer me-2" 
+                                        style="cursor: pointer;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14">
+                                            <g fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z"/>
+                                                <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
+                                            </g>
+                                        </svg>
+                                    </span>
+
+                                    {# Replace button #}
+                                    {% if levels[i] is defined %}
+                                        <span
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editLevelModal" 
+                                            data-action="replace"
+                                            data-level-id="{{ levels[i].id }}"
+                                            data-level-label="{{ levels[i].label }}"
+                                            class="text-danger cursor-pointer"
+                                            style="cursor: pointer;">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </span>
+
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+
+                            <td class="text-end">
+                                <div class="form-check form-check-inline">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        id="disableBehavior{{ behavior.id }}"
+                                        {% if behavior.disabledAt is not null %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="disableBehavior{{ behavior.id }}">
+                                        Désactiver
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                Aucun critère de comportement trouvé.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# modal import #}
+{% include 'components/behavior_manage/modal_add_behavior.html.twig' %}
+{% include 'components/behavior_manage/modal_edit_level.html.twig' %}
+
+{% endblock %}
+
+{# script import #}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/behavior_management.js') }}"></script>
+{% endblock %}
