@@ -12,12 +12,14 @@ class PdfService
 
     public function __construct()
     {
-        // Configure Dompdf options
+       // src/Service/PdfService.php
         $options = new Options();
-        $options->set('defaultFont', 'Arial'); // Set default font
-        $options->set('isRemoteEnabled', true); // Allow loading images from URLs
+        $options->set('defaultFont', 'DejaVu Sans Mono');    
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true); // recommended for modern HTML
 
         $this->dompdf = new Dompdf($options);
+
     }
 
     public function generatePdf(string $html, string $filename = 'document.pdf'): void

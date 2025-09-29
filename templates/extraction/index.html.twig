@@ -1,7 +1,118 @@
-{% extends 'empty.html.twig' %}
+{% extends 'pdf.html.twig' %}
 
-{% block title %}Extraction livret{% endblock %}
+{% block title %}Acteurs et informations générales{% endblock %}
 
 {% block body %}
-<h1>Extraction livret</h1>
+<style>
+    .field-input {
+        width: 250px;
+        display: inline-block;
+    }
+</style>
+
+<div class="py-3">
+    <h2 class="mb-3">I. Acteurs et informations générales</h2>
+
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+        <h6 class="mb-0 small">1. INFORMATIONS ALTERNANT</h6>
+    </div>
+
+    <div class="border border-beaupeyrat border-2 p-3 mb-2">
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Section :</td>
+                <td style="width:75%; padding-bottom:6px;">
+                    <input type="text" class="form-control form-control-sm field-input"
+                           value="{{ student.section|default('Bachelor AIS / Administrateur d\'Infrastructures Sécurisées') }}"
+                           disabled>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666;">Nom Prénom :</td>
+                <td>
+                    <input type="text" class="form-control form-control-sm field-input"
+                           value="{{ student.fullName|default('Nom prénom') }}"
+                           disabled>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="border border-beaupeyrat border-2 p-3 mb-2">
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Tél :</td>
+                <td style="width:75%; padding-bottom:6px;">
+                    <input type="text" class="form-control form-control-sm field-input"
+                           value="{{ student.phone|default('06.06.06.06.06') }}"
+                           disabled>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666;">Mail :</td>
+                <td>
+                    <input type="email" class="form-control form-control-sm field-input"
+                           value="{{ student.email|default('exemple@exemple.com') }}"
+                           disabled>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card shadow-sm border-3 border-beaupeyrat mb-3">
+        <div class="card-header bg-beaupeyrat text-white py-1">
+            <h6 class="mb-0 small">2. INFORMATIONS EMPLOYEUR</h6>
+        </div>
+        <div class="card-body py-2 px-3">
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Raison sociale :</td>
+                    <td style="width:75%; padding-bottom:6px;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.companyName|default('Une entreprise') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse :</td>
+                    <td style="width:75%; padding-bottom:6px;">
+                        <textarea class="form-control form-control-sm field-input" disabled>{{ tutor.address|default('Adresse - 87000-LIMOGES') }}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Nom du tuteur :</td>
+                    <td style="width:75%; padding-bottom:6px;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.tutorName|default('Nom Prénom') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Tél :</td>
+                    <td style="width:75%; padding-bottom:6px;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.phone|default('06.06.06.06.06 / 06.06.06.06.06') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Mail :</td>
+                    <td style="width:75%; padding-bottom:6px;">
+                        <input type="email" class="form-control form-control-sm field-input"
+                               value="{{ tutor.email|default('tuteur@exemple.com') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666;">Dates du contrat :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.contractDates|default('03/09/2024 au 29/08/2025') }}"
+                               disabled>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

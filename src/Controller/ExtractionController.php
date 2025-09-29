@@ -15,14 +15,25 @@ final class ExtractionController extends AbstractController
         $html = null;
         
         // adding bootstrap
-        $cssFile = $this->getParameter('kernel.project_dir') . '/public/assets/styles/bootstrap-5.3.8.min.css';
-        $css = file_get_contents($cssFile);
-        $html = '<style>' . $css . '</style>';
+        $path = $this->getParameter('kernel.project_dir') . '/public/assets/styles/';
+        $bootstrap = file_get_contents($path . "bootstrap-5.3.8.min.css");
+        $css = file_get_contents($path . "app.css");
+        
 
-        // Render the Twig template as HTML
+        $html = '<!DOCTYPE html>
+            <html lang="fr">
+            <head>
+                <meta charset="UTF-8">
+                <title>Exemple PDF</title>
+                <style>' . $bootstrap . '</style>
+                <style>' . $css . '</style>
+                <style>body { font-family: "DejaVu Sans", sans-serif; }</style>
+            </head>
+            <body>';
         $html .= $this->renderView('extraction/index.html.twig', [
-            'controller_name' => 'ExtractionController',
+                'controller_name' => 'ExtractionController',
         ]);
+        $html .= '</body></html>';
         
         // Generate and stream the PDF
         $pdfService->generatePdf($html, 'extraction.pdf');
