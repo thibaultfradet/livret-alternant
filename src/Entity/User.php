@@ -436,4 +436,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getTtms(): Collection
+    {
+        if (!$this->classroom) {
+            return new ArrayCollection();
+        }
+
+        $ttms = new ArrayCollection();
+        foreach ($this->classroom->getTtmClassrooms() as $ttmClassroom) {
+            $ttms->add($ttmClassroom->getTtm());
+        }
+
+        return $ttms;
+}
+
 }
