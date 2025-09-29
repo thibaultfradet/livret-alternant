@@ -74,7 +74,7 @@ final class BehaviorManageAjaxController extends AbstractController
     }
 
 
-    #[Route('/behavior/criteria/toggle/{id}', name: 'app_behavior_manage_ajax_create', methods: ['POST'])]
+    #[Route('/behavior/criteria/toggle/{id}', name: 'app_behavior_toggle_criteria', methods: ['POST'])]
     public function toggleCriteriaBehavior(BehaviorCriteria $behaviorCriteria, EntityManagerInterface $em): JsonResponse
     {
 

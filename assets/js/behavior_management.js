@@ -112,4 +112,24 @@ $(document).ready(function () {
             }
         );
     });
+
+    // Handle criteria toggle (checkbox click)
+    $(document).on("change", "input[id^='disableBehavior']", function () {
+        // Get behavior criteria id from checkbox id
+        const criteriaId = $(this).attr("id").replace("disableBehavior", "");
+
+        // Send AJAX request to toggle criteria
+        sendAjax(
+            `/behavior/criteria/toggle/${criteriaId}`,
+            {}, // no payload needed
+            function (response) {
+                if (response.success) {
+                    // Display a quick feedback message
+                    console.log(response.message);
+                } else {
+                    alert(response.message || "Error while toggling criteria.");
+                }
+            }
+        );
+    });
 });
