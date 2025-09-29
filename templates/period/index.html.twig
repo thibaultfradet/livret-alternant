@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Period index{% endblock %}
+
+{% block body %}
+    <h1>Period index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>PeriodNumber</th>
+                <th>StartDate</th>
+                <th>EndDate</th>
+                <th>DisabledAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for period in periods %}
+            <tr>
+                <td>{{ period.id }}</td>
+                <td>{{ period.periodNumber }}</td>
+                <td>{{ period.startDate ? period.startDate|date('Y-m-d') : '' }}</td>
+                <td>{{ period.endDate ? period.endDate|date('Y-m-d') : '' }}</td>
+                <td>{{ period.disabledAt ? period.disabledAt|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_period_show', {'id': period.id}) }}">show</a>
+                    <a href="{{ path('app_period_edit', {'id': period.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_period_new') }}">Create new</a>
+{% endblock %}
