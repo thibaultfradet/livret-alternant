@@ -28,6 +28,20 @@ class PeriodRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+
+
+    public function findByActiveSchoolYear(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.schoolYear', 'sy')
+            ->where('sy.active = :active')
+            ->setParameter('active', true)
+            ->orderBy('p.periodNumber', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
     //    /**
     //     * @return Period[] Returns an array of Period objects
     //     */
