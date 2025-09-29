@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification des fichiers de la classe {{ id }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="text-center text-primary mb-4">Modification de la classe {{ id }}</h1>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'success' ? 'success' : 'warning') }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="calendar_file" class="form-label">Calendrier (PDF)</label>
+                    <input type="file" name="calendar_file" id="calendar_file" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="schedule_file" class="form-label">Emploi du temps (PDF)</label>
+                    <input type="file" name="schedule_file" id="schedule_file" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Valider</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Fichiers existants</h5>
+            <div class="row mt-3">
+                <div class="col-md-6 text-center">
+                    <h6>Calendrier</h6>
+                    {% if calendarFile %}
+                        <iframe src="{{ asset(calendarFile) }}" class="border rounded" width="100%" height="300"></iframe>
+                    {% else %}
+                        <p class="text-muted fst-italic">Non existant</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 text-center">
+                    <h6>Emploi du temps</h6>
+                    {% if scheduleFile %}
+                        <iframe src="{{ asset(scheduleFile) }}" class="border rounded" width="100%" height="300"></iframe>
+                    {% else %}
+                        <p class="text-muted fst-italic">Non existant</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
