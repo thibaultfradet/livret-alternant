@@ -1,5 +1,16 @@
-td
-{
+:root {
+    --common-blue-beaupeyrat: #4c8fba;
+    --orange-beaupeyrat: #f6731f;
+    --border-color: #dce0e5;
+    --title-blue-beaupeyrat: #00609c;
+}
+
+h1 {
+    font-family: "Bell MT", serif !important;
+    color: var(--title-blue-beaupeyrat) !important;
+}
+
+td {
     padding-top: 1.5rem !important;
     padding-bottom: 1.5rem !important;
     padding-right: 1rem !important;

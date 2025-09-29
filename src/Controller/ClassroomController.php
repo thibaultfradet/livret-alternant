@@ -13,6 +13,8 @@ class ClassroomController extends AbstractController
     #[Route('/classroom/{id}/files', name: 'app_classroom_files', methods: ['GET', 'POST'])]
     public function index(Request $request, int $id): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_TTM');
+
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/';
         $fs = new Filesystem();
 
