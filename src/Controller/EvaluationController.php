@@ -62,7 +62,7 @@ final class EvaluationController extends AbstractController
 
         $skillsCriteria = $SCRepo->createQueryBuilder('sc')
             ->join('sc.skillGroup', 'sg')
-            ->where('sc.diploma = :diploma')
+            ->where('sg.diploma = :diploma')
             ->andWhere('sc.disabledAt IS NULL')
             ->andWhere('sg.disabledAt IS NULL')
             ->setParameter('diploma', $diploma)

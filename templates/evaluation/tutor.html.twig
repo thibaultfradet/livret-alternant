@@ -38,6 +38,7 @@
                                 {{ behavior_entry.vars.data.behaviorCriteria.label }}
                             </span>
                             <select class="form-select" name="{{ behavior_entry.behaviorLevel.vars.full_name }}">
+                                <option value="" selected disabled>Sélectionnez un niveau</option>
                                 {% for level in behavior_entry.vars.data.availableLevels %}
                                     <option value="{{ level.id }}"
                                         {% if behavior_entry.behaviorLevel.vars.value == level.id %}selected{% endif %}>
