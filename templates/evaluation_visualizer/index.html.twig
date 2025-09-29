@@ -11,8 +11,8 @@
     {% endif %}
 
     <form method="get" class="row g-3 mb-4 align-items-end">
-        <div class="col-md-4">
-            <label for="period" class="form-label">Period</label>
+        <div class="col-md-3">
+            <label for="period" class="form-label">Période</label>
             <select name="period" id="period" class="form-select">
                 {% for p in periods %}
                     <option value="{{ p.id }}" {% if selectedPeriod and p.id == selectedPeriod.id %}selected{% endif %}>
@@ -22,8 +22,8 @@
             </select>
         </div>
 
-        <div class="col-md-4">
-            <label for="classroom" class="form-label">Class</label>
+        <div class="col-md-3">
+            <label for="classroom" class="form-label">Classe</label>
             <select name="classroom" id="classroom" class="form-select">
                 <option value="" {% if not selectedClassroom %}selected{% endif %}>Toutes</option>
                 {% for c in classrooms %}
@@ -34,8 +34,16 @@
             </select>
         </div>
 
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+        </div>
+        
+       <div class="col-md-3">
+        {# Export Excel button #}
+        <a href="{{ path('export_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
+           class="btn btn-success w-100">
+           Export Excel
+        </a>
         </div>
     </form>
 
