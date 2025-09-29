@@ -19,6 +19,7 @@ final class ExtractionController extends AbstractController
         SchoolYearRepository $schoolYearRepository,
         PdfService $pdfService
     ): Response {
+
         // Get the active school year
         $activeYear = $schoolYearRepository->findActive();
         if (!$activeYear) {
@@ -26,18 +27,15 @@ final class ExtractionController extends AbstractController
         }
 
         // Get the student with all related data
-        
         $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
       
 
-    
-
-
-
+        // student not found throw
         if (!$student) {
             throw $this->createNotFoundException('Student not found.');
         }
 
+        // format ttm roles
         $ttmRoles = [];
         foreach ($student->getClassroom()->getTtmClassrooms() as $ttmClassroom) {
             $ttm = $ttmClassroom->getTtm();
@@ -51,6 +49,58 @@ final class ExtractionController extends AbstractController
             }
             $ttmRoles[$ttmId]['roles'][] = $ttmClassroom->getLabel();
         }
+
+
+
+        // format skill evaluation
+        $skillEvaluationsByPeriod = [];
+        $activeYearId = $activeYear->getId(); 
+
+        foreach ($student->getTutorEvaluationsReceived() as $tutorEvaluation) {
+            $period = $tutorEvaluation->getPeriod();
+            if (!$period) {
+                continue; // Skip if no period
+            }
+
+            // Filter by active school year via the period
+            $periodYear = $period->getSchoolYear(); // Assuming Period entity has getSchoolYear()
+            if (!$periodYear || $periodYear->getId() !== $activeYearId) {
+                continue; // Skip periods not in the active year
+            }
+
+            foreach ($tutorEvaluation->getSkillEvaluation() as $skill) {
+                $skillCriteria = $skill->getSkillCriteria();
+                $skillGroup = $skillCriteria->getSkillGroup();
+
+                if (!$skillGroup) {
+                    continue; // Skip if no group
+                }
+
+                $periodKey = $period->getPeriodNumber();
+                $groupId = $skillGroup->getId();
+
+                if (!isset($skillEvaluationsByPeriod[$periodKey])) {
+                    $skillEvaluationsByPeriod[$periodKey] = [];
+                }
+
+                if (!isset($skillEvaluationsByPeriod[$periodKey][$groupId])) {
+                    $skillEvaluationsByPeriod[$periodKey][$groupId] = [
+                        'label' => $skillGroup->getLabel(),
+                        'criteria' => []
+                    ];
+                }
+
+                $skillEvaluationsByPeriod[$periodKey][$groupId]['criteria'][] = [
+                    'label' => $skillCriteria->getLabel(),
+                    'level' => $skill->getSkillLevel() ? $skill->getSkillLevel()->getLabel() : null
+                ];
+            }
+        }
+
+
+
+                
+
 
 
         // Load CSS files
@@ -75,11 +125,9 @@ final class ExtractionController extends AbstractController
             'controller_name' => 'ExtractionController',
             'student' => $student,
             'ttmRoles' => $ttmRoles,
+            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
         ]);
-
         $html .= '</body></html>';
-        
-        
         // Generate PDF
         $pdfService->generatePdf($html, 'extraction.pdf');
 

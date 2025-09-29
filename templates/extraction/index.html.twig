@@ -82,7 +82,7 @@
 
 <div class="page-break"></div>
 
-{# --- Centre de formation --- #}
+{# --- formation center --- #}
 <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
     <h6 class="mb-0 small">3. LE CENTRE DE FORMATION</h6>
 </div>
@@ -92,7 +92,7 @@
 
 <div class="page-break"></div>
 
-{# --- Equipe pédagogique (TTM) --- #}
+{# --- Teaching team --- #}
 <div class="card shadow-sm border-3 border-beaupeyrat mb-3">
     <div class="card-header bg-beaupeyrat text-white py-1">
         <h6 class="mb-0 small">4. Équipe pédagogique</h6>
@@ -128,7 +128,7 @@
 
 <div class="page-break"></div>
 
-{# --- Modalités d'utilisation du livret --- #}
+{# --- Terms of service --- #}
 <div>
     <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
         <h6 class="mb-0 small">5. MODALITÉS D'UTILISATION DU LIVRET</h6>
@@ -137,8 +137,8 @@
     <thead>
         <tr class="bg-beaupeyrat text-white">
             <th style="visibility: hidden;"></th>
-            <th>L'alternant</th>
-            <th>Le tuteur</th>
+            <th class="text-center">L'alternant</th>
+            <th class="text-center">Le tuteur</th>
         </tr>
     </thead>
     <tbody>
@@ -149,11 +149,9 @@
 
         <tr>
             <td class="bg-beaupeyrat text-white border-1">Date</td>
-            <td class="border-1">
-                {{ studentAcceptance ? studentAcceptance.validationDate|date('d/m/Y') : '' }}
+            <td class="border-1 text-center">A validé les données le {{ studentAcceptance ? studentAcceptance.validationDate|date('d/m/Y') : '' }}
             </td>
-            <td class="border-1">
-                {{ tutorAcceptance ? tutorAcceptance.validationDate|date('d/m/Y') : '' }}
+            <td class="border-1 text-center"> A validé les données le {{ tutorAcceptance ? tutorAcceptance.validationDate|date('d/m/Y') : '' }}
             </td>
         </tr>
     </tbody>
@@ -162,37 +160,162 @@
 
 <div class="page-break"></div>
 
-{# --- Informations pédagogiques / Calendrier --- #}
+{# --- Calendar / schedule --- #}
 <div>
     <h2 class="mb-3">II. Informations pédagogiques</h2>
     <img src="/uploads/classroom/calendar-1.png" style="width:100%;">
 </div>
 
+
 <div class="page-break"></div>
-{# --- Évaluations par période --- #}
+
+
+
+{# --- evaluation by period (reworked for multi-level structure) --- #}
 <div>
+
+
     {% for period in student.classroom.schoolYear.periods %}
-        <h3>Période {{ period.periodNumber }}</h3>
-
-{% for eval in student.tutorEvaluationsReceived %}
+        <h2>
+            Période {{ period.periodNumber }} - Du {{ period.startDate|date('d/m/Y') }} au {{ period.endDate|date('d/m/Y') }}
+        </h2>
+        {% for eval in student.tutorEvaluationsReceived %}
             {% if eval.period == period %}
-                <p><strong>Évaluation du tuteur :</strong> {{ eval.contents|json_encode }}</p>
+                {# tutor evaluation behavior #}
+                <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
+                    <!-- Card header -->
+                    <div class="card-header bg-beaupeyrat text-center">
+                        APPRECIATION DU COMPORTEMENT AU TRAVAIL
+                    </div>
+
+                    <!-- Table content -->
+                    <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc;">
+                        {% for evalBehavior in eval.behaviorEvaluation %}
+                            <tr>
+                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                    {{ evalBehavior.behaviorCriteria.label }}
+                                </td>
+                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                    <input type="text" class="form-control form-control-sm field-input"
+                                        value="{{ evalBehavior.behaviorLevel.label|default('') }}"
+                                        disabled>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                {# tutor evaluation skills #}
+                <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
+                    <!-- Card header -->
+                    <div class="card-header bg-beaupeyrat text-center">
+                        EVALUATION DES COMPETENCES AU REGARD DES OBJECTIFS DE LA FORMATION
+                    </div>
+
+                    <!-- Table content -->
+                    <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc;">
+                        {% for evalSkill in eval.skillEvaluation %}
+                            <tr>
+                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                    {{ evalSkill.skillCriteria.label }}
+                                </td>
+                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                    <input type="text" class="form-control form-control-sm field-input"
+                                        value="{{ evalSkill.skillLevel.label|default('') }}"
+                                        disabled>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+               <table class="table">
+                    <tbody>
+                        <tr>
+                            <td class="w-25 fw-bold">Points forts</td>
+                            <td>{{eval.strengths}}</td>
+                        </tr>
+                        <tr>
+                            <td class="w-25 fw-bold">Points faibles</td>
+                            <td>{{eval.weaknesses}}</td>
+                        </tr>
+                        <tr>
+                            <td class="w-25 fw-bold">Objectifs à atteindre à la prochaine période</td>
+                            <td>{{eval.goals}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                        <h6 class="mb-0 small">Remarques du tuteur et attendus</h6>
+                    </div>
+                    <textarea>{{eval.remarks}}</textarea>
+                </div>
+                            
             {% endif %}
         {% endfor %}
 
-        {% for eval in student.TtmEvaluationsReceived %}
-            {% if eval.period == period %}
-                <p><strong>Évaluation TTM :</strong> {{ eval.contents|json_encode }}</p>
-            {% endif %}
-        {% endfor %}
 
         {% for eval in student.studentEvaluations %}
             {% if eval.period == period %}
-                <p><strong>Auto-évaluation de l'alternant :</strong> {{ eval.contents|json_encode }}</p>
+                <div>
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                        <h6 class="mb-0 small">Remarques de l'alternant et attendus</h6>
+                    </div>
+                    <textarea>{{eval.remarks}}</textarea>
+                </div>
             {% endif %}
         {% endfor %}
+
+
+        {% for eval in student.TtmEvaluationsReceived %}
+            {% if eval.period == period %}
+                    <div>
+                        <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                            <h6 class="mb-0 small">Remarques de l'équipé pédagogique et attendus</h6>
+                        </div>
+                        <textarea>{{eval.remarks}}</textarea>
+                </div>
+            {% endif %}
+        {% endfor %}
+    <div class="page-break"></div>
+    {% endfor %}
+    {% for periodNumber, groups in skillEvaluationsByPeriod %}
+        <h2>
+            Période {{ periodNumber }}
+        </h2>
+
+        {% for groupId, group in groups %}
+            <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px; page-break-inside: avoid;">
+                <!-- Card header -->
+                <div class="card-header bg-beaupeyrat text-center">
+                    {{ group.label }}
+                </div>
+
+                <!-- Table content -->
+                <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc;">
+                    {% for criterion in group.criteria %}
+                        <tr>
+                            <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                {{ criterion.label }}
+                            </td>
+                            <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                <input type="text" class="form-control form-control-sm field-input"
+                                       value="{{ criterion.level|default('') }}"
+                                       disabled>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        <div class="page-break"></div>
+    {% else %}
+        <p>Aucune évaluation de compétence pour l'année scolaire active.</p>
     {% endfor %}
 </div>
+
+   
 
 
 {% endblock %}
