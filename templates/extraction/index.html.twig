@@ -205,29 +205,44 @@
                     </table>
                 </div>
 
-                {# tutor evaluation skills #}
+                {# tutor evaluation skill #}
                 <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
-                    <!-- Card header -->
                     <div class="card-header bg-beaupeyrat text-center">
                         EVALUATION DES COMPETENCES AU REGARD DES OBJECTIFS DE LA FORMATION
                     </div>
-
-                    <!-- Table content -->
-                    <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc;">
-                        {% for evalSkill in eval.skillEvaluation %}
-                            <tr>
-                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
-                                    {{ evalSkill.skillCriteria.label }}
-                                </td>
-                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
-                                    <input type="text" class="form-control form-control-sm field-input"
-                                        value="{{ evalSkill.skillLevel.label|default('') }}"
-                                        disabled>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </table>
+                    {% for periodNumber, skillGroups in skillEvaluationsByPeriod %}
+                        {# same period as the main loop #}
+                        {% if periodNumber == period.periodNumber %}
+                            {% for groupId, groupData in skillGroups %}
+                                <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc; margin-bottom:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" style="background:#f0f0f0; text-align:center; padding:6px; border:1px solid #ccc;">
+                                                {{ groupData.label }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for criteria in groupData.criteria %}
+                                            <tr>
+                                                <td style="width:70%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                                    {{ criteria.label }}
+                                                </td>
+                                                <td style="width:30%; padding:6px; border:1px solid #ccc;">
+                                                    <input type="text" class="form-control form-control-sm field-input"
+                                                        value="{{ criteria.level|default('') }}"
+                                                        disabled>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
                 </div>
+
+
 
                <table class="table">
                     <tbody>
