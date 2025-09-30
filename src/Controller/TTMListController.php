@@ -29,8 +29,6 @@ final class TTMListController extends AbstractController
             $ttmRoles[$ttmId]['roles'][] = $ttmClassroom->getLabel();
         }
 
-        dump($ttmRoles);
-
 
         return $this->render('ttm_list/index.html.twig', [
             'controller_name' => 'TTMListController',

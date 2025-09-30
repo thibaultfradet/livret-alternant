@@ -44,7 +44,7 @@ final class TermsAcceptanceController extends AbstractController
 
         if ($existingAcceptance) {
             $this->addFlash('warning', 'Vous avez déjà validé les termes pour l’année active.');
-            return $this->redirectToRoute('app_terms_acceptance');
+            return $this->redirectToRoute('app_home');
         }
 
         if ($request->isMethod('POST')) {
@@ -61,7 +61,7 @@ final class TermsAcceptanceController extends AbstractController
                 $this->addFlash('danger', 'Une erreur est survenue lors de l’enregistrement.');
             }
 
-            return $this->redirectToRoute('app_terms_acceptance');
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('terms_acceptance/validate.html.twig', [
