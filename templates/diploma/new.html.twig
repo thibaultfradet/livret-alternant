@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un titre{% endblock %}
+
+{% block body %}
+    <h1>Ajouter un titre</h1>
+
+    {{ include('diploma/_form.html.twig') }}
+
+    <a href="{{ path('app_diploma_index') }}">Revenir à la liste</a>
+{% endblock %}
