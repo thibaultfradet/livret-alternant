@@ -25,7 +25,7 @@ class UserCheckSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $path = $request->getPathInfo();
         // Ignorer certaines routes pour éviter les boucles
-        $excludedPaths = ['/login', '/logout', '/terms-acceptance'];
+        $excludedPaths = ['/login', '/logout', '/terms-acceptance/validation'];
         if (in_array($path, $excludedPaths)) {
             return;
         }
@@ -51,7 +51,7 @@ class UserCheckSubscriber implements EventSubscriberInterface
                 'schoolYear' => $year
             ]);
         if (!$terms || !$terms->getValidationDate() || $terms == null) {
-            $redirectUrl = $this->router->generate('app_terms_acceptance');
+            $redirectUrl = $this->router->generate('app_terms_acceptance_validation');
             $event->setResponse(new RedirectResponse($redirectUrl));
         }
     }
