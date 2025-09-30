@@ -285,14 +285,58 @@
 
         {% for eval in student.TtmEvaluationsReceived %}
             {% if eval.period == period %}
-                    <div>
-                        <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
-                            <h6 class="mb-0 small">Remarques de l'équipé pédagogique et attendus</h6>
-                        </div>
-                        <textarea>{{eval.remarks}}</textarea>
+                <div>
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                        <h6 class="mb-0 small">Remarques de l'équipé pédagogique et attendus</h6>
+                    </div>
+                    <textarea>{{eval.remarks}}</textarea>
                 </div>
             {% endif %}
         {% endfor %}
+
+
+        <div>
+            <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                <h6 class="mb-0 small">SIGNATURES</h6>
+            </div>
+
+            <table class="table table-bordered" style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="border:1px solid #000; padding:4px;">Rôle</th>
+                        <th class="text-center" style="border:1px solid #000; padding:4px;">Date de validation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set tutorEval = student.tutorEvaluationsReceived|filter(e => e.period == period)|first %}
+                    {% set studentEval = student.studentEvaluations|filter(e => e.period == period)|first %}
+                    {% set ttmEval = student.TtmEvaluationsReceived|filter(e => e.period == period)|first %}
+
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Tuteur</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                            A validé les données le  {{ tutorEval ? tutorEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Alternant</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                        A validé les données le  {{ studentEval ? studentEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Équipe pédagogique</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                            A validé les données le {{ ttmEval ? ttmEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
     <div class="page-break"></div>
     {% endfor %}
     {% for periodNumber, groups in skillEvaluationsByPeriod %}

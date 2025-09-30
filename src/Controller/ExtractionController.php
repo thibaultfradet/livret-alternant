@@ -99,10 +99,6 @@ final class ExtractionController extends AbstractController
 
 
 
-                
-
-
-
         // Load CSS files
         $path = $this->getParameter('kernel.project_dir') . '/public/assets/styles/';
         $bootstrap = file_get_contents($path . "bootstrap-5.3.8.min.css");

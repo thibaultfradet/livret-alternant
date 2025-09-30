@@ -16,7 +16,7 @@ class PdfService
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans Mono');    
         $options->set('isRemoteEnabled', true);
-        $options->set('isHtml5ParserEnabled', true); // recommended for modern HTML
+        $options->set('isHtml5ParserEnabled', true);
 
         $this->dompdf = new Dompdf($options);
 
