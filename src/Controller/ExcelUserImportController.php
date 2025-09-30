@@ -66,6 +66,7 @@ final class ExcelUserImportController extends AbstractController
                             $tutor->setEmail($tutorEmail);
                             $tutor->setRoles(['ROLE_TUTOR']);
                             $tutor->setPassword($passwordHasher->hashPassword($tutor, 'temporaryPassword123')); // Temporary password
+                            $tutor->setAddress($companyAddress);
                             $em->persist($tutor);
                             $em->flush();
                         } else {
@@ -80,7 +81,6 @@ final class ExcelUserImportController extends AbstractController
                         $student->setEmail($studentEmail);
                         $student->setRoles(['ROLE_USER']);
                         $student->setPassword($passwordHasher->hashPassword($student, 'temporaryPassword123'));
-                        $student->setAddress($companyAddress);
                         $em->persist($student);
                         $em->flush();
 
@@ -94,7 +94,8 @@ final class ExcelUserImportController extends AbstractController
                         $em->flush();
                     }
 
-                    $message = 'Fichier importé avec succès !';
+                    $this->addFlash('success', 'Utilisateurs créer avec succès !');
+                    return $this->redirectToRoute('app_home');
                 } catch (FileException $e) {
                     $message = 'Erreur lors de l’import du fichier : ' . $e->getMessage();
                 } catch (\Exception $e) {
