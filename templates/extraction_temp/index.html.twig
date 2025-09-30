@@ -1,6 +1,5 @@
 {% extends 'pdf.html.twig' %}
 
-{% block title %}Acteurs et informations générales{% endblock %}
 
 {% block body %}
 
@@ -49,6 +48,14 @@
         </div>
         <div class="card-body py-2 px-3">
             <table style="width:100%; border-collapse:collapse;">
+                 <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Entreprise :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.address|default('') }}"
+                               disabled>
+                    </td>
+                </tr>
                 <tr>
                     <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Nom du tuteur :</td>
                     <td style="width:75%;">
@@ -58,10 +65,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse :</td>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse mail du tuteur :</td>
                     <td style="width:75%;">
                         <input type="text" class="form-control form-control-sm field-input"
-                               value="{{ tutor.address|default('') }}"
+                               value="{{ tutor.email |default('') }}"
                                disabled>
                     </td>
                 </tr>
