@@ -5,19 +5,17 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\SchoolYearRepository;
-use App\Service\PdfService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class ExtractionController extends AbstractController
+final class ExtractionTempController extends AbstractController
 {
-    #[Route('/extraction/{student}', name: 'app_extraction')]
+    #[Route('/extraction/temp/{student}', name: 'app_extraction_temp')]
     public function index(
         User $student,
         UserRepository $userRepository,
-        SchoolYearRepository $schoolYearRepository,
-        PdfService $pdfService
+        SchoolYearRepository $schoolYearRepository
     ): Response {
 
         // Get the active school year
@@ -28,14 +26,13 @@ final class ExtractionController extends AbstractController
 
         // Get the student with all related data
         $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
-      
 
-        // student not found throw
+        // Student not found
         if (!$student) {
             throw $this->createNotFoundException('Student not found.');
         }
 
-        // format ttm roles
+        // Format TTM roles
         $ttmRoles = [];
         foreach ($student->getClassroom()->getTtmClassrooms() as $ttmClassroom) {
             $ttm = $ttmClassroom->getTtm();
@@ -50,9 +47,7 @@ final class ExtractionController extends AbstractController
             $ttmRoles[$ttmId]['roles'][] = $ttmClassroom->getLabel();
         }
 
-
-
-        // format skill evaluation
+        // Format skill evaluations
         $skillEvaluationsByPeriod = [];
         $activeYearId = $activeYear->getId(); 
 
@@ -62,8 +57,7 @@ final class ExtractionController extends AbstractController
                 continue; // Skip if no period
             }
 
-            // Filter by active school year via the period
-            $periodYear = $period->getSchoolYear(); // Assuming Period entity has getSchoolYear()
+            $periodYear = $period->getSchoolYear();
             if (!$periodYear || $periodYear->getId() !== $activeYearId) {
                 continue; // Skip periods not in the active year
             }
@@ -97,47 +91,12 @@ final class ExtractionController extends AbstractController
             }
         }
 
-
-
-        // Load CSS files
-        $path = $this->getParameter('kernel.project_dir') . '/public/assets/styles/';
-        $bootstrap = file_get_contents($path . "bootstrap-5.3.8.min.css");
-        $css = file_get_contents($path . "app.css");
-
-        // === Build HTML manually with inline CSS for PDF ===
-        $html = '<!DOCTYPE html>
-        <html lang="fr">
-        <head>
-            <meta charset="UTF-8">
-            <title>Extraction PDF</title>
-            <style>' . $bootstrap . '</style>
-            <style>' . $css . '</style>
-            <style>body { font-family: "DejaVu Sans", sans-serif; }</style>
-        </head>
-        <body>';
-
-
-         $imagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/calendar-3.png';
-
-    // Encode image to Base64
-    $imageData = base64_encode(file_get_contents($imagePath));
-    $imageBase64 = 'data:image/png;base64,' . $imageData;
-
-
-
-
-        // Render the main Twig template and append to HTML
-        $html .= $this->renderView('extraction/index.html.twig', [
-            'controller_name' => 'ExtractionController',
+        // Render the main Twig template
+        return $this->render('extraction_temp/index.html.twig', [
+            'controller_name' => 'ExtractionTemp',
             'student' => $student,
             'ttmRoles' => $ttmRoles,
             'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
-            'calendar_image' => $imageBase64,
         ]);
-        $html .= '</body></html>';
-        // Generate PDF
-        $pdfService->generatePdf($html, 'extraction.pdf');
-
-        return new Response();
     }
 }
