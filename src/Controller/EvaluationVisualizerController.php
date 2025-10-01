@@ -157,4 +157,52 @@ class EvaluationVisualizerController extends AbstractController
             'error' => null,
         ];
     }
+
+
+
+    
+
+    #[Route('/evaluation/notifier', name: 'notifier_pending_evaluations')]
+    public function notifier(
+        Request $request,
+        ClassroomRepository $classroomRepo,
+        PeriodRepository $periodRepo,
+        StudentEvaluationRepository $studentEvalRepo,
+        TutorEvaluationRepository $tutorEvalRepo,
+        TTMEvaluationRepository $ttmEvalRepo
+    ): Response {
+        /* get data */
+        $data = $this->getEvaluationData(
+            $request,
+            $classroomRepo,
+            $periodRepo,
+            $studentEvalRepo,
+            $tutorEvalRepo,
+            $ttmEvalRepo
+        );
+
+        $pendingEvaluations = [];
+        foreach ($data['evaluations'] as $eval) {
+              
+            if (!$eval['tutor_validated'] || !$eval['student_validated']) {
+                $pendingEvaluations[] = $eval;
+            }
+        }
+
+
+        return $this->render('evaluation_visualizer/notifier.html.twig', [
+            'evaluations' => $pendingEvaluations,
+        ]);
+    }
+
+    
+    private function sendNotification(array $pendingEvaluations): void
+    {
+        foreach ($pendingEvaluations as $eval) {
+            $student = $eval['student'];
+            $messages = [];
+
+           
+        }
+    }
 }

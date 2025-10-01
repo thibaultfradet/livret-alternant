@@ -1,0 +1,61 @@
+{# templates/evaluation_visualizer/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Évaluations à valider{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Évaluations à valider</h1>
+
+    <!-- Action buttons -->
+    <div class="mb-3">
+        <button class="btn btn-success">Valider la sélection</button>
+        <button class="btn btn-secondary">Annuler</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped text-center align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th><input type="checkbox" id="selectAll" /></th>
+                    <th>Alternant</th>
+                    <th>Validation attendue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eval in evaluations %}
+                    {% if not eval.overall_validated %}
+                        <tr>
+                            <td><input type="checkbox" class="row-check" /></td>
+                            <td>
+                                {{ eval.student.firstName }} {{ eval.student.lastName }}<br />
+                                <small>
+                                    {{ eval.classroom.diploma.label }} ({{ eval.classroom.schoolYear.label }})
+                                </small>
+                            </td>
+                            <td>
+                                {% if not eval.tutor_validated %}
+                                    <span class="badge bg-primary">Tuteur</span>
+                                {% elseif not eval.student_validated %}
+                                    <span class="badge bg-warning text-dark">Alternant</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">Toutes les évaluations de la période sont validées.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Simple JS for "select all"
+    document.getElementById('selectAll').addEventListener('change', function(e) {
+        document.querySelectorAll('.row-check').forEach(cb => cb.checked = e.target.checked);
+    });
+</script>
+{% endblock %}
