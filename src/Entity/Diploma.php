@@ -30,6 +30,9 @@ class Diploma
     #[ORM\OneToMany(targetEntity: SkillGroup::class, mappedBy: 'diploma')]
     private Collection $skillGroups;
 
+    #[ORM\Column(length: 255)]
+    private ?string $code = null;
+
     public function __construct()
     {
         $this->classrooms = new ArrayCollection();
@@ -109,6 +112,18 @@ class Diploma
                 $skillGroup->setDiploma(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
 
         return $this;
     }
