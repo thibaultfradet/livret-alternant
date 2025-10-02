@@ -1,18 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Évaluations à valider{% endblock %}
-
 {% block body %}
 <div class="container mt-4">
-    <h1 class="mb-4">Évaluations à valider</h1>
+    <h1 class="mb-4">Notifier les évaluations en attente</h1>
 
-    <!-- Action buttons -->
-    <div class="mb-3">
-        <button class="btn btn-success">Valider la sélection</button>
-        <button class="btn btn-secondary">Annuler</button>
-    </div>
+    {{ form_start(form) }}
 
-    <!-- Search filters -->
+    {% if selectedPeriod %}
+        {{ form_row(form.periodId, { value: selectedPeriod.id }) }}
+    {% endif %}
+
+    <!-- Filters -->
     <div class="row mb-3">
         <div class="col-md-6">
             <input type="text" id="searchName" class="form-control" placeholder="Rechercher par nom...">
@@ -20,6 +18,11 @@
         <div class="col-md-6">
             <input type="text" id="searchClass" class="form-control" placeholder="Rechercher par classe...">
         </div>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-success">Envoyer notifications</button>
+        <button type="reset" class="btn btn-secondary">Annuler</button>
     </div>
 
     <div class="table-responsive">
@@ -33,41 +36,40 @@
             </thead>
             <tbody>
                 {% for eval in evaluations %}
-                    {% if not eval.overall_validated %}
-                        <tr>
-                            <td><input type="checkbox" class="row-check" /></td>
-                            <td>
-                                {{ eval.student.firstName }} {{ eval.student.lastName }}<br />
-                                <small class="classroom-label">
-                                    {{ eval.classroom.diploma.label }} ({{ eval.classroom.schoolYear.label }})
-                                </small>
-                            </td>
-                            <td>
-                                {% if not eval.tutor_validated %}
-                                    <span class="badge bg-primary">Tuteur</span>
-                                {% elseif not eval.student_validated %}
-                                    <span class="badge bg-warning text-dark">Alternant</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                {% else %}
                     <tr>
-                        <td colspan="3">Toutes les évaluations de la période sont validées.</td>
+                        <td>
+                            {{ form_widget(form.selectedStudents[loop.index0]) }}
+                        </td>
+                        <td>
+                            {{ eval.student.firstName }} {{ eval.student.lastName }}<br />
+                            <small class="classroom-label">
+                                {{ eval.classroom.diploma.label }} ({{ eval.classroom.schoolYear.label }})
+                            </small>
+                        </td>
+                        <td>
+                            {% if not eval.tutor_validated %}
+                                <span class="badge bg-primary">Tuteur</span>
+                            {% elseif not eval.student_validated %}
+                                <span class="badge bg-warning text-dark">Alternant</span>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-    </div>
+    </div>  
+    {{ form_end(form) }}
 </div>
 
 <script>
-    // Simple JS for "select all"
-    document.getElementById('selectAll').addEventListener('change', function(e) {
-        document.querySelectorAll('.row-check').forEach(cb => cb.checked = e.target.checked);
+    // Select All functionality
+    document.getElementById('selectAll')?.addEventListener('change', function(e) {
+        document.querySelectorAll('input[name="notifier_evaluation[selectedStudents][]"]').forEach(cb => {
+            cb.checked = e.target.checked;
+        });
     });
 
-    // Function to filter rows dynamically
+    // Dynamic search filter
     function filterTable() {
         const nameFilter = document.getElementById('searchName').value.toLowerCase();
         const classFilter = document.getElementById('searchClass').value.toLowerCase();
@@ -77,7 +79,6 @@
             const nameCell = row.cells[1]?.innerText.toLowerCase() || '';
             const classCell = row.querySelector('.classroom-label')?.innerText.toLowerCase() || '';
 
-            // Show row if it matches both filters
             if (nameCell.includes(nameFilter) && classCell.includes(classFilter)) {
                 row.style.display = '';
             } else {
@@ -86,7 +87,6 @@
         });
     }
 
-    // Attach events to inputs
     document.getElementById('searchName').addEventListener('input', filterTable);
     document.getElementById('searchClass').addEventListener('input', filterTable);
 </script>

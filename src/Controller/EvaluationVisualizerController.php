@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\NotifierEvaluationType;
 use App\Repository\ClassroomRepository;
 use App\Repository\PeriodRepository;
 use App\Repository\StudentEvaluationRepository;
@@ -171,7 +172,7 @@ class EvaluationVisualizerController extends AbstractController
         TutorEvaluationRepository $tutorEvalRepo,
         TTMEvaluationRepository $ttmEvalRepo
     ): Response {
-        /* get data */
+        // get evaluation data
         $data = $this->getEvaluationData(
             $request,
             $classroomRepo,
@@ -181,23 +182,47 @@ class EvaluationVisualizerController extends AbstractController
             $ttmEvalRepo
         );
 
-        $pendingEvaluations = [];
-        foreach ($data['evaluations'] as $eval) {
-              
-            if (!$eval['tutor_validated'] || !$eval['student_validated']) {
-                $pendingEvaluations[] = $eval;
-            }
+        // only keep the non evaluate 
+        $pendingEvaluations = array_filter($data['evaluations'], fn($eval) => !$eval['tutor_validated'] || !$eval['student_validated']);
+        $students = array_map(fn($eval) => $eval['student'], $pendingEvaluations);
+
+        // create the form
+        $form = $this->createForm(NotifierEvaluationType::class, null, [
+            'students' => $students,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var User[] $selectedStudents */
+            $selectedStudents = $form->get('selectedStudents')->getData();
+            $periodId = $form->get('periodId')->getData();
+
+            // filter evaluation baseed on selected user
+            $selectedEvaluations = array_filter(
+                $pendingEvaluations,
+                fn($eval) => in_array($eval['student'], $selectedStudents, true) 
+            );
+
+            $this->sendNotification($selectedEvaluations);
+
+            $this->addFlash('success', count($selectedEvaluations) . ' notifications envoyées.');
+            return $this->redirectToRoute('notifier_pending_evaluations', [
+                'period' => $periodId,
+            ]);
         }
 
-
         return $this->render('evaluation_visualizer/notifier.html.twig', [
+            'form' => $form->createView(),
             'evaluations' => $pendingEvaluations,
+            'selectedPeriod' => $data['selectedPeriod'],
         ]);
     }
+
 
     
     private function sendNotification(array $pendingEvaluations): void
     {
+        dump($pendingEvaluations);
         foreach ($pendingEvaluations as $eval) {
             $student = $eval['student'];
             $messages = [];
