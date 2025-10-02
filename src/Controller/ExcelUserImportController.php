@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\TutorStudent;
+use App\Repository\ClassroomRepository;
+use App\Repository\DiplomaRepository;
+use App\Repository\SchoolYearRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,7 +19,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final class ExcelUserImportController extends AbstractController
 {
     #[Route('/import-user', name: 'app_excel_user_import')]
-    public function index(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
+    public function index(Request $request , SchoolYearRepository $schoolYearRepo,  DiplomaRepository $diplomaRepo , ClassroomRepository $classroomRepo , EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
     {
         $message = null;
 
@@ -25,6 +28,9 @@ final class ExcelUserImportController extends AbstractController
 
             if ($excelFile) {
                 try {
+
+                    $activeSchoolYear = $schoolYearRepo->findActive();
+
                     // Load Excel file
                     $spreadsheet = IOFactory::load($excelFile->getPathname());
                     $sheet = $spreadsheet->getActiveSheet();
@@ -49,6 +55,17 @@ final class ExcelUserImportController extends AbstractController
                         $emptyRowsCount = 0; // reset empty row counter
 
                         [$classCode, $studentFullName, $studentPhone, $studentEmail, $companyName, $companyAddress, $tutorFullName, $tutorPhone, $tutorMobile, $tutorEmail, $tutorEmail2, $stageObservation] = $row;
+
+                        $diploma = $diplomaRepo->findOneBy(['code' => $classCode]);
+                        if (!$diploma) {
+                            $this->addFlash('warning', "Classe avec le code $classCode non trouvée pour l'étudiant $studentFullName.");
+                            continue;
+                        }
+
+                        $classroom = $classroomRepo->findOneBy([
+                            'diploma' => $diplomaRepo ->findOneBy(['code' => $classCode]),
+                            'schoolYear' => $activeSchoolYear
+                        ]);
 
                         // Skip if student already exists
                         $existingStudent = $em->getRepository(User::class)->findOneBy(['email' => $studentEmail]);
@@ -79,8 +96,9 @@ final class ExcelUserImportController extends AbstractController
                         $student->setFirstName($studentFirstName);
                         $student->setLastName($studentLastName);
                         $student->setEmail($studentEmail);
-                        $student->setRoles(['ROLE_USER']);
+                        $student->setRoles(['ROLE_STUDENT']);
                         $student->setPassword($passwordHasher->hashPassword($student, 'temporaryPassword123'));
+                        $student->setClassroom($classroom);
                         $em->persist($student);
                         $em->flush();
 
