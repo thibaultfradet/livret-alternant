@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Period;
+use App\Form\NotifierEvaluationType;
 use App\Repository\ClassroomRepository;
 use App\Repository\PeriodRepository;
 use App\Repository\StudentEvaluationRepository;
@@ -13,7 +15,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Annotation\Route;    
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mailer\MailerInterface;
+
+
 
 class EvaluationVisualizerController extends AbstractController
 {
@@ -33,7 +40,9 @@ class EvaluationVisualizerController extends AbstractController
             $periodRepo,
             $studentEvalRepo,
             $tutorEvalRepo,
-            $ttmEvalRepo
+            $ttmEvalRepo,
+            $request->query->get('classroom')
+
         );
 
         return $this->render('evaluation_visualizer/index.html.twig', $data);
@@ -55,7 +64,9 @@ class EvaluationVisualizerController extends AbstractController
             $periodRepo,
             $studentEvalRepo,
             $tutorEvalRepo,
-            $ttmEvalRepo
+            $ttmEvalRepo,
+            $request->query->get('classroom')
+
         );
 
         $evaluations = $data['evaluations'];
@@ -116,10 +127,10 @@ class EvaluationVisualizerController extends AbstractController
         PeriodRepository $periodRepo,
         StudentEvaluationRepository $studentEvalRepo,
         TutorEvaluationRepository $tutorEvalRepo,
-        TTMEvaluationRepository $ttmEvalRepo
+        TTMEvaluationRepository $ttmEvalRepo,
+        int $classroomId = null
     ): array {
         $periodId = $request->query->get('period');
-        $classroomId = $request->query->get('classroom');
 
         $classrooms = $classroomRepo->findAll();
         $periods = $periodRepo->findByActiveSchoolYear();
@@ -156,5 +167,110 @@ class EvaluationVisualizerController extends AbstractController
             'evaluations' => $evaluations,
             'error' => null,
         ];
+    }
+
+
+
+    
+
+    #[Route('/evaluation-visualizer/notifier', name: 'notifier_pending_evaluations')]
+    public function notifier(
+        Request $request,
+        ClassroomRepository $classroomRepo,
+        PeriodRepository $periodRepo,
+        StudentEvaluationRepository $studentEvalRepo,
+        TutorEvaluationRepository $tutorEvalRepo,
+        TTMEvaluationRepository $ttmEvalRepo,
+        MailerInterface $mailer
+    ): Response {
+        // get evaluation data
+        $data = $this->getEvaluationData(
+            $request,
+            $classroomRepo,
+            $periodRepo,
+            $studentEvalRepo,
+            $tutorEvalRepo,
+            $ttmEvalRepo
+        );
+
+        // only keep the non evaluate 
+        $pendingEvaluations = array_filter($data['evaluations'], fn($eval) => !$eval['tutor_validated'] || !$eval['student_validated']);
+        $students = array_map(fn($eval) => $eval['student'], $pendingEvaluations);
+
+        // create the form
+        $form = $this->createForm(NotifierEvaluationType::class, null, [
+            'students' => $students,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var User[] $selectedStudents */
+            $selectedStudents = $form->get('selectedStudents')->getData();
+            $periodId = $form->get('periodId')->getData();
+
+            // filter evaluation baseed on selected user
+            $selectedEvaluations = array_filter(
+                $pendingEvaluations,
+                fn($eval) => in_array($eval['student'], $selectedStudents, true) 
+            );
+
+            $period = $periodRepo->find($periodId);
+
+            $this->sendNotification($selectedEvaluations,$period,$mailer);
+
+            $this->addFlash('success', count($selectedEvaluations) . ' notifications envoyées.');
+            return $this->redirectToRoute('notifier_pending_evaluations', [
+                'period' => $periodId,
+            ]);
+        }
+
+        return $this->render('evaluation_visualizer/notifier.html.twig', [
+            'form' => $form->createView(),
+            'evaluations' => $pendingEvaluations,
+            'selectedPeriod' => $data['selectedPeriod'],
+        ]);
+    }
+
+    private function sendNotification(array $pendingEvaluations, Period $period, MailerInterface $mailer): void
+    {
+        if (empty($pendingEvaluations)) {
+            return;
+        }
+
+        foreach ($pendingEvaluations as $eval) {
+            $student = $eval['student'];
+            $classroom = $eval['classroom'];
+            $periodLabel = $period->getPeriodNumber();
+
+
+            $tutorContract = $student->getStudentContracts()->first();
+            if (!$eval['tutor_validated'] && $tutorContract && $tutorContract->getTutor()) {
+                $user = $tutorContract->getTutor(); 
+                $badge = 'Tuteur';
+            } else {
+                $user = $student; 
+                $badge = 'Alternant';
+            }
+
+            // sécurisation
+            if (!$user || !$user->getEmail()) {
+                continue;
+            }
+
+            // Build the email
+            $email = (new TemplatedEmail())
+                ->from(new Address('test@example.com', 'Livret de l\'alternant'))
+                ->to($user->getEmail())
+                ->subject("Livret de l'alternant - Validation d'évaluation en attente")
+                ->htmlTemplate('evaluation_visualizer/email_reminder.html.twig')
+                ->context([
+                    'student'   => $student,
+                    'classroom' => $classroom,
+                    'badge'     => $badge,
+                    'period'    => $periodLabel,
+                ]);
+
+            $mailer->send($email);
+        }
     }
 }
