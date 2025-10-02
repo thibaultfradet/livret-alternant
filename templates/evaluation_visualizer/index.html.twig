@@ -34,15 +34,23 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">Filtrer</button>
         </div>
         
-       <div class="col-md-3">
+       <div class="col-md-2">
         {# Export Excel button #}
         <a href="{{ path('export_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
            class="btn btn-success w-100">
            Export Excel
+        </a>
+        </div>
+
+       <div class="col-md-2">
+        {# Link to notifier #}
+        <a href="{{ path('notifier_pending_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
+           class="btn btn-white text-dark border border-1 w-100">
+            Notifier
         </a>
         </div>
     </form>
