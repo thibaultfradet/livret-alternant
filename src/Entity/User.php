@@ -34,8 +34,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $address = null;
+    #[ORM\Column( nullable: true)]
+    private array $company = [];
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $disabledAt = null;
@@ -69,6 +69,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(targetEntity: TermsAcceptance::class, mappedBy: 'user')]
     private Collection $termsAcceptances;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $phone = null;
 
     public function __construct()
     {
@@ -152,16 +155,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(?string $address): static
-    {
-        $this->address = $address;
-        return $this;
-    }
+    
 
     public function getDisabledAt(): ?\DateTimeInterface
     {
@@ -450,5 +444,52 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $ttms;
 }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getCompany(): ?array
+    {
+        return $this->company;
+    }
+
+    public function setCompany(?array $company): static
+    {
+        $this->company = $company;
+
+        return $this;
+    }
+
+
+     public function getCompanyName(): ?string
+    {
+        return $this->company[0] ?? null;
+    }
+
+    public function setCompanyName(?string $name): self
+    {
+        $this->company[0] = $name;
+        return $this;
+    }
+
+    public function getCompanyAddress(): ?string
+    {
+        return $this->company[1] ?? null;
+    }
+
+    public function setCompanyAddress(?string $address): self
+    {
+        $this->company[1] = $address;
+        return $this;
+    }
 
 }

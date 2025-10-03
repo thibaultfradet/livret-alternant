@@ -49,10 +49,18 @@
         <div class="card-body py-2 px-3">
             <table style="width:100%; border-collapse:collapse;">
                  <tr>
-                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Entreprise :</td>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Nom de l'entreprise :</td>
                     <td style="width:75%;">
                         <input type="text" class="form-control form-control-sm field-input"
-                               value="{{ tutor.address|default('') }}"
+                               value="{{ tutor.companyName|default('') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse de l'entreprise :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.companyAddress|default('') }}"
                                disabled>
                     </td>
                 </tr>

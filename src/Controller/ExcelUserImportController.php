@@ -83,7 +83,13 @@ final class ExcelUserImportController extends AbstractController
                             $tutor->setEmail($tutorEmail);
                             $tutor->setRoles(['ROLE_TUTOR']);
                             $tutor->setPassword($passwordHasher->hashPassword($tutor, 'temporaryPassword123')); // Temporary password
-                            $tutor->setAddress($companyAddress);
+                            $tutor->setCompanyname($companyName);
+                            $tutor->setCompanyAddress($companyAddress);
+                            if (!empty($tutorPhone)) {
+                                $tutor->setPhone($tutorPhone);
+                            } elseif (!empty($tutorMobile)) {
+                                $tutor->setPhone($tutorMobile);
+                            }
                             $em->persist($tutor);
                             $em->flush();
                         } else {

@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class ExtractionController extends AbstractController
 {
-    #[Route('/extraction/temp/{student}', name: 'app_extraction_temp')]
+    #[Route('/extraction/{student}', name: 'app_extraction')]
     public function index(
         User $student,
         UserRepository $userRepository,
@@ -46,8 +46,8 @@ final class ExtractionController extends AbstractController
         $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear,$student);
 
         // Render the main Twig template
-        return $this->render('extraction_temp/index.html.twig', [
-            'controller_name' => 'ExtractionTemp',
+        return $this->render('extraction/index.html.twig', [
+            'controller_name' => 'Extraction',
             'student' => $student,
             'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
             'formationCenterPath' => $formationCenterPath,
