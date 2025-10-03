@@ -16,6 +16,7 @@ class SchoolYearType extends AbstractType
             ->add('startDate')
             ->add('endDate')
             ->add('active')
+            ->add('termsContent')
         ;
     }
 

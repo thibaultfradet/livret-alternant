@@ -17,9 +17,14 @@ final class TermsAcceptanceController extends AbstractController
      * Route to see what the user valid
      */
     #[Route('/terms-acceptance', name: 'app_terms_acceptance')]
-    public function index(Request $request, SchoolYearRepository $SYRepo, TermsAcceptanceRepository $termsRepo): Response
+    public function index(Request $request, SchoolYearRepository $SYRepo): Response
     {
-        return $this->render('terms_acceptance/index.html.twig', []);
+        $activeYear = $SYRepo->findActive();
+        $termsContent = $activeYear->getTermsContent();
+
+        return $this->render('terms_acceptance/index.html.twig', [
+            'termsContent' => $termsContent
+        ]);
     }
 
     /**
@@ -64,9 +69,13 @@ final class TermsAcceptanceController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
+
+        $termsContent = $activeYear->getTermsContent();
+
         return $this->render('terms_acceptance/validate.html.twig', [
             'schoolYear' => $activeYear,
             'user' => $user,
+            'termsContent' => $termsContent,
         ]);
     }
 }

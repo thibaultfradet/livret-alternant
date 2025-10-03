@@ -46,6 +46,9 @@ class SchoolYear
     #[ORM\OneToMany(targetEntity: TermsAcceptance::class, mappedBy: 'schoolYear')]
     private Collection $termsAcceptances;
 
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $termsContent = null;
+
     public function __construct()
     {
         $this->classrooms = new ArrayCollection();
@@ -185,6 +188,18 @@ class SchoolYear
                 $termsAcceptance->setSchoolYear(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTermsContent(): ?string
+    {
+        return $this->termsContent;
+    }
+
+    public function setTermsContent(string $termsContent): static
+    {
+        $this->termsContent = $termsContent;
 
         return $this;
     }
