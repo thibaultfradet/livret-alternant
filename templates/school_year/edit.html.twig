@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une année scolaire{% endblock %}
+
+{% block body %}
+    <h1>Modifier une année scolaire</h1>
+
+    {{ include('school_year/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_school_year_index') }}">Retourner à la liste</a>
+
+    {{ include('school_year/_delete_form.html.twig') }}
+{% endblock %}
