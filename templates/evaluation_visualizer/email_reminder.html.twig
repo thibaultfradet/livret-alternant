@@ -1,0 +1,23 @@
+<h1>Rappel : évaluation en attente</h1>
+
+{% if badge == 'Tuteur' %}
+    <p>
+        Bonjour {{ student.getStudentContracts().first().getTutor().getFirstName() }},
+    </p>
+    <p>
+        L'évaluation de l'alternant <strong>{{ student.getFirstName() }} {{ student.getLastName() }}</strong>
+        pour la période <strong>{{ period }}</strong> est en attente de validation.
+    </p>
+    <p>Merci de valider cette évaluation en tant que tuteur.</p>
+{% else %}
+    <p>
+        Bonjour {{ student.getFirstName() }},
+    </p>
+    <p>
+        Vous avez oublié de compléter votre auto-évaluation pour la période <strong>{{ period }}</strong>.
+    </p>
+    <p>Merci de la compléter rapidement.</p>
+{% endif %}
+
+<p>Cordialement,<br>
+L'institution Beaupyerat</p>

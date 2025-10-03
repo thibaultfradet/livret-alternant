@@ -39,7 +39,8 @@ security:
         # Route protégée
         - { path: ^/, roles: ROLE_USER }
 
-        - { path: ^/, roles: ROLE_USER }
+        # Route admin
+        - { path: ^/diploma, roles: ROLE_ADMIN }
 
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
