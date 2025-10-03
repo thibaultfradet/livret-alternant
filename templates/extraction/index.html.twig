@@ -1,0 +1,399 @@
+{% extends 'pdf.html.twig' %}
+
+
+{% block body %}
+
+<div class="py-3">
+    <h2 class="mb-3">I. Acteurs et informations générales</h2>
+
+    {# student information #}
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+        <h6 class="mb-0 small">1. INFORMATIONS ALTERNANT</h6>
+    </div>
+    <div class="border border-beaupeyrat border-2 p-3 mb-2">
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666;">Section :</td>
+                <td style="width:75%; padding-bottom:6px;">
+                    <input type="text" class="form-control form-control-sm field-input"
+                           value="{{ student.classroom.diploma.label|default('') }}"
+                           disabled>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666;">Nom Prénom :</td>
+                <td>
+                    <input type="text" class="form-control form-control-sm field-input"
+                        value="{{ (student.lastName ~ ' ' ~ student.firstName)|default('') }}"
+                           disabled>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:25%; font-size:12px; color:#666;">Email :</td>
+                <td>
+                    <input type="email" class="form-control form-control-sm field-input"
+                           value="{{ student.email|default('') }}"
+                           disabled>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    {# tutor information #}
+    {% set tutorContract = student.studentContracts|first %}
+    {% set tutor = tutorContract ? tutorContract.tutor : null %}
+    <div class="card shadow-sm border-3 border-beaupeyrat mb-3">
+        <div class="card-header bg-beaupeyrat text-white py-1 text-center h4">
+            <h6 class="mb-0 small">2. INFORMATIONS EMPLOYEUR</h6>
+        </div>
+        <div class="card-body py-2 px-3">
+            <table style="width:100%; border-collapse:collapse;">
+                 <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Entreprise :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.address|default('') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Nom du tuteur :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.lastName ~ ' ' ~ tutor.firstName |default('') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse mail du tuteur :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.email |default('') }}"
+                               disabled>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Dates du contrat :</td>
+                    {% set contractDates = tutorContract ? tutorContract.dateDebutContract|date('d/m/Y') ~ ' - ' ~ tutorContract.dateFinContract|date('d/m/Y') : '' %}
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ contractDates }}"
+                               disabled>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="page-break"></div>
+
+{# --- formation center --- #}
+<div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+    <h6 class="mb-0 small">3. LE CENTRE DE FORMATION</h6>
+</div>
+<div class="border border-beaupeyrat border-2 p-3 mb-2">
+            <img class="w-100" src="{{ asset(formationCenterPath) }}" alt="Information du centre de formation" 
+</div>
+
+<div class="page-break"></div>
+
+
+
+{# --- Teaching team --- #}
+<div class="card shadow-sm border-3 border-beaupeyrat mb-3 h-100">
+    <div class="card-header bg-beaupeyrat text-white py-1 text-center h4">
+        <h6 class="mb-0 small">4. Équipe pédagogique</h6>
+    </div>
+    <div class="card-body p-0 d-flex flex-column">
+        <img src="{{ asset(ttmPath) }}" alt="Liste des membres de l'équipe pédagogique" 
+    </div>
+</div>
+
+
+
+
+
+<div class="page-break"></div>
+
+{# --- Terms of service --- #}
+<div>
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+        <h6 class="mb-0 small">5. MODALITÉS D'UTILISATION DU LIVRET</h6>
+    </div>
+    <div>
+         <p>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+        </p>
+    </div>
+    <table class="table table-bordered">
+    <thead>
+        <tr class="bg-beaupeyrat text-white">
+            <th style="visibility: hidden;"></th>
+            <th class="text-center text-white bg-beaupeyrat">L'alternant</th>
+            <th class="text-center text-white bg-beaupeyrat">Le tuteur</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set studentAcceptance = student.termsAcceptances|first %}
+        {% set tutorContract = student.studentContracts|first %}
+        {% set tutor = tutorContract ? tutorContract.tutor : null %}
+        {% set tutorAcceptance = tutor ? tutor.termsAcceptances|first : null %}
+
+        <tr>
+            <td class="bg-beaupeyrat text-white border-1">Date</td>
+            <td class="border-1 text-center">A validé les données le {{ studentAcceptance ? studentAcceptance.validationDate|date('d/m/Y') : '' }}
+            </td>
+            <td class="border-1 text-center"> A validé les données le {{ tutorAcceptance ? tutorAcceptance.validationDate|date('d/m/Y') : '' }}
+            </td>
+        </tr>
+    </tbody>
+    </table>
+</div>
+
+<div class="page-break"></div>
+
+
+
+{# --- Calendar / schedule --- #}
+<div>
+    <h2 class="mb-3">II. Informations pédagogiques</h2>
+    <img src="/uploads/classroom/calendar-{{ student.classroom.id }}.png" style="width:100%;">
+</div>
+
+
+
+
+<div class="page-break"></div>
+
+
+
+{# --- evaluation by period (reworked for multi-level structure) --- #}
+<div>
+    <h2 class="mb-3">III. Suivi de la formation</h2>
+    {% for period in student.classroom.schoolYear.periods %}
+        <h2>
+            Période {{ period.periodNumber }} - Du {{ period.startDate|date('d/m/Y') }} au {{ period.endDate|date('d/m/Y') }}
+        </h2>
+        {% for eval in student.tutorEvaluationsReceived %}
+            {% if eval.period == period %}
+                {# tutor evaluation behavior #}
+                <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
+                    <!-- Card header -->
+                    <div class="card-header text-white bg-beaupeyrat text-center h4">
+                        APPRECIATION DU COMPORTEMENT AU TRAVAIL
+                    </div>
+
+                    <!-- Table content -->
+                    <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc;">
+                        {% for evalBehavior in eval.behaviorEvaluation %}
+                            <tr>
+                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                    {{ evalBehavior.behaviorCriteria.label }}
+                                </td>
+                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                    <input type="text" class="form-control form-control-sm field-input"
+                                        value="{{ evalBehavior.behaviorLevel.label|default('') }}"
+                                        disabled>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                {# tutor evaluation skill #}
+                <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
+                    <div class="card-header bg-beaupeyrat text-center text-white h4">
+                        EVALUATION DES COMPETENCES AU REGARD DES OBJECTIFS DE LA FORMATION
+                    </div>
+                    {% for periodNumber, skillGroups in skillEvaluationsByPeriod %}
+                        {# same period as the main loop #}
+                        {% if periodNumber == period.periodNumber %}
+                            {% for groupId, groupData in skillGroups %}
+                                <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc; margin-bottom:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="w-100 text-center text-white bg-beaupeyrat" >
+                                                {{ groupData.label }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for criteria in groupData.criteria %}
+                                            <tr>
+                                                <td class="w-50">
+                                                    {{ criteria.label }}
+                                                </td>
+                                                <td class="w-50">
+                                                    <input type="text" class="form-control form-control-sm field-input"
+                                                        value="{{ criteria.level|default('') }}"
+                                                        disabled>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+
+                <div class="page-break"></div>
+
+<table class="table table-bordered border-dark mb-3">
+    <tbody>
+        <tr>
+            <td class="w-25 fw-bold p-4 border-dark">Points forts</td>
+            <td class="p-4 border-dark">{{eval.strengths}}</td>
+        </tr>
+        <tr>
+            <td class="w-25 fw-bold p-4 border-dark">Points faibles</td>
+            <td class="p-4 border-dark">{{eval.weaknesses}}</td>
+        </tr>
+        <tr>
+            <td class="w-25 fw-bold p-4 border-dark">Objectifs à atteindre à la prochaine période</td>
+            <td class="p-4 border-dark">{{eval.goals}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="mb-3">
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+        <h6 class="mb-0 small">Remarques du tuteur et attendus</h6>
+    </div>
+    <textarea class="form-control border border-dark p-4" rows="8">{{eval.remarks}}</textarea>
+</div>
+
+                            
+            {% endif %}
+        {% endfor %}
+
+
+        {% for eval in student.studentEvaluations %}
+            {% if eval.period == period %}
+                <div>
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+                        <h6 class="mb-0 small">Remarques de l'alternant et attendus</h6>
+                    </div>
+                    <textarea class="form-control" disabled>{{eval.remarks}}</textarea>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+
+        {% for eval in student.TtmEvaluationsReceived %}
+            {% if eval.period == period %}
+                <div>
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+                        <h6 class="mb-0 small">Remarques de l'équipé pédagogique et attendus</h6>
+                    </div>
+                    <textarea class="form-control" sdisabled>{{eval.remarks}}</textarea>
+                </div>
+            {% endif %}
+        {% endfor %}
+
+
+        <div>
+            <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+                <h6 class="mb-0 small">SIGNATURES</h6>
+            </div>
+
+            <table class="table table-bordered" style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="border:1px solid #000; padding:4px;">Rôle</th>
+                        <th class="text-center" style="border:1px solid #000; padding:4px;">Date de validation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set tutorEval = student.tutorEvaluationsReceived|filter(e => e.period == period)|first %}
+                    {% set studentEval = student.studentEvaluations|filter(e => e.period == period)|first %}
+                    {% set ttmEval = student.TtmEvaluationsReceived|filter(e => e.period == period)|first %}
+
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Tuteur</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                            A validé les données le  {{ tutorEval ? tutorEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Alternant</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                        A validé les données le  {{ studentEval ? studentEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Équipe pédagogique</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                            A validé les données le {{ ttmEval ? ttmEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+    <div class="page-break"></div>
+    {% endfor %}
+    {% for periodNumber, groups in skillEvaluationsByPeriod %}
+        <h2>
+            Période {{ periodNumber }}
+        </h2>
+
+        {% for groupId, group in groups %}
+            <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px; page-break-inside: avoid;">
+                <!-- Card header -->
+                <div class="card-header bg-beaupeyrat text-center text-white h4">
+                    {{ group.label }}
+                </div>
+
+                <!-- Table content -->
+                <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc;">
+                    {% for criterion in group.criteria %}
+                        <tr>
+                            <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                {{ criterion.label }}
+                            </td>
+                            <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                <input type="text" class="form-control form-control-sm field-input"
+                                       value="{{ criterion.level|default('') }}"
+                                       disabled>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endfor %}
+        <div class="page-break"></div>
+    {% else %}
+        <p>Aucune évaluation de compétence pour l'année scolaire active.</p>
+    {% endfor %}
+</div>
+
+   
+
+
+{% endblock %}

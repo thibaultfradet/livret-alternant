@@ -4,9 +4,10 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
-   <title>{% block title %}Welcome!{% endblock %}</title>
+    <title></title>
 
     {% block stylesheets %}
+      <link href="{{ asset('assets/styles/app.css') }}" rel="stylesheet">        
       <link href="{{ asset('assets/styles/bootstrap-5.3.8.min.css') }}" rel="stylesheet">        
     {% endblock %}
 
@@ -14,9 +15,9 @@
        <script src="{{ asset('/assets/js/bootstrap-5.3.8.min.js') }}"></script>
     {% endblock %}
   </head>
-  <body class="d-flex flex-column">
-    <div class="page page-center">
-      <div class="container container-normal py-4">
+  <body>
+    <div>
+      <div class="">
          {% block body %}{% endblock %}
       </div>
     </div>

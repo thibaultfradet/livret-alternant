@@ -34,11 +34,11 @@
             </select>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-3">
             <button type="submit" class="btn btn-primary w-100">Filtrer</button>
         </div>
         
-       <div class="col-md-2">
+       <div class="col-md-3">
         {# Export Excel button #}
         <a href="{{ path('export_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
            class="btn btn-success w-100">
@@ -55,14 +55,15 @@
         </div>
     </form>
 
-    <div class="table-responsive">
+    <div class="table-responsive">  
         <table class="table table-bordered table-striped text-center mt-2">
             <thead class="table-light">
                 <tr>
-                    <th>Alternant </th>
+                    <th>Alternant</th>
                     <th>Évaluation tuteur</th>
                     <th>Évaluation alternant</th>
                     <th>Évaluation de l'équipe pédagogique</th>
+                    <th>Export PDF</th> {# New column #}
                 </tr>
             </thead>
             <tbody>
@@ -93,14 +94,20 @@
                                 <span class="text-danger">&#10007;</span>
                             {% endif %}
                         </td>
+                        <td>
+                            <a href="/extraction/{{ eval.student.id }}" class="btn btn-danger btn-sm">
+                                PDF
+                            </a>
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4">Aucune évaluation trouvée pour ces filtres.</td>
+                        <td colspan="5">Aucune évaluation trouvée pour ces filtres.</td> {# colspan updated to 5 #}
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+
     </div>
 </div>
 {% endblock %}
