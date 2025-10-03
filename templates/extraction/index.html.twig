@@ -1,6 +1,5 @@
 {% extends 'pdf.html.twig' %}
 
-{% block title %}Acteurs et informations générales{% endblock %}
 
 {% block body %}
 
@@ -8,7 +7,7 @@
     <h2 class="mb-3">I. Acteurs et informations générales</h2>
 
     {# student information #}
-    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
         <h6 class="mb-0 small">1. INFORMATIONS ALTERNANT</h6>
     </div>
     <div class="border border-beaupeyrat border-2 p-3 mb-2">
@@ -44,11 +43,19 @@
     {% set tutorContract = student.studentContracts|first %}
     {% set tutor = tutorContract ? tutorContract.tutor : null %}
     <div class="card shadow-sm border-3 border-beaupeyrat mb-3">
-        <div class="card-header bg-beaupeyrat text-white py-1">
+        <div class="card-header bg-beaupeyrat text-white py-1 text-center h4">
             <h6 class="mb-0 small">2. INFORMATIONS EMPLOYEUR</h6>
         </div>
         <div class="card-body py-2 px-3">
             <table style="width:100%; border-collapse:collapse;">
+                 <tr>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Entreprise :</td>
+                    <td style="width:75%;">
+                        <input type="text" class="form-control form-control-sm field-input"
+                               value="{{ tutor.address|default('') }}"
+                               disabled>
+                    </td>
+                </tr>
                 <tr>
                     <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Nom du tuteur :</td>
                     <td style="width:75%;">
@@ -58,10 +65,10 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse :</td>
+                    <td style="width:25%; font-size:12px; color:#666; padding-bottom:6px;">Adresse mail du tuteur :</td>
                     <td style="width:75%;">
                         <input type="text" class="form-control form-control-sm field-input"
-                               value="{{ tutor.address|default('') }}"
+                               value="{{ tutor.email |default('') }}"
                                disabled>
                     </td>
                 </tr>
@@ -83,62 +90,68 @@
 <div class="page-break"></div>
 
 {# --- formation center --- #}
-<div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+<div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
     <h6 class="mb-0 small">3. LE CENTRE DE FORMATION</h6>
 </div>
 <div class="border border-beaupeyrat border-2 p-3 mb-2">
-    <p>{{ student.classroom.schoolYear.label|default('') }}</p>
+            <img class="w-100" src="{{ asset(formationCenterPath) }}" alt="Information du centre de formation" 
 </div>
 
 <div class="page-break"></div>
 
+
+
 {# --- Teaching team --- #}
-<div class="card shadow-sm border-3 border-beaupeyrat mb-3">
-    <div class="card-header bg-beaupeyrat text-white py-1">
+<div class="card shadow-sm border-3 border-beaupeyrat mb-3 h-100">
+    <div class="card-header bg-beaupeyrat text-white py-1 text-center h4">
         <h6 class="mb-0 small">4. Équipe pédagogique</h6>
     </div>
-    <div class="card-body py-2 px-3">
-        <table class="table" style="border-collapse: collapse; width: 100%;">
-            <thead>
-                <tr>
-                    <th class="text-center" style="border: 1px solid #000; padding: 4px;">Nom Prénom</th>
-                    <th class="text-center" style="border: 1px solid #000; padding: 4px;">Rôles</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ttm in ttmRoles %}
-                    <tr>
-                        <td class="text-center" style="border: 1px solid #000; padding: 4px;">{{ ttm.name }}</td>
-                        <td class="text-center" style="border: 1px solid #000; padding: 4px;">
-                            {% for role in ttm.roles %}
-                                • {{ role }}<br>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="2" style="border: 1px solid #000; padding: 4px;">Aucun TTM trouvé.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="card-body p-0 d-flex flex-column">
+        <img src="{{ asset(ttmPath) }}" alt="Liste des membres de l'équipe pédagogique" 
     </div>
 </div>
+
+
+
 
 
 <div class="page-break"></div>
 
 {# --- Terms of service --- #}
 <div>
-    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
         <h6 class="mb-0 small">5. MODALITÉS D'UTILISATION DU LIVRET</h6>
+    </div>
+    <div>
+         <p>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
+            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
+            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
+            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+        </p>
     </div>
     <table class="table table-bordered">
     <thead>
         <tr class="bg-beaupeyrat text-white">
             <th style="visibility: hidden;"></th>
-            <th class="text-center">L'alternant</th>
-            <th class="text-center">Le tuteur</th>
+            <th class="text-center text-white bg-beaupeyrat">L'alternant</th>
+            <th class="text-center text-white bg-beaupeyrat">Le tuteur</th>
         </tr>
     </thead>
     <tbody>
@@ -165,7 +178,7 @@
 {# --- Calendar / schedule --- #}
 <div>
     <h2 class="mb-3">II. Informations pédagogiques</h2>
-    <img src="{{ calendar_image }}" style="width:100%;">
+    <img src="/uploads/classroom/calendar-{{ student.classroom.id }}.png" style="width:100%;">
 </div>
 
 
@@ -177,8 +190,7 @@
 
 {# --- evaluation by period (reworked for multi-level structure) --- #}
 <div>
-
-
+    <h2 class="mb-3">III. Suivi de la formation</h2>
     {% for period in student.classroom.schoolYear.periods %}
         <h2>
             Période {{ period.periodNumber }} - Du {{ period.startDate|date('d/m/Y') }} au {{ period.endDate|date('d/m/Y') }}
@@ -188,7 +200,7 @@
                 {# tutor evaluation behavior #}
                 <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
                     <!-- Card header -->
-                    <div class="card-header bg-beaupeyrat text-center">
+                    <div class="card-header text-white bg-beaupeyrat text-center h4">
                         APPRECIATION DU COMPORTEMENT AU TRAVAIL
                     </div>
 
@@ -211,7 +223,7 @@
 
                 {# tutor evaluation skill #}
                 <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px;">
-                    <div class="card-header bg-beaupeyrat text-center">
+                    <div class="card-header bg-beaupeyrat text-center text-white h4">
                         EVALUATION DES COMPETENCES AU REGARD DES OBJECTIFS DE LA FORMATION
                     </div>
                     {% for periodNumber, skillGroups in skillEvaluationsByPeriod %}
@@ -221,7 +233,7 @@
                                 <table style="border-collapse: collapse; width: 100%; border: 1px solid #ccc; margin-bottom:10px;">
                                     <thead>
                                         <tr>
-                                            <th colspan="2" style="background:#f0f0f0; text-align:center; padding:6px; border:1px solid #ccc;">
+                                            <th colspan="2" class="w-100 text-center text-white bg-beaupeyrat" >
                                                 {{ groupData.label }}
                                             </th>
                                         </tr>
@@ -229,10 +241,10 @@
                                     <tbody>
                                         {% for criteria in groupData.criteria %}
                                             <tr>
-                                                <td style="width:70%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                                <td class="w-50">
                                                     {{ criteria.label }}
                                                 </td>
-                                                <td style="width:30%; padding:6px; border:1px solid #ccc;">
+                                                <td class="w-50">
                                                     <input type="text" class="form-control form-control-sm field-input"
                                                         value="{{ criteria.level|default('') }}"
                                                         disabled>
@@ -247,29 +259,32 @@
                 </div>
 
 
+                <div class="page-break"></div>
 
-               <table class="table">
-                    <tbody>
-                        <tr>
-                            <td class="w-25 fw-bold">Points forts</td>
-                            <td>{{eval.strengths}}</td>
-                        </tr>
-                        <tr>
-                            <td class="w-25 fw-bold">Points faibles</td>
-                            <td>{{eval.weaknesses}}</td>
-                        </tr>
-                        <tr>
-                            <td class="w-25 fw-bold">Objectifs à atteindre à la prochaine période</td>
-                            <td>{{eval.goals}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div>
-                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
-                        <h6 class="mb-0 small">Remarques du tuteur et attendus</h6>
-                    </div>
-                    <textarea>{{eval.remarks}}</textarea>
-                </div>
+<table class="table table-bordered border-dark mb-3">
+    <tbody>
+        <tr>
+            <td class="w-25 fw-bold p-4 border-dark">Points forts</td>
+            <td class="p-4 border-dark">{{eval.strengths}}</td>
+        </tr>
+        <tr>
+            <td class="w-25 fw-bold p-4 border-dark">Points faibles</td>
+            <td class="p-4 border-dark">{{eval.weaknesses}}</td>
+        </tr>
+        <tr>
+            <td class="w-25 fw-bold p-4 border-dark">Objectifs à atteindre à la prochaine période</td>
+            <td class="p-4 border-dark">{{eval.goals}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="mb-3">
+    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
+        <h6 class="mb-0 small">Remarques du tuteur et attendus</h6>
+    </div>
+    <textarea class="form-control border border-dark p-4" rows="8">{{eval.remarks}}</textarea>
+</div>
+
                             
             {% endif %}
         {% endfor %}
@@ -278,10 +293,10 @@
         {% for eval in student.studentEvaluations %}
             {% if eval.period == period %}
                 <div>
-                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
                         <h6 class="mb-0 small">Remarques de l'alternant et attendus</h6>
                     </div>
-                    <textarea>{{eval.remarks}}</textarea>
+                    <textarea class="form-control" disabled>{{eval.remarks}}</textarea>
                 </div>
             {% endif %}
         {% endfor %}
@@ -290,17 +305,17 @@
         {% for eval in student.TtmEvaluationsReceived %}
             {% if eval.period == period %}
                 <div>
-                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+                    <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
                         <h6 class="mb-0 small">Remarques de l'équipé pédagogique et attendus</h6>
                     </div>
-                    <textarea>{{eval.remarks}}</textarea>
+                    <textarea class="form-control" sdisabled>{{eval.remarks}}</textarea>
                 </div>
             {% endif %}
         {% endfor %}
 
 
         <div>
-            <div class="bg-beaupeyrat text-white py-1 px-3 mb-2">
+            <div class="bg-beaupeyrat text-white py-1 px-3 mb-2 text-center h4">
                 <h6 class="mb-0 small">SIGNATURES</h6>
             </div>
 
@@ -351,7 +366,7 @@
         {% for groupId, group in groups %}
             <div style="margin-bottom:15px; border:1px solid #ccc; border-radius:4px; page-break-inside: avoid;">
                 <!-- Card header -->
-                <div class="card-header bg-beaupeyrat text-center">
+                <div class="card-header bg-beaupeyrat text-center text-white h4">
                     {{ group.label }}
                 </div>
 

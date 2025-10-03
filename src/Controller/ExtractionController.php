@@ -2,22 +2,21 @@
 
 namespace App\Controller;
 
+use App\Entity\SchoolYear;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\SchoolYearRepository;
-use App\Service\PdfService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 final class ExtractionController extends AbstractController
 {
-    #[Route('/extraction/{student}', name: 'app_extraction')]
+    #[Route('/extraction/temp/{student}', name: 'app_extraction_temp')]
     public function index(
         User $student,
         UserRepository $userRepository,
-        SchoolYearRepository $schoolYearRepository,
-        PdfService $pdfService
+        SchoolYearRepository $schoolYearRepository
     ): Response {
 
         // Get the active school year
@@ -28,31 +27,39 @@ final class ExtractionController extends AbstractController
 
         // Get the student with all related data
         $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
-      
 
-        // student not found throw
+        // Student not found
         if (!$student) {
             throw $this->createNotFoundException('Student not found.');
         }
 
-        // format ttm roles
-        $ttmRoles = [];
-        foreach ($student->getClassroom()->getTtmClassrooms() as $ttmClassroom) {
-            $ttm = $ttmClassroom->getTtm();
-            $ttmId = $ttm->getId();
+       
+        // formation center path
+        $formationCenterPath = sprintf('/uploads/general/formation-center-%d.png', $activeYear->getId());
 
-            if (!isset($ttmRoles[$ttmId])) {
-                $ttmRoles[$ttmId] = [
-                    'name' => $ttm->getFirstName() . ' ' . $ttm->getLastName(),
-                    'roles' => [],
-                ];
-            }
-            $ttmRoles[$ttmId]['roles'][] = $ttmClassroom->getLabel();
-        }
+        //full teaching team path
+        $ttmPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
 
 
 
-        // format skill evaluation
+
+        $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear,$student);
+
+        // Render the main Twig template
+        return $this->render('extraction_temp/index.html.twig', [
+            'controller_name' => 'ExtractionTemp',
+            'student' => $student,
+            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
+            'formationCenterPath' => $formationCenterPath,
+            'ttmPath' => $ttmPath,
+            ]);
+    }
+
+
+
+    private function getEvaluationData(SchoolYear $activeYear, User $student)
+    {
+        // Format skill evaluations
         $skillEvaluationsByPeriod = [];
         $activeYearId = $activeYear->getId(); 
 
@@ -62,8 +69,7 @@ final class ExtractionController extends AbstractController
                 continue; // Skip if no period
             }
 
-            // Filter by active school year via the period
-            $periodYear = $period->getSchoolYear(); // Assuming Period entity has getSchoolYear()
+            $periodYear = $period->getSchoolYear();
             if (!$periodYear || $periodYear->getId() !== $activeYearId) {
                 continue; // Skip periods not in the active year
             }
@@ -96,48 +102,6 @@ final class ExtractionController extends AbstractController
                 ];
             }
         }
-
-
-
-        // Load CSS files
-        $path = $this->getParameter('kernel.project_dir') . '/public/assets/styles/';
-        $bootstrap = file_get_contents($path . "bootstrap-5.3.8.min.css");
-        $css = file_get_contents($path . "app.css");
-
-        // === Build HTML manually with inline CSS for PDF ===
-        $html = '<!DOCTYPE html>
-        <html lang="fr">
-        <head>
-            <meta charset="UTF-8">
-            <title>Extraction PDF</title>
-            <style>' . $bootstrap . '</style>
-            <style>' . $css . '</style>
-            <style>body { font-family: "DejaVu Sans", sans-serif; }</style>
-        </head>
-        <body>';
-
-
-         $imagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/calendar-3.png';
-
-    // Encode image to Base64
-    $imageData = base64_encode(file_get_contents($imagePath));
-    $imageBase64 = 'data:image/png;base64,' . $imageData;
-
-
-
-
-        // Render the main Twig template and append to HTML
-        $html .= $this->renderView('extraction/index.html.twig', [
-            'controller_name' => 'ExtractionController',
-            'student' => $student,
-            'ttmRoles' => $ttmRoles,
-            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
-            'calendar_image' => $imageBase64,
-        ]);
-        $html .= '</body></html>';
-        // Generate PDF
-        $pdfService->generatePdf($html, 'extraction.pdf');
-
-        return new Response();
+        return $skillEvaluationsByPeriod;
     }
 }
