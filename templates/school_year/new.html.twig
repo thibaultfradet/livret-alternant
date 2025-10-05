@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New SchoolYear{% endblock %}
+{% block title %}Ajouter une année scolaire{% endblock %}
 
 {% block body %}
-    <h1>Create new SchoolYear</h1>
+    <h1>Ajouter une année scolaire</h1>
 
     {{ include('school_year/_form.html.twig') }}
 
-    <a href="{{ path('app_school_year_index') }}">back to list</a>
+    <a href="{{ path('app_school_year_index') }}">Retourner à la liste</a>
 {% endblock %}

@@ -1,18 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}SchoolYear index{% endblock %}
+{% block title %}Liste des années scolaires{% endblock %}
 
 {% block body %}
-    <h1>SchoolYear index</h1>
+    <h1>Liste des années scolaires</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Label</th>
-                <th>StartDate</th>
-                <th>EndDate</th>
+                <th>Libellé</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
                 <th>Active</th>
+                <th>Condition du livret sur l'année</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -23,19 +24,20 @@
                 <td>{{ school_year.label }}</td>
                 <td>{{ school_year.startDate ? school_year.startDate|date('Y-m-d') : '' }}</td>
                 <td>{{ school_year.endDate ? school_year.endDate|date('Y-m-d') : '' }}</td>
-                <td>{{ school_year.active ? 'Yes' : 'No' }}</td>
+                <td>{{ school_year.active ? 'Oui' : 'Non' }}</td>
+                <td>{{ school_year.termsContent }}</td>
                 <td>
-                    <a href="{{ path('app_school_year_show', {'id': school_year.id}) }}">show</a>
-                    <a href="{{ path('app_school_year_edit', {'id': school_year.id}) }}">edit</a>
+                    <a href="{{ path('app_school_year_show', {'id': school_year.id}) }}">Afficher</a>
+                    <a href="{{ path('app_school_year_edit', {'id': school_year.id}) }}">Modifier</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="7">Aucun enregistrement trouvé.</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_school_year_new') }}">Create new</a>
+    <a href="{{ path('app_school_year_new') }}">Ajouter une année scolaire</a>
 {% endblock %}
