@@ -23,7 +23,7 @@
                         <select name="period" id="period" class="form-select" onchange="this.form.submit()">
                             {% for p in allPeriods %}
                                 <option value="{{ p.id }}" {% if p.id == period.id %}selected{% endif %}>
-                                    Période {{ p.periodNumber }}
+                                    {{ p.periodNumber }} ({{ p.startDate|date('d/m/Y') }} - {{ p.endDate|date('d/m/Y') }})
                                 </option>
                             {% endfor %}
                         </select>

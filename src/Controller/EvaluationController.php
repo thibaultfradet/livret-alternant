@@ -9,6 +9,7 @@ use App\Entity\TutorEvaluation;
 use App\Entity\TutorEvaluationBehavior;
 use App\Entity\TutorEvaluationSkill;
 use App\Entity\User;
+use App\Entity\SkillLevel;
 use App\Form\StudentEvaluationFormType;
 use App\Form\TTMEvaluationFormType;
 use App\Form\TutorEvaluationFormType;
@@ -23,8 +24,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class EvaluationController extends AbstractController
 {
-
-
     #[Route('/evaluation/tutor/{student}/{period}', name: 'app_create_evaluation')]
     public function tutor(
         User $student,
@@ -34,11 +33,10 @@ final class EvaluationController extends AbstractController
         SkillCriteriaRepository $SCRepo,
         BehaviorCriteriaRepository $BCRepo
     ): Response {
-
         $this->denyAccessUnlessGranted('ROLE_TUTOR');
         $tutor = $this->getUser();
 
-        // verify if there is no already evaluation on period, tutor && student
+        // Check for an existing evaluation
         $existingEvaluation = $em->getRepository(TutorEvaluation::class)->findOneBy([
             'student' => $student,
             'tutor'   => $tutor,
@@ -50,8 +48,7 @@ final class EvaluationController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-
-        // get && set context
+        // Context setup
         $evaluation = new TutorEvaluation();
         $evaluation->setStudent($student);
         $evaluation->setTutor($this->getUser());
@@ -60,6 +57,7 @@ final class EvaluationController extends AbstractController
         $classroom = $student->getClassroom();
         $diploma = $classroom->getDiploma();
 
+        // Fetch skill criteria for this diploma
         $skillsCriteria = $SCRepo->createQueryBuilder('sc')
             ->join('sc.skillGroup', 'sg')
             ->where('sg.diploma = :diploma')
@@ -77,6 +75,7 @@ final class EvaluationController extends AbstractController
             $evaluation->addSkillEvaluation($skill);
         }
 
+        // Fetch behavior criteria
         $behaviorCriteriaList = $BCRepo->createQueryBuilder('bc')
             ->where('bc.disabledAt IS NULL')
             ->orderBy('bc.label', 'ASC')
@@ -93,23 +92,20 @@ final class EvaluationController extends AbstractController
             $evaluation->addBehaviorEvaluation($behavior);
         }
 
-
-        // create form data
+        // Create the form
         $form = $this->createForm(TutorEvaluationFormType::class, $evaluation);
         $form->handleRequest($request);
 
-        // handle submit && create data
         if ($form->isSubmitted() && $form->isValid()) {
-
             $em->persist($evaluation);
             $em->flush();
 
             $this->addFlash('success', 'Évaluation enregistrée avec succès !');
-
             return $this->redirectToRoute('app_home');
         }
 
-
+        // ✅ Fetch all skill levels for grouped rating in Twig
+        $skillLevels = $em->getRepository(SkillLevel::class)->findBy([], ['id' => 'ASC']);
 
         return $this->render('evaluation/tutor.html.twig', [
             'form' => $form->createView(),
@@ -117,9 +113,13 @@ final class EvaluationController extends AbstractController
             'period' => $period,
             'skillsCriteria' => $skillsCriteria,
             'behaviorCriteriaList' => $behaviorCriteriaList,
+            'skillLevels' => $skillLevels, // ✅ send to Twig
         ]);
     }
 
+
+
+    
 
     #[Route('/evaluation/student/{period}', name: 'app_create_student_evaluation')]
     public function student(

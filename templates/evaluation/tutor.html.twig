@@ -9,28 +9,13 @@
 
     {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': ''}}) }}
 
+    {# ---------------------- Comportements (inchangé) ---------------------- #}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light">
             <h5 class="card-title mb-0">Comportement</h5>
         </div>
         <div class="card-body">
             <div class="row">
-                {# {% for behavior_entry in form.behaviorEvaluation %}
-                    <div class="col-md-6 mb-3">
-                        <div class="input-group">
-                            <span class="input-group-text" style="width: 200px;">
-                                {{ behavior_entry.vars.data.behaviorCriteria.label }}
-                            </span>
-                            {{ form_widget(behavior_entry.behaviorLevel, {'attr': {'class': 'form-select'}}) }}
-                        </div>
-                        {{ form_errors(behavior_entry.behaviorLevel) }}
-                        <div class="d-none">
-                            {{ form_widget(behavior_entry.behaviorCriteria) }}
-                        </div>
-                    </div>
-                {% endfor %} #}
-
-
                 {% for behavior_entry in form.behaviorEvaluation %}
                     <div class="col-md-6 mb-3">
                         <div class="input-group">
@@ -53,50 +38,55 @@
                         </div>
                     </div>
                 {% endfor %}
-
             </div>
         </div>
     </div>
 
-    {% set grouped_skills = {} %}
-    {% for skill_entry in form.skillEvaluation %}
-        {% set category = skill_entry.vars.data.skillCriteria.skillGroup.label|default('Autres Compétences') %}
-        {% set grouped_skills = grouped_skills|merge({ (category): (grouped_skills[category]|default([])|merge([skill_entry])) }) %}
-    {% endfor %}
-
+    {# ---------------------- Compétences (modifié pour multi-select rapide) ---------------------- #}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light">
             <h5 class="card-title mb-0">Compétences</h5>
         </div>
         <div class="card-body">
-            {% for category, skills in grouped_skills %}
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title mb-0">{{ category }}</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            {% for skill_entry in skills %}
-                                <div class="col-md-6 mb-3">
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 200px;">
-                                            {{ skill_entry.vars.data.skillCriteria.label }}
-                                        </span>
-                                        {{ form_widget(skill_entry.skillLevel, {'attr': {'class': 'form-select'}}) }}
-                                    </div>
-                                    {{ form_errors(skill_entry.skillLevel) }}
-                                    <div class="d-none">
-                                        {{ form_widget(skill_entry.skillCriteria) }}
-                                    </div>
-                                </div>
-                            {% endfor %}
+            <div class="mb-3 row align-items-center">
+                <label class="col-sm-4 col-form-label">Appliquer une note aux compétences sélectionnées :</label>
+                <div class="col-sm-4">
+                    <select id="globalGradeSelect" class="form-select">
+                        <option value="">-- Sélectionnez une note --</option>
+                        {% for level in skillLevels %}
+                            <option value="{{ level.id }}">{{ level.label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <button type="button" class="btn btn-primary" onclick="applyGroupGrade()">Appliquer</button>
+                </div>
+            </div>
+
+            <div class="row">
+                {% for skill_entry in form.skillEvaluation %}
+                    <div class="col-md-6 mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text" style="width: 200px;">
+                                {{ skill_entry.vars.data.skillCriteria.label }}
+                            </span>
+                            {{ form_widget(skill_entry.skillLevel, {'attr': {'class': 'form-select', 'id': 'skillLevel_' ~ loop.index0}}) }}
+                        </div>
+                        <div class="form-check mt-1">
+                            <input type="checkbox" class="form-check-input skill-checkbox" data-skill-id="{{ loop.index0 }}">
+                            <label class="form-check-label">Sélectionner pour notation rapide</label>
+                        </div>
+                        {{ form_errors(skill_entry.skillLevel) }}
+                        <div class="d-none">
+                            {{ form_widget(skill_entry.skillCriteria) }}
                         </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
+    {# ---------------------- Remarques et commentaires (inchangé) ---------------------- #}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light">
             <h5 class="card-title mb-0">Remarques et commentaires</h5>
@@ -117,14 +107,27 @@
         </div>
     </div>
 
-    
     <div class="d-flex justify-content-center mt-4">
         <button class="btn btn-primary btn-lg px-5">{{ button_label|default('Valider mon évaluation') }}</button>
     </div>
 
-    {# CSRF token seulement, pas le reste #}
     {{ form_widget(form._token) }}
-
     {{ form_end(form, {'render_rest': false}) }}
 </div>
+
+{% block javascripts %}
+<script>
+    function applyGroupGrade() {
+        const selectedGrade = document.getElementById('globalGradeSelect').value;
+        if (!selectedGrade) return;
+
+        const checkboxes = document.querySelectorAll('.skill-checkbox:checked');
+        checkboxes.forEach(cb => {
+            const dropdown = document.getElementById('skillLevel_' + cb.dataset.skillId);
+            if (dropdown) dropdown.value = selectedGrade;
+        });
+    }
+</script>
+{% endblock %}
+
 {% endblock %}
