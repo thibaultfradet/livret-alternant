@@ -58,6 +58,8 @@ security:
         - { path: ^/classroom, roles: ROLE_TTM }
         - { path: ^/school-year, roles: ROLE_TTM }
         - { path: ^/period, roles: ROLE_TTM }
+        - { path: ^/users, roles: ROLE_TTM }
+
 
         # ROLE_ADMIN
         - { path: ^/diploma, roles: ROLE_ADMIN }

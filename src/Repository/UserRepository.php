@@ -15,6 +15,18 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+
+
+    public function findUsersExcludingOnlyTutor(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('JSON_LENGTH(u.roles) = 0 OR JSON_CONTAINS(u.roles, :role) = 0 OR JSON_LENGTH(u.roles) > 1')
+            ->setParameter('role', json_encode('ROLE_TUTOR'))
+            ->getQuery()
+            ->getResult();
+    }
+
+
     /**
      * Retrieve a student with all related data for the active school year.
      */
