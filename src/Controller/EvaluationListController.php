@@ -52,20 +52,40 @@ final class EvaluationListController extends AbstractController
         $diplomaId = $request->query->get('diploma');
         $evaluations = [];
         $diplomas = [];
+        
 
-        // find students that dont have evaluations already
-        $students = $userRepo->createQueryBuilder('s')
+        
+        // Get all diplomas of tutor students (independent of filter)
+        $allStudents = $userRepo->createQueryBuilder('s')
+            ->join('s.studentContracts', 'ts')
+            ->where('ts.tutor = :tutor')
+            ->setParameter('tutor', $tutor)
+            ->getQuery()
+            ->getResult();
+
+        $diplomas = [];
+        foreach ($allStudents as $student) {
+            $diplomas[$student->getClassroom()->getDiploma()->getId()] = $student->getClassroom()->getDiploma()->getLabel();
+        }
+
+        // Now build the filtered list of students
+        $qb = $userRepo->createQueryBuilder('s')
             ->join('s.studentContracts', 'ts')
             ->leftJoin('s.tutorEvaluationsReceived', 'te', 'WITH', 'te.period = :period AND te.tutor = :tutor')
             ->where('ts.tutor = :tutor')
             ->andWhere('te.id IS NULL')
             ->setParameter('tutor', $tutor)
-            ->setParameter('period', $period)
-            ->orderBy('s.lastName', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->setParameter('period', $period);
 
+        if ($diplomaId) {
+            $qb->join('s.classroom', 'c')
+            ->andWhere('c.diploma = :diploma')
+            ->setParameter('diploma', $diplomaId);
+        }
 
+        $students = $qb->orderBy('s.lastName', 'ASC')
+                    ->getQuery()
+                    ->getResult();
 
         foreach ($students as $student) {
             $already = $em->getRepository(TutorEvaluation::class)->findOneBy([
