@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Classroom;
+use App\Form\ClassroomFilesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,7 @@ use Symfony\Component\Mime\Address;
 class ClassroomController extends AbstractController
 {
     #[Route('/classroom/{id}/files', name: 'app_classroom_files', methods: ['GET', 'POST'])]
-    public function index(
+    public function files(
         Request $request, 
         int $id, 
         MailerInterface $mailer, 
@@ -27,60 +28,83 @@ class ClassroomController extends AbstractController
 
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/';
         $fs = new Filesystem();
-
         if (!$fs->exists($storagePath)) {
             $fs->mkdir($storagePath, 0777);
         }
 
-        if ($request->isMethod('POST')) {
-            $calendarFile = $request->files->get('calendar_file');
-            $scheduleFile = $request->files->get('schedule_file');
+        // English comment: Create and handle the Symfony form
+        $form = $this->createForm(ClassroomFilesType::class);
+        $form->handleRequest($request);
 
-            // Process Calendar file
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile|null $calendarFile */
+            $calendarFile = $form->get('calendar_file')->getData();
+            /** @var UploadedFile|null $scheduleFile */
+            $scheduleFile = $form->get('schedule_file')->getData();
+            /** @var UploadedFile|null $scheduleFile */
+            $teacherListFile = $form->get('teacher_list')->getData();
+
+            // English comment: Define allowed image MIME types
+            $allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+            // Handle calendar image upload
             if ($calendarFile) {
-                if (!in_array($calendarFile->getMimeType(), ['application/pdf', 'application/x-pdf'])) {
-                    $this->addFlash('error', 'Le fichier Calendrier doit être un PDF.');
+                if (!in_array($calendarFile->getMimeType(), $allowedImageTypes)) {
+                    $this->addFlash('error', 'Le fichier Calendrier doit être une image (JPG, PNG, GIF, WebP).');
                 } else {
-                    // Save the file
-                    $calendarFile->move($storagePath, sprintf('calendar-%d.pdf', $id));
+                    $newFilename = sprintf('calendar-%d.%s', $id, $calendarFile->guessExtension());
+                    $calendarFile->move($storagePath, $newFilename);
                     $this->addFlash('success', 'Calendrier mis à jour.');
-
-                    // Call mailing function
                     $this->sendUpdateEmails($id, $mailer, $em, 'Calendrier');
                 }
             }
 
-            // Process Schedule file
+            // Handle schedule image upload
             if ($scheduleFile) {
-                if (!in_array($scheduleFile->getMimeType(), ['application/pdf', 'application/x-pdf'])) {
-                    $this->addFlash('error', 'Le fichier Emploi du temps doit être un PDF.');
+                if (!in_array($scheduleFile->getMimeType(), $allowedImageTypes)) {
+                    $this->addFlash('error', 'Le fichier Emploi du temps doit être une image (JPG, PNG, GIF, WebP).');
                 } else {
-                    // Save the file
-                    $scheduleFile->move($storagePath, sprintf('schedule-%d.pdf', $id));
+                    $newFilename = sprintf('schedule-%d.%s', $id, $scheduleFile->guessExtension());
+                    $scheduleFile->move($storagePath, $newFilename);
                     $this->addFlash('success', 'Emploi du temps mis à jour.');
-
-                    // Call mailing function
                     $this->sendUpdateEmails($id, $mailer, $em, 'Emploi du temps');
                 }
             }
 
-            if (!$calendarFile && !$scheduleFile) {
+
+            if ($teacherListFile) {
+                if (!in_array($teacherListFile->getMimeType(), $allowedImageTypes)) {
+                    $this->addFlash('error', 'Le fichier Liste des professeurs doit être une image (JPG, PNG, GIF, WebP).');
+                } else {
+                    $newFilename = sprintf('teacher-list-%d.%s', $id, $teacherListFile->guessExtension());
+                    $teacherListFile->move($storagePath, $newFilename);
+                    $this->addFlash('success', 'Liste des professeurs mis à jour.');
+                }
+            }
+
+            if (!$calendarFile && !$scheduleFile && !$teacherListFile) {
                 $this->addFlash('warning', 'Aucun fichier sélectionné.');
             }
 
             return $this->redirectToRoute('app_classroom_files', ['id' => $id]);
         }
 
-        // Check if file exists
-        $calendarPath = sprintf('/uploads/classroom/calendar-%d.pdf', $id);
-        $schedulePath = sprintf('/uploads/classroom/schedule-%d.pdf', $id);
+        // Prepare file paths for display
+        $calendarPath = sprintf('/uploads/classroom/calendar-%d.jpg', $id);
+        $schedulePath = sprintf('/uploads/classroom/schedule-%d.jpg', $id);
+        $teacherListPath = sprintf('/uploads/classroom/teacher-list-%d.jpg', $id);
 
         return $this->render('classroom/files.html.twig', [
             'id' => $id,
+            'form' => $form->createView(),
             'calendarFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $calendarPath) ? $calendarPath : null,
             'scheduleFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $schedulePath) ? $schedulePath : null,
+            'teacherListFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $teacherListPath )? $teacherListPath : null,
         ]);
     }
+
+
 
     /**
      * Send email notification to all students when a file (calendar or schedule) is updated
