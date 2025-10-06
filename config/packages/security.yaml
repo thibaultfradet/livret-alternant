@@ -50,8 +50,6 @@ security:
         # ROLE_TTM (Membre de l'équipe pédagogique)
         - { path: ^/evaluations/ttm, roles: ROLE_TTM }
         - { path: ^/evaluation/ttm, roles: ROLE_TTM }
-        - { path: ^/evaluation-visualizer, roles: ROLE_TTM }
-        - { path: ^/export-evaluations, roles: ROLE_TTM }
         - { path: ^/behavior, roles: ROLE_TTM }
         - { path: ^/behavior-manage, roles: ROLE_TTM }
         - { path: ^/skill-manage, roles: ROLE_TTM }
@@ -60,6 +58,10 @@ security:
         - { path: ^/period, roles: ROLE_TTM }
         - { path: ^/users, roles: ROLE_TTM }
 
+
+        # multiples roles
+        - { path: ^/evaluation-visualizer, roles: [ROLE_TTM, ROLE_PT] }
+        - { path: ^/export-evaluations, roles: [ROLE_TTM, ROLE_PT] }
 
         # ROLE_ADMIN
         - { path: ^/diploma, roles: ROLE_ADMIN }

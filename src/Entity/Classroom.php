@@ -28,6 +28,11 @@ class Classroom
     #[ORM\ManyToOne(inversedBy: 'classrooms')]
     private ?Diploma $diploma = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'principal_teacher_id', referencedColumnName: 'id', nullable: true)]
+    private ?User $principalTeacher = null;
+
+
     /**
      * @var Collection<int, TTMClassroom>
      */
@@ -114,6 +119,18 @@ class Classroom
                 $ttmClassroom->setClassroom(null);
             }
         }
+        return $this;
+    }
+
+    public function getPrincipalTeacher(): ?User
+    {
+        return $this->principalTeacher;
+    }
+
+    public function setPrincipalTeacher(?User $principalTeacher): static
+    {
+        $this->principalTeacher = $principalTeacher;
+
         return $this;
     }
 }

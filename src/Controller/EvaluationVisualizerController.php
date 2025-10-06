@@ -121,7 +121,7 @@ class EvaluationVisualizerController extends AbstractController
     
 
     // return the data based on the request (get params) to filter with period and classroom
-    private function getEvaluationData(
+  private function getEvaluationData(
         Request $request,
         ClassroomRepository $classroomRepo,
         PeriodRepository $periodRepo,
@@ -131,12 +131,22 @@ class EvaluationVisualizerController extends AbstractController
         int $classroomId = null
     ): array {
         $periodId = $request->query->get('period');
+        $user = $this->getUser(); 
 
         $classrooms = $classroomRepo->findAll();
         $periods = $periodRepo->findByActiveSchoolYear();
 
         $selectedPeriod = $periodId ? $periodRepo->find($periodId) : ($periods[0] ?? null);
         $selectedClassroom = $classroomId ? $classroomRepo->find($classroomId) : null;
+
+        // Check user's roles
+        $roles = $user->getRoles(); // array of roles
+        $isPtOnly = in_array('ROLE_PT', $roles) && count(array_diff($roles, ['ROLE_USER', 'ROLE_PT'])) === 0;
+
+        // Filter classrooms if needed
+        if ($isPtOnly) {
+            $classrooms = array_filter($classrooms, fn($classroom) => $classroom->getPrincipalTeacher() === $user);
+        }
 
         $evaluations = [];
         foreach ($classrooms as $classroom) {

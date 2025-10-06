@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Attribuer un professeur principal{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Attribuer un professeur principal pour la classe {{ classroom.id }}</h1>
+
+    {# Display flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.principalTeacher) }}
+            {{ form_widget(form.principalTeacher, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.principalTeacher) }}
+        </div>
+
+        <button class="btn btn-primary">{{ form.save.vars.label|default('Enregistrer') }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_classroom_index') }}" class="btn btn-secondary mt-3">Retour à la liste des classes</a>
+</div>
+{% endblock %}
