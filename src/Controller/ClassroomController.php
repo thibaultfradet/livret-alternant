@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Classroom;
 use App\Form\ClassroomFilesType;
+use App\Form\ClassroomPrincipalTeacherType;
 use App\Repository\ClassroomRepository;
 use App\Repository\SchoolYearRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,6 +45,45 @@ class ClassroomController extends AbstractController
     }
 
 
+
+
+    // change classroom principal teacher
+    #[Route('/classroom/{id}/principal-teacher', name: 'app_classroom_tp', methods: ['GET', 'POST'])]
+    public function assignPrincipalTeacher(
+        int $id,
+        Request $request,
+        EntityManagerInterface $em
+    ): Response {
+        /** @var Classroom $classroom */
+        $classroom = $em->getRepository(Classroom::class)->find($id);
+
+        if (!$classroom) {
+            $this->addFlash('error', 'Classe introuvable.');
+            return $this->redirectToRoute('app_classroom_index');
+        }
+
+        // Create form with a select of users who are not ROLE_STUDENT
+      $form = $this->createForm(ClassroomPrincipalTeacherType::class, $classroom);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $em->persist($classroom);
+        $em->flush();
+
+        $this->addFlash('success', 'Professeur principal mis à jour.');
+        return $this->redirectToRoute('app_classroom_index');
+    }
+        
+        return $this->render('classroom/principal_teacher.html.twig', [
+            'classroom' => $classroom,
+            'form' => $form->createView(),
+        ]);
+    }
+
+
+
+
+    // Change classroom files
     #[Route('/classroom/{id}/files', name: 'app_classroom_files', methods: ['GET', 'POST'])]
     public function files(
         Request $request, 

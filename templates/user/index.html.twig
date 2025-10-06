@@ -16,7 +16,6 @@
                     <th scope="col">Rôles</th>
                     <th scope="col">Prénom</th>
                     <th scope="col">Nom</th>
-                    <th scope="col">Désactivé le</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
@@ -33,7 +32,6 @@
                     </td>
                     <td>{{ user.firstName }}</td>
                     <td>{{ user.lastName }}</td>
-                    <td>{{ user.disabledAt ? user.disabledAt|date('Y-m-d') : '-' }}</td>
                     <td>
                         <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-info">Voir</a>
                         <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning">Modifier</a>

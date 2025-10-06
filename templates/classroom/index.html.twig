@@ -23,6 +23,11 @@
                                class="btn btn-outline-primary btn-sm">
                                 Modifier les fichiers
                             </a>
+                            
+                            <a href="{{ path('app_classroom_tp', {'id': classroom.id}) }}" 
+                               class="btn btn-outline-primary btn-sm">
+                                Modifier le professeur référent
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
