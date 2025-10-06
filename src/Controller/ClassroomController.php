@@ -32,7 +32,7 @@ class ClassroomController extends AbstractController
             $fs->mkdir($storagePath, 0777);
         }
 
-        // English comment: Create and handle the Symfony form
+        // create and handle the Symfony form
         $form = $this->createForm(ClassroomFilesType::class);
         $form->handleRequest($request);
 
@@ -45,7 +45,7 @@ class ClassroomController extends AbstractController
             /** @var UploadedFile|null $scheduleFile */
             $teacherListFile = $form->get('teacher_list')->getData();
 
-            // English comment: Define allowed image MIME types
+            //  Define allowed image MIME types
             $allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
             // Handle calendar image upload
@@ -127,7 +127,7 @@ class ClassroomController extends AbstractController
                 ->to($student->getEmail())
                 ->subject("Mise à jour du $fileType de votre classe")
                 ->text(sprintf(
-                    // English comments: We personalize the message with the student's last name
+                    // We personalize the message with the student's last name
                     "Bonjour %s,\n\nLe %s de votre classe vient d'être mis à jour.\n\nVeuillez le consulter dans votre espace.\n\nCordialement,\nL'équipe pédagogique",
                     $student->getLastName(),
                     strtolower($fileType)

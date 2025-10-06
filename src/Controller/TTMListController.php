@@ -14,25 +14,12 @@ final class TTMListController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_STUDENT');
 
         $user = $this->getUser();
-        // format ttm roles
-        $ttmRoles = [];
-        foreach ($user->getClassroom()->getTtmClassrooms() as $ttmClassroom) {
-            $ttm = $ttmClassroom->getTtm();
-            $ttmId = $ttm->getId();
-
-            if (!isset($ttmRoles[$ttmId])) {
-                $ttmRoles[$ttmId] = [
-                    'name' => $ttm->getFirstName() . ' ' . $ttm->getLastName(),
-                    'roles' => [],
-                ];
-            }
-            $ttmRoles[$ttmId]['roles'][] = $ttmClassroom->getLabel();
-        }
-
+        
+        $teacherListPath = sprintf('/uploads/classroom/teacher-list-%d.jpg', $user->getClassroom()->getId());
 
         return $this->render('ttm_list/index.html.twig', [
             'controller_name' => 'TTMListController',
-            'ttmRoles' => $ttmRoles,
+            'teacherListFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $teacherListPath )? $teacherListPath : null,
         ]);
     }
 }

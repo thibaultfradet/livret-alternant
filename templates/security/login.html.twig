@@ -4,12 +4,10 @@
 {% block body %}
 <div class="container-fluid vh-100">
     <div class="row h-100">
-        <!-- Colonne gauche : logo -->
         <div class="col-md-6 d-flex justify-content-center align-items-center">
             <img src="{{ asset('images/logo_bleu.png') }}" alt="Logo" class="img-fluid" style="max-width: 350px;">
         </div>
 
-        <!-- Colonne droite : formulaire -->
         <div class="col-md-6 d-flex justify-content-center align-items-center">
             <div class="card shadow-sm border-0 w-75">
                 <div class="card-body m-3">
@@ -34,10 +32,8 @@
                     </form>
 
 
-                    <!-- Séparateur -->
                     <hr class="my-3">
 
-                    <!-- Bouton mot de passe oublié -->
                     <div class="d-grid">
                         <a href="{{ path('app_forgot_password_request') }}" class="btn btn-outline-secondary">
                             Mot de passe oublié

@@ -1,17 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Visuel de valiation des évaluations{% endblock %}
+{% block title %}Visuel de validation des évaluations{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
-    <h1 class="mb-4">Visuel de valiation des évaluations</h1>
+    <h1 class="mb-4">Visuel de validation des évaluations</h1>
 
     {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
     {% endif %}
 
-    <form method="get" class="row g-3 mb-4 align-items-end">
-        <div class="col-md-3">
+    {# FILTER FORM - TOP #}
+    <form method="get" class="row g-3 mb-2 align-items-end">
+        <div class="col-md-4">
             <label for="period" class="form-label">Période</label>
             <select name="period" id="period" class="form-select">
                 {% for p in periods %}
@@ -22,7 +23,7 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <label for="classroom" class="form-label">Classe</label>
             <select name="classroom" id="classroom" class="form-select">
                 <option value="" {% if not selectedClassroom %}selected{% endif %}>Toutes</option>
@@ -34,27 +35,28 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4 d-flex align-items-end">
             <button type="submit" class="btn btn-primary w-100">Filtrer</button>
-        </div>
-        
-       <div class="col-md-3">
-        {# Export Excel button #}
-        <a href="{{ path('export_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
-           class="btn btn-success w-100">
-           Export Excel
-        </a>
-        </div>
-
-       <div class="col-md-2">
-        {# Link to notifier #}
-        <a href="{{ path('notifier_pending_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
-           class="btn btn-white text-dark border border-1 w-100">
-            Notifier
-        </a>
         </div>
     </form>
 
+    {# BUTTONS BELOW FILTERS #}
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <a href="{{ path('notifier_pending_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
+               class="btn btn-white text-dark border border-1 w-100">
+                Notifier
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{{ path('export_evaluations', { period: selectedPeriod ? selectedPeriod.id : null, classroom: selectedClassroom ? selectedClassroom.id : null }) }}" 
+               class="btn btn-success w-100">
+                Export Excel
+            </a>
+        </div>
+    </div>
+
+    {# TABLE #}
     <div class="table-responsive">  
         <table class="table table-bordered table-striped text-center mt-2">
             <thead class="table-light">
@@ -63,7 +65,7 @@
                     <th>Évaluation tuteur</th>
                     <th>Évaluation alternant</th>
                     <th>Évaluation de l'équipe pédagogique</th>
-                    <th>Export PDF</th> {# New column #}
+                    <th>Export PDF</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,19 +97,16 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="/extraction/{{ eval.student.id }}" class="btn btn-danger btn-sm">
-                                PDF
-                            </a>
+                            <a href="/extraction/{{ eval.student.id }}" class="btn btn-danger btn-sm">PDF</a>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="5">Aucune évaluation trouvée pour ces filtres.</td> {# colspan updated to 5 #}
+                        <td colspan="5">Aucune évaluation trouvée pour ces filtres.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
-
     </div>
 </div>
 {% endblock %}
