@@ -170,4 +170,52 @@ final class EvaluationListController extends AbstractController
             'selectedDiploma' => $diplomaId,
         ]);
     }
+
+
+
+    #[Route('/evaluations/student', name: 'app_evaluation_list_student')]
+    public function studentList(
+        Security $security,
+        PeriodRepository $periodRepo,
+        EntityManagerInterface $em
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_STUDENT');
+
+        /** @var User $student */
+        $student = $security->getUser();
+
+        // Récupère toutes les périodes de l'année scolaire active
+        $periods = $periodRepo->createQueryBuilder('p')
+            ->join('p.schoolYear', 'sy')
+            ->where('sy.active = true')
+            ->orderBy('p.startDate', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $missingEvaluations = [];
+
+        foreach ($periods as $period) {
+            // Vérifie si une évaluation du tuteur existe déjà
+            $alreadyTutorEvaluation = $em->getRepository(\App\Entity\TutorEvaluation::class)->findOneBy([
+                'student' => $student,
+                'period'  => $period,
+            ]);
+
+            // Vérifie si l’étudiant a déjà fait son évaluation
+            $alreadyStudentEvaluation = $em->getRepository(\App\Entity\StudentEvaluation::class)->findOneBy([
+                'student' => $student,
+                'period'  => $period,
+            ]);
+
+            // On ajoute la période uniquement si le tuteur a évalué mais pas encore l’étudiant
+            if ($alreadyTutorEvaluation && !$alreadyStudentEvaluation) {
+                $missingEvaluations[] = $period;
+            }
+        }
+
+        return $this->render('evaluation/list_student.html.twig', [
+            'student' => $student,
+            'missingEvaluations' => $missingEvaluations,
+        ]);
+    }
 }

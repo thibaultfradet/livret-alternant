@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes évaluations manquantes{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Périodes sans évaluation étudiante</h1>
+
+    {% if missingEvaluations is not empty %}
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Nom de la période</th>
+                    <th scope="col">Dates</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for period in missingEvaluations %}
+                    <tr>
+                        <td>{{ period.periodNumber }}</td>
+                        <td>{{ period.startDate|date('d/m/Y') }} – {{ period.endDate|date('d/m/Y') }}</td>
+                        <td class="text-end">
+                            <a href="{{ path('app_create_student_evaluation', {'period': period.id}) }}"
+                               class="btn btn-outline-primary btn-sm">
+                                Créer l’évaluation
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="w-100 text-center">
+            <p>Toutes vos périodes ont une évaluation étudiante ou sont en attente d'une évaluation par votre tuteur.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

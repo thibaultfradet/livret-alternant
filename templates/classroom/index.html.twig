@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Classe{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">Classes de l'année {{ activeYear ? activeYear.label : 'inconnue' }}</h1>
+
+    {% if classrooms is not empty %}
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Diplôme</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for classroom in classrooms %}
+                    <tr>
+                        <td>{{ classroom.diploma.label }}</td>
+                        <td class="text-end">
+                            <a href="{{ path('app_classroom_files', {'id': classroom.id}) }}" 
+                               class="btn btn-outline-primary btn-sm">
+                                Modifier les fichiers
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune classe disponible pour l'année scolaire active.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Classroom;
 use App\Form\ClassroomFilesType;
+use App\Repository\ClassroomRepository;
+use App\Repository\SchoolYearRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +19,31 @@ use Symfony\Component\Mime\Address;
 
 class ClassroomController extends AbstractController
 {
+    #[Route('/classroom', name: 'app_classroom_index')]
+    public function index(ClassroomRepository $classroomRepository, SchoolYearRepository $schoolYearRepository): Response
+    {
+        // Get the active school year (assuming you have a boolean "isActive" field)
+        $activeYear = $schoolYearRepository->findActive();
+
+        // If no active year found, show an error or empty list
+        if (!$activeYear) {
+            $this->addFlash('warning', 'Aucune année active trouvée.');
+            return $this->render('user_classroom/index.html.twig', [
+                'classrooms' => [],
+                'activeYear' => null,
+            ]);
+        }
+
+        // Get all classrooms for that school year
+        $classrooms = $classroomRepository->findBy(['schoolYear' => $activeYear]);
+
+        return $this->render('classroom/index.html.twig', [
+            'classrooms' => $classrooms,
+            'activeYear' => $activeYear,
+        ]);
+    }
+
+
     #[Route('/classroom/{id}/files', name: 'app_classroom_files', methods: ['GET', 'POST'])]
     public function files(
         Request $request, 
