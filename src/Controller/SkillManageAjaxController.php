@@ -20,7 +20,6 @@ class SkillManageAjaxController extends AbstractController
     #[Route('/skill/{id}/toggle', name: 'ajax_skill_toggle', methods: ['POST'])]
     public function toggleSkill(SkillCriteria $skill, EntityManagerInterface $em): JsonResponse
     {
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         if ($skill->getDisabledAt()) {
             $skill->setDisabledAt(null);
@@ -38,7 +37,6 @@ class SkillManageAjaxController extends AbstractController
     public function saveSkillCriteria(SkillGroup $skillGroup, Request $request, EntityManagerInterface $em): JsonResponse
     {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         $data = json_decode($request->getContent(), true);
         if (empty($data['label'])) {
@@ -64,7 +62,6 @@ class SkillManageAjaxController extends AbstractController
     public function toggleGroupStatus(SkillGroup $skillGroup, EntityManagerInterface $em): JsonResponse
     {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         if ($skillGroup->getDisabledAt()) {
             $skillGroup->setDisabledAt(null);
@@ -82,7 +79,6 @@ class SkillManageAjaxController extends AbstractController
     public function saveSkillGroup(Diploma $diploma, Request $request, EntityManagerInterface $em): JsonResponse
     {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         $data = json_decode($request->getContent(), true);
         if (empty($data['label'])) {
@@ -112,7 +108,6 @@ class SkillManageAjaxController extends AbstractController
         EntityManagerInterface $em
     ): JsonResponse {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         $data = json_decode($request->getContent(), true);
 
@@ -157,7 +152,6 @@ class SkillManageAjaxController extends AbstractController
     public function toggleLevelStatus(SkillLevel $skillLevel, EntityManagerInterface $em): JsonResponse
     {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         if ($skillLevel->getDisabledAt()) {
             $skillLevel->setDisabledAt(null);

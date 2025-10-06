@@ -13,7 +13,6 @@ class SkillManageController extends AbstractController
     #[Route('/skill-manage/{id?}', name: 'app_skill_management')]
     public function index(DiplomaRepository $diplomaRepository, SkillLevelRepository $skillLevelRepo, ?int $id = null): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // get all diplomas
         $diplomas = $diplomaRepository->findAll();

@@ -35,7 +35,6 @@ final class EvaluationController extends AbstractController
         BehaviorCriteriaRepository $BCRepo
     ): Response {
 
-        $this->denyAccessUnlessGranted('ROLE_TUTOR');
         $tutor = $this->getUser();
 
         // verify if there is no already evaluation on period, tutor && student
@@ -128,7 +127,6 @@ final class EvaluationController extends AbstractController
         EntityManagerInterface $em,
     ): Response {
 
-        $this->denyAccessUnlessGranted('ROLE_STUDENT');
 
         $student = $this->getUser();
         // required tutor evaluation
@@ -192,7 +190,6 @@ final class EvaluationController extends AbstractController
         Security $security
     ): Response {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // check for existing evaluation
         $existingEvaluation = $em->getRepository(TTMEvaluation::class)->findOneBy([

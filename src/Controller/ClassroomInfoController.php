@@ -11,7 +11,6 @@ final class ClassroomInfoController extends AbstractController
     #[Route('/teaching-team-list', name: 'app_ttm_list')]
     public function ttmList(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_STUDENT');
 
         $user = $this->getUser();
         
@@ -26,7 +25,6 @@ final class ClassroomInfoController extends AbstractController
      #[Route('/calendar-schedule', name: 'app_calendar_schedule')]
     public function calendar_schedule(): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_STUDENT');
 
         $user = $this->getUser();
         

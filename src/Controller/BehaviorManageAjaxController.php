@@ -15,7 +15,6 @@ final class BehaviorManageAjaxController extends AbstractController
     #[Route('/behavior/level/toggle/{id}', name: 'app_behavior_level_toggle', methods: ['POST'])]
     public function toggleLevelBehavior(BehaviorLevel $level, Request $request, EntityManagerInterface $em): JsonResponse
     {
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // get the data
         $data = $request->toArray();
@@ -78,8 +77,6 @@ final class BehaviorManageAjaxController extends AbstractController
     public function toggleCriteriaBehavior(BehaviorCriteria $behaviorCriteria, EntityManagerInterface $em): JsonResponse
     {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
-
         if ($behaviorCriteria->getDisabledAt()) {
             $behaviorCriteria->setDisabledAt(null);
             $message = 'Criteria enable.';
@@ -100,7 +97,6 @@ final class BehaviorManageAjaxController extends AbstractController
     public function createBehavior(Request $request, EntityManagerInterface $em): JsonResponse
     {
 
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // get data from json
         $data = json_decode($request->getContent(), true);

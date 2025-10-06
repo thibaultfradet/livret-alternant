@@ -30,7 +30,6 @@ final class EvaluationListController extends AbstractController
         EntityManagerInterface $em,
         Request $request
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_TUTOR');
 
         $tutor = $security->getUser();
 
@@ -107,7 +106,6 @@ final class EvaluationListController extends AbstractController
         EntityManagerInterface $em,
         Request $request
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // période par défaut
         $periodId = $request->query->get('period');
@@ -179,7 +177,6 @@ final class EvaluationListController extends AbstractController
         PeriodRepository $periodRepo,
         EntityManagerInterface $em
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_STUDENT');
 
         /** @var User $student */
         $student = $security->getUser();

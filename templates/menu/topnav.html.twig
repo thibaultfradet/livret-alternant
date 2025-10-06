@@ -61,9 +61,11 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
     <div class="container-fluid">
-        <div>
-            <img src="{{ asset('images/logo_bleu_zoom.png') }}" alt="Logo campus" clas="img-fluid"  style="max-width: 100px ; max-height: 100px">
-        </div>
+       <a href="{{ path('app_home') }}">
+            <div>
+                <img src="{{ asset('images/logo_bleu_zoom.png') }}" alt="Logo campus" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+            </div>
+        </a>
         <a class="navbar-brand" href="{{ path('app_home') }}">Livret Alternant</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnavMenu" aria-controls="topnavMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

@@ -51,7 +51,6 @@ class ClassroomController extends AbstractController
         MailerInterface $mailer, 
         EntityManagerInterface $em
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/';
         $fs = new Filesystem();

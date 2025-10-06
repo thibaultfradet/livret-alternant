@@ -13,7 +13,6 @@ final class BehaviorManageController extends AbstractController
     #[Route('/behavior-manage', name: 'app_behavior_manage')]
     public function index(EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_TTM');
 
         // get all active behavior with their levels
         $query = $em->createQueryBuilder()

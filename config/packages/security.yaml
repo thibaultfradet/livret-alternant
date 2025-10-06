@@ -30,18 +30,43 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
+    # Encoders, providers, firewalls, etc.
+    # ...
+
     access_control:
-        # Route publique
+        # Routes publiques
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
-        - { path: ^/terms-acceptance, roles: PUBLIC_ACCESS }
 
-        # Route protégée
-        - { path: ^/, roles: ROLE_USER }
+        # ROLE_STUDENT (Alternant)
+        - { path: ^/calendar-schedule, roles: ROLE_STUDENT }
+        - { path: ^/evaluations/student, roles: ROLE_STUDENT }
+        - { path: ^/teaching-team-list, roles: ROLE_STUDENT }
 
-        # Route admin
+        # ROLE_TUTOR (Tuteur)
+        - { path: ^/evaluations/tutor, roles: ROLE_TUTOR }
+        - { path: ^/evaluation/tutor, roles: ROLE_TUTOR }
+
+        # ROLE_TTM (Membre de l'équipe pédagogique)
+        - { path: ^/evaluations/ttm, roles: ROLE_TTM }
+        - { path: ^/evaluation/ttm, roles: ROLE_TTM }
+        - { path: ^/evaluation-visualizer, roles: ROLE_TTM }
+        - { path: ^/export-evaluations, roles: ROLE_TTM }
+        - { path: ^/behavior, roles: ROLE_TTM }
+        - { path: ^/behavior-manage, roles: ROLE_TTM }
+        - { path: ^/skill-manage, roles: ROLE_TTM }
+        - { path: ^/classroom, roles: ROLE_TTM }
+        - { path: ^/school-year, roles: ROLE_TTM }
+        - { path: ^/period, roles: ROLE_TTM }
+
+        # ROLE_ADMIN
         - { path: ^/diploma, roles: ROLE_ADMIN }
 
+        # ROLE_SUPER_ADMIN
+        - { path: ^/super-admin, roles: ROLE_SUPER_ADMIN }
+
+        # Toutes les autres routes nécessitent un utilisateur connecté
+        - { path: ^/, roles: ROLE_USER }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
