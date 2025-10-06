@@ -17,8 +17,15 @@ final class PeriodController extends AbstractController
     #[Route(name: 'app_period_index', methods: ['GET'])]
     public function index(PeriodRepository $periodRepository): Response
     {
+        $periods = $periodRepository->createQueryBuilder('p')
+            ->join('p.schoolYear', 'sy')
+            ->where('sy.active = true')
+            ->orderBy('p.startDate', 'ASC')
+            ->getQuery()
+            ->getResult();
+
         return $this->render('period/index.html.twig', [
-            'periods' => $periodRepository->findAll(),
+            'periods' => $periods,
         ]);
     }
 

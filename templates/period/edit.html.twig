@@ -1,13 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Period{% endblock %}
+{% block title %}Modifier la période{% endblock %}
 
 {% block body %}
-    <h1>Edit Period</h1>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Modifier la période</h1>
+        <a href="{{ path('app_period_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
 
-    {{ include('period/_form.html.twig', {'button_label': 'Update'}) }}
+    <div class="card shadow-sm border-0 rounded-3 p-4">
+        {{ include('period/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+    </div>
 
-    <a href="{{ path('app_period_index') }}">back to list</a>
-
-    {{ include('period/_delete_form.html.twig') }}
+    <div class="mt-3 d-flex justify-content-end">
+        {{ include('period/_delete_form.html.twig', { 'button_label': 'Supprimer la période' }) }}
+    </div>
+</div>
 {% endblock %}

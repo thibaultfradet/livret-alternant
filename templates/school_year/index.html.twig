@@ -22,8 +22,8 @@
             <tr>
                 <td>{{ school_year.id }}</td>
                 <td>{{ school_year.label }}</td>
-                <td>{{ school_year.startDate ? school_year.startDate|date('Y-m-d') : '' }}</td>
-                <td>{{ school_year.endDate ? school_year.endDate|date('Y-m-d') : '' }}</td>
+                <td>{{ school_year.startDate ? school_year.startDate|date('d/m/Y') : '' }}</td>
+                <td>{{ school_year.endDate ? school_year.endDate|date('d/m/Y') : '' }}</td>
                 <td>{{ school_year.active ? 'Oui' : 'Non' }}</td>
                 <td>{{ school_year.termsContent }}</td>
                 <td>

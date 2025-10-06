@@ -1,41 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Period index{% endblock %}
+{% block title %}Périodes de l'année active{% endblock %}
 
 {% block body %}
-    <h1>Period index</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Périodes de l'année active</h1>
+        <a href="{{ path('app_period_new') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Nouvelle période
+        </a>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>PeriodNumber</th>
-                <th>StartDate</th>
-                <th>EndDate</th>
-                <th>DisabledAt</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for period in periods %}
-            <tr>
-                <td>{{ period.id }}</td>
-                <td>{{ period.periodNumber }}</td>
-                <td>{{ period.startDate ? period.startDate|date('Y-m-d') : '' }}</td>
-                <td>{{ period.endDate ? period.endDate|date('Y-m-d') : '' }}</td>
-                <td>{{ period.disabledAt ? period.disabledAt|date('Y-m-d') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_period_show', {'id': period.id}) }}">show</a>
-                    <a href="{{ path('app_period_edit', {'id': period.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_period_new') }}">Create new</a>
+    {% if periods is not empty %}
+        <div class="card shadow-sm rounded-3">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Numéro de période</th>
+                            <th scope="col">Date de début</th>
+                            <th scope="col">Date de fin</th>
+                            <th scope="col">Désactivée le</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for period in periods %}
+                            <tr>
+                                <td>{{ period.periodNumber }}</td>
+                                <td>{{ period.startDate ? period.startDate|date('d/m/Y') : '-' }}</td>
+                                <td>{{ period.endDate ? period.endDate|date('d/m/Y') : '-' }}</td>
+                                <td>{{ period.disabledAt ? period.disabledAt|date('d/m/Y') : '-' }}</td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_period_show', {'id': period.id}) }}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> Voir
+                                    </a>
+                                    <a href="{{ path('app_period_edit', {'id': period.id}) }}" 
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil"></i> Modifier
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-4">
+            Aucune période trouvée pour l'année scolaire active.
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

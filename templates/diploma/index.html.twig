@@ -3,33 +3,35 @@
 {% block title %}Gestion des titres{% endblock %}
 
 {% block body %}
-    <h1>Gestion des titres</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Gestion des titres</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Label</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for diploma in diplomas %}
-            <tr>
-                <td>{{ diploma.id }}</td>
-                <td>{{ diploma.label }}</td>
-                <td>
-                    <a href="{{ path('app_diploma_show', {'id': diploma.id}) }}">Voir</a>
-                    <a href="{{ path('app_diploma_edit', {'id': diploma.id}) }}">Modifier</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">Aucun dipôme trouvé.</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {% if diplomas is not empty %}
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for diploma in diplomas %}
+                <tr>
+                    <td>{{ diploma.id }}</td>
+                    <td>{{ diploma.label }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary me-2" href="{{ path('app_diploma_show', {'id': diploma.id}) }}">Voir</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_diploma_edit', {'id': diploma.id}) }}">Modifier</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">Aucun diplôme trouvé.</div>
+    {% endif %}
 
-    <a href="{{ path('app_diploma_new') }}">Ajouter un diplôme</a>
+    <a class="btn btn-success mt-3" href="{{ path('app_diploma_new') }}">Ajouter un diplôme</a>
+</div>
 {% endblock %}

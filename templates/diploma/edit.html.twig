@@ -1,13 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier un titre{% endblock %}
+{% block title %}Modifier un diplôme{% endblock %}
 
 {% block body %}
-    <h1>Modifier un titre</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Modifier un diplôme</h1>
 
-    {{ include('diploma/_form.html.twig', {'button_label': 'Update'}) }}
+    <div class="card p-4 mb-4">
+        {{ include('diploma/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+    </div>
 
-    <a href="{{ path('app_diploma_index') }}">Revenir à la liste</a>
-
-    {{ include('diploma/_delete_form.html.twig') }}
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" href="{{ path('app_diploma_index') }}">Revenir à la liste</a>
+        {{ include('diploma/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}
