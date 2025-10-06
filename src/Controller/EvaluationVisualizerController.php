@@ -24,7 +24,7 @@ use Symfony\Component\Mailer\MailerInterface;
 
 class EvaluationVisualizerController extends AbstractController
 {
-    #[Route('/evaluation-visualizer', name: 'evaluation_visualizer')]
+    #[Route('/evaluation-visualizer', name: 'app_evaluation_visualizer')]
     public function index(
         Request $request,
         ClassroomRepository $classroomRepo,

@@ -9,36 +9,37 @@
         'title': 'Administrateur',
         'links': [
             { 'label': 'Gérer les TTM', 'path': 'app_home' },
-            { 'label': 'Gérer les titres', 'path': 'app_home' }
+            { 'label': 'Gérer les titres', 'path': 'app_diploma_index' }
         ]
     },
     'ROLE_TUTOR': {
         'title': 'Tuteur',
         'links': [
-            { 'label': 'Livrets de mes alternants', 'path': 'app_home' }
+            { 'label': 'Livrets de mes alternants', 'path': 'app_evaluation_list_tutor' }
         ]
     },
     'ROLE_STUDENT': {
         'title': 'Alternant',
         'links': [
-            { 'label': 'Calendrier & EDT', 'path': 'app_home' },
+            { 'label': 'Calendrier & EDT', 'path': 'app_calendar_schedule' },
             { 'label': 'Livret', 'path': 'app_home' },
-            { 'label': 'Équipe pédagogique', 'path': 'app_home' }
+            { 'label': 'Équipe pédagogique', 'path': 'app_ttm_list' }
         ]
     },
     'ROLE_TTM': {
         'title': 'Membre de l\'équipe pédagogique',
         'links': [
-            { 'label': 'Validations des livrets', 'path': 'app_home' },
-            { 'label': 'Evaluer un alternant (livret)', 'path': 'app_home' },
+            { 'label': 'Validations des livrets', 'path': 'app_evaluation_visualizer' },
+            { 'label': 'Evaluer un alternant (livret)', 'path': 'app_evaluation_list_ttm' },
             { 
                 'label': 'Gestion',
                 'is_dropdown': true,
                 'links': [
-                    { 'label': 'Classes', 'path': 'app_home' },
-                    { 'label': 'Compétences', 'path': 'app_home' },
-                    { 'label': 'Comportement', 'path': 'app_home' },
-                    { 'label': 'Période et année scolaire', 'path': 'app_home' }
+                    { 'label': 'Fichier de classe', 'path': 'app_home' },
+                    { 'label': 'Compétences', 'path': 'app_skill_management' },
+                    { 'label': 'Comportement', 'path': 'app_behavior_manage' },
+                    { 'label': 'Années scolaires', 'path': 'app_school_year_index' },
+                    { 'label': 'Périodes','path':'app_period_index' }
                 ]
             }
         ]

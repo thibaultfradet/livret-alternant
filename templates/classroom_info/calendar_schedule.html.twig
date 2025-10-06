@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier et emploi du temps{% endblock %}
+
+{% block body %}
+<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
+    <div class="card shadow-lg w-100">
+        <div class="card-body">
+            {% if calendarFile or scheduleFile %}
+                {% if calendarFile %}
+                    <div class="mb-4 text-center">
+                        <h1 class="card-title text-center mb-4">Calendrier</h1>
+                        <img src="{{ asset(calendarFile) }}" alt="Calendrier" class="img-fluid rounded shadow-sm">
+                    </div>
+                {% endif %}
+                {% if scheduleFile %}
+                    <div class="text-center">
+                        <h1 class="card-title text-center mb-4">Emploi du temps</h1>
+                        <img src="{{ asset(scheduleFile) }}" alt="Emploi du temps" class="img-fluid rounded shadow-sm">
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
