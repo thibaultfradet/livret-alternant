@@ -12,6 +12,7 @@
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Titre</th>
+                    <th scope="col">Code</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
@@ -20,6 +21,7 @@
                 <tr>
                     <td>{{ diploma.id }}</td>
                     <td>{{ diploma.label }}</td>
+                    <td>{{ diploma.code }}</td>
                     <td>
                         <a class="btn btn-sm btn-outline-primary me-2" href="{{ path('app_diploma_show', {'id': diploma.id}) }}">Voir</a>
                         <a class="btn btn-sm btn-outline-secondary" href="{{ path('app_diploma_edit', {'id': diploma.id}) }}">Modifier</a>

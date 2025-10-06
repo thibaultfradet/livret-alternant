@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Classroom;
 use App\Entity\User;
 use App\Entity\TutorStudent;
 use App\Repository\ClassroomRepository;
@@ -62,10 +63,20 @@ final class ExcelUserImportController extends AbstractController
                             continue;
                         }
 
+                        // Try to find the classroom
                         $classroom = $classroomRepo->findOneBy([
-                            'diploma' => $diplomaRepo ->findOneBy(['code' => $classCode]),
+                            'diploma' => $diploma,
                             'schoolYear' => $activeSchoolYear
                         ]);
+
+                        // If classroom doesn't exist, create it
+                        if (!$classroom) {
+                            $classroom = new Classroom();
+                            $classroom->setDiploma($diploma);
+                            $classroom->setSchoolYear($activeSchoolYear);
+                            $em->persist($classroom);
+                            $em->flush();
+                        }
 
                         // Skip if student already exists
                         $existingStudent = $em->getRepository(User::class)->findOneBy(['email' => $studentEmail]);
