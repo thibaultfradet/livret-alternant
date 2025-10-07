@@ -49,9 +49,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: TutorStudent::class, mappedBy: 'student')]
     private Collection $studentContracts;
 
-    #[ORM\OneToMany(targetEntity: TTMClassroom::class, mappedBy: 'ttm')]
-    private Collection $ttmClassrooms;
-
     #[ORM\OneToMany(targetEntity: TutorEvaluation::class, mappedBy: 'tutor')]
     private Collection $tutorEvaluationsGiven;
 
@@ -77,7 +74,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->tutorContracts = new ArrayCollection();
         $this->studentContracts = new ArrayCollection();
-        $this->ttmClassrooms = new ArrayCollection();
         $this->tutorEvaluationsGiven = new ArrayCollection();
         $this->tutorEvaluationsReceived = new ArrayCollection();
         $this->ttmEvaluationsGiven = new ArrayCollection();
@@ -191,12 +187,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->studentContracts;
     }
 
-    /** @return Collection<int, TTMClassroom> */
-    public function getTtmClassrooms(): Collection
-    {
-        return $this->ttmClassrooms;
-    }
-
     /** @return Collection<int, TutorEvaluation> */
     public function getTutorEvaluationsGiven(): Collection
     {
@@ -271,28 +261,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($studentContract->getStudent() === $this) {
                 $studentContract->setStudent(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function addTtmClassroom(TTMClassroom $ttmClassroom): static
-    {
-        if (!$this->ttmClassrooms->contains($ttmClassroom)) {
-            $this->ttmClassrooms->add($ttmClassroom);
-            $ttmClassroom->setTtm($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTtmClassroom(TTMClassroom $ttmClassroom): static
-    {
-        if ($this->ttmClassrooms->removeElement($ttmClassroom)) {
-            // set the owning side to null (unless already changed)
-            if ($ttmClassroom->getTtm() === $this) {
-                $ttmClassroom->setTtm(null);
             }
         }
 
@@ -431,19 +399,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTtms(): Collection
-    {
-        if (!$this->classroom) {
-            return new ArrayCollection();
-        }
-
-        $ttms = new ArrayCollection();
-        foreach ($this->classroom->getTtmClassrooms() as $ttmClassroom) {
-            $ttms->add($ttmClassroom->getTtm());
-        }
-
-        return $ttms;
-}
+  
 
     public function getPhone(): ?string
     {

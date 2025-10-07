@@ -33,16 +33,10 @@ class Classroom
     private ?User $principalTeacher = null;
 
 
-    /**
-     * @var Collection<int, TTMClassroom>
-     */
-    #[ORM\OneToMany(targetEntity: TTMClassroom::class, mappedBy: 'classroom')]
-    private Collection $ttmClassrooms;
 
     public function __construct()
     {
         $this->students = new ArrayCollection();
-        $this->ttmClassrooms = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,31 +88,6 @@ class Classroom
     public function setDiploma(?Diploma $diploma): static
     {
         $this->diploma = $diploma;
-        return $this;
-    }
-
-    /** @return Collection<int, TTMClassroom> */
-    public function getTtmClassrooms(): Collection
-    {
-        return $this->ttmClassrooms;
-    }
-
-    public function addTtmClassroom(TTMClassroom $ttmClassroom): static
-    {
-        if (!$this->ttmClassrooms->contains($ttmClassroom)) {
-            $this->ttmClassrooms->add($ttmClassroom);
-            $ttmClassroom->setClassroom($this);
-        }
-        return $this;
-    }
-
-    public function removeTtmClassroom(TTMClassroom $ttmClassroom): static
-    {
-        if ($this->ttmClassrooms->removeElement($ttmClassroom)) {
-            if ($ttmClassroom->getClassroom() === $this) {
-                $ttmClassroom->setClassroom(null);
-            }
-        }
         return $this;
     }
 

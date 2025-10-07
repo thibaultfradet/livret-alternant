@@ -6,6 +6,7 @@ use App\Entity\Period;
 use App\Entity\TutorEvaluation;
 use App\Entity\TTMEvaluation;
 use App\Entity\User;
+use App\Repository\DiplomaRepository;
 use App\Repository\PeriodRepository;
 use App\Repository\SchoolYearRepository;
 use App\Repository\UserRepository;
@@ -123,42 +124,54 @@ final class EvaluationListController extends AbstractController
         Security $security,
         PeriodRepository $periodRepo,
         UserRepository $userRepo,
+        SchoolYearRepository $schoolYearRepo,
+        DiplomaRepository $diplomaRepo,
         EntityManagerInterface $em,
         Request $request
     ): Response {
+
+        $activeSchoolYear = $schoolYearRepo->findActive();
 
         // période par défaut
         $periodId = $request->query->get('period');
         $period = $periodId ? $periodRepo->find($periodId) : $periodRepo->getActivePeriod();
 
+
+        $allPeriods = $periodRepo->createQueryBuilder('p')
+            ->where('p.schoolYear = :schoolYear')
+            ->orderBy('p.startDate', 'ASC')
+            ->setParameter('schoolYear', $activeSchoolYear)
+            ->getQuery()
+            ->getResult();
+
+        
         $diplomaId = $request->query->get('diploma');
         $evaluations = [];
         $diplomas = [];
 
+        
 
         $ttm = $this->getUser();
         $qb = $userRepo->createQueryBuilder('s')
             ->join('s.classroom', 'c')
-            ->join('c.ttmClassrooms', 'tc')
+            ->join('c.schoolYear', 'sy') // join the school year
             ->leftJoin('s.tutorEvaluationsReceived', 'te', 'WITH', 'te.period = :period')
             ->leftJoin('s.studentEvaluations', 'se', 'WITH', 'se.period = :period')
-            ->where('tc.ttm = :ttm')
-            // required tutor evaluation to see it
             ->andWhere('te.id IS NOT NULL')
-            // required student evaluation to see it
             ->andWhere('se.id IS NOT NULL')
-            ->setParameter('ttm', $ttm)
-            ->setParameter('period', $period);
+            ->andWhere('sy.id = :schoolYear') // filter by the current school year
+            ->setParameter('period', $period)
+            ->setParameter('schoolYear', $activeSchoolYear); 
 
         if ($diplomaId) {
             $qb->join('c.diploma', 'd')
-                ->andWhere('d.id = :diploma')
-                ->setParameter('diploma', $diplomaId);
+            ->andWhere('d.id = :diploma')
+            ->setParameter('diploma', $diplomaId);
         }
 
-        $students = $qb->orderBy('s.lastName', 'ASC')->getQuery()->getResult();
-
-
+        $students = $qb->orderBy('s.lastName', 'ASC')
+                    ->getQuery()
+                    ->getResult();
 
         foreach ($students as $student) {
             $already = $em->getRepository(TTMEvaluation::class)->findOneBy([
@@ -177,12 +190,27 @@ final class EvaluationListController extends AbstractController
                 ];
             }
 
-            $diplomas[$student->getClassroom()->getDiploma()->getId()] = $student->getClassroom()->getDiploma()->getLabel();
         }
+
+
+        // Fetch diplomas that have at least one classroom in the current school year
+        $diplomasData = $diplomaRepo->createQueryBuilder('d')
+            ->join('d.classrooms', 'c')                // join classrooms
+            ->andWhere('c.schoolYear = :schoolYear')   // filter by school year
+            ->setParameter('schoolYear', $activeSchoolYear)
+            ->getQuery()
+            ->getResult();
+
+        // Transform to id => label for Twig select
+        $diplomas = [];
+        foreach ($diplomasData as $d) {
+            $diplomas[$d->getId()] = $d->getLabel();
+        }
+
 
         return $this->render('evaluation/list_ttm.html.twig', [
             'evaluations' => $evaluations,
-            'allPeriods'  => $periodRepo->findBy([], ['startDate' => 'ASC']),
+            'allPeriods'  => $allPeriods,
             'period'      => $period,
             'diplomas'    => $diplomas,
             'selectedDiploma' => $diplomaId,
