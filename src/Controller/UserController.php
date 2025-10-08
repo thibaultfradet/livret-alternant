@@ -17,29 +17,13 @@ final class UserController extends AbstractController
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        // Récupérer tous les utilisateurs
+        // Retrieve all users
         $allUsers = $userRepository->findAll();
 
-        $users = array_filter($allUsers, function (User $user) {
-            $roles = $user->getRoles();
-
-        $excludeRoles = [
-                ['ROLE_TUTOR'],
-                ['ROLE_TUTOR', 'ROLE_USER'],
-                ['ROLE_STUDENT'],
-                ['ROLE_STUDENT', 'ROLE_USER'],
-            ];
-
-            return !in_array($roles, $excludeRoles, true);
-        });
-
         return $this->render('user/index.html.twig', [
-            'users' => $users,
+            'users' => $allUsers,
         ]);
     }
-
-
-    
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -49,6 +33,20 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Get roles from form checkboxes
+            $roles = $user->getRoles();
+
+            if ($form->get('isProfPrincipal')->getData()) {
+                $roles[] = 'ROLE_PT';
+            }
+
+            if ($form->get('isTeamMember')->getData()) {
+                $roles[] = 'ROLE_TTM';
+            }
+
+            // Remove duplicates just in case
+            $user->setRoles(array_unique($roles));
+
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -73,9 +71,29 @@ final class UserController extends AbstractController
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserType::class, $user);
+
+        // Pre-check checkboxes based on existing roles
+        $form->get('isProfPrincipal')->setData(in_array('ROLE_PT', $user->getRoles()));
+        $form->get('isTeamMember')->setData(in_array('ROLE_TTM', $user->getRoles()));
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $roles = [];
+
+            if ($form->get('isProfPrincipal')->getData()) {
+                $roles[] = 'ROLE_PT';
+            }
+
+            if ($form->get('isTeamMember')->getData()) {
+                $roles[] = 'ROLE_TTM';
+            }
+
+            // Preserve default ROLE_USER if applicable
+            $roles[] = 'ROLE_USER';
+
+            $user->setRoles(array_unique($roles));
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);

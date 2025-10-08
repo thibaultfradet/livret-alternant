@@ -93,10 +93,10 @@ class ClassroomController extends AbstractController
     ): Response {
 
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/';
-        $fs = new Filesystem();
-        if (!$fs->exists($storagePath)) {
-            $fs->mkdir($storagePath, 0777);
-        }
+        // $fs = new Filesystem();
+        // if (!$fs->exists($storagePath)) {
+        //     $fs->mkdir($storagePath, 0777);
+        // }
 
         // create and handle the Symfony form
         $form = $this->createForm(ClassroomFilesType::class);

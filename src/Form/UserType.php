@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class UserType extends AbstractType
 {
@@ -20,6 +21,18 @@ class UserType extends AbstractType
             ])
             ->add('lastName', TextType::class, [
                 'label' => 'Nom',
+            ])
+            // Checkbox for main teacher role
+            ->add('isProfPrincipal', CheckboxType::class, [
+                'label' => 'Est un professeur référent',
+                'required' => false,
+                'mapped' => false, // Not a real entity field
+            ])
+            // Checkbox for teaching team member role
+            ->add('isTeamMember', CheckboxType::class, [
+                'label' => 'Est un membre de l\'équipe pédagogique',
+                'required' => false,
+                'mapped' => false, // Not a real entity field
             ])
         ;
     }

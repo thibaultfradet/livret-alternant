@@ -8,8 +8,6 @@
     'ROLE_ADMIN': {
         'title': 'Administrateur',
         'links': [
-            { 'label': 'Gérer les TTM', 'path': 'app_user_index' },
-            { 'label': 'Gérer les titres', 'path': 'app_diploma_index' }
         ]
     },
     'ROLE_TUTOR': {
@@ -29,15 +27,17 @@
     'ROLE_TTM': {
         'title': 'Membre de l\'équipe pédagogique',
         'links': [
+            { 'label': 'Gérer les diplômes', 'path': 'app_diploma_index' },
+            { 'label': 'Gérer les utilisateurs', 'path': 'app_user_index' },
             { 'label': 'Validations des livrets', 'path': 'app_evaluation_visualizer' },
             { 'label': 'Evaluer un alternant (livret)', 'path': 'app_evaluation_list_ttm' },
             { 
                 'label': 'Gestion',
                 'is_dropdown': true,
                 'links': [
-                    { 'label': 'Classe', 'path': 'app_classroom_index' },
+                    { 'label': 'Classes', 'path': 'app_classroom_index' },
                     { 'label': 'Compétences', 'path': 'app_skill_management' },
-                    { 'label': 'Comportement', 'path': 'app_behavior_manage' },
+                    { 'label': 'Comportements', 'path': 'app_behavior_manage' },
                     { 'label': 'Années scolaires', 'path': 'app_school_year_index' },
                     { 'label': 'Périodes','path':'app_period_index' }
                 ]
