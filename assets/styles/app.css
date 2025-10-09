@@ -23,7 +23,9 @@ h2 {
     font-family: "Bell MT", serif !important;
     color: var(--title-blue-beaupeyrat) !important;
 }
-
+.w-40 {
+    width: 40% !important;
+}
 .bg-beaupeyrat {
     background-color: var(--common-blue-beaupeyrat) !important;
 }
@@ -43,4 +45,8 @@ h2 {
 .table {
     width: 100% !important;
     border-collapse: collapse !important;
+}
+.btn-excel {
+    background-color: #217346 !important;
+    color: white !important;
 }

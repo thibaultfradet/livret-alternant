@@ -27,7 +27,7 @@ final class ExtractionController extends AbstractController
 
         // Get the student with all related data
         $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
-
+        dump($student);
         // Student not found
         if (!$student) {
             throw $this->createNotFoundException('Student not found.');

@@ -57,6 +57,8 @@ security:
         - { path: ^/school-year, roles: ROLE_TTM }
         - { path: ^/period, roles: ROLE_TTM }
         - { path: ^/users, roles: ROLE_TTM }
+        - { path: ^/diploma, roles: ROLE_TTM }
+        - { path: ^/formation-center, roles: ROLE_TTM }
 
 
         # multiples roles
@@ -64,7 +66,6 @@ security:
         - { path: ^/export-evaluations, roles: [ROLE_TTM, ROLE_PT] }
 
         # ROLE_ADMIN
-        - { path: ^/diploma, roles: ROLE_ADMIN }
 
         # ROLE_SUPER_ADMIN
         - { path: ^/super-admin, roles: ROLE_SUPER_ADMIN }

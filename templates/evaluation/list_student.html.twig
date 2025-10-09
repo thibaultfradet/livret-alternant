@@ -3,37 +3,45 @@
 {% block title %}Mes évaluations manquantes{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1 class="mb-4 text-center">Périodes sans évaluation étudiante</h1>
+<div class="page-body d-flex">
+  <div class="container py-6 d-flex flex-column gap-4">
+    <h1 class="fw-bold text-primary text-center mb-5 display-5">
+      Périodes sans évaluation étudiante
+    </h1>
 
     {% if missingEvaluations is not empty %}
-        <table class="table table-striped align-middle">
-            <thead>
-                <tr>
-                    <th scope="col">Nom de la période</th>
-                    <th scope="col">Dates</th>
-                    <th scope="col" class="text-end">Actions</th>
-                </tr>
+      <div class="card shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-striped align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Nom de la période</th>
+                <th>Dates</th>
+                <th class="text-end">Actions</th>
+              </tr>
             </thead>
             <tbody>
-                {% for period in missingEvaluations %}
-                    <tr>
-                        <td>{{ period.periodNumber }}</td>
-                        <td>{{ period.startDate|date('d/m/Y') }} – {{ period.endDate|date('d/m/Y') }}</td>
-                        <td class="text-end">
-                            <a href="{{ path('app_create_student_evaluation', {'period': period.id}) }}"
-                               class="btn btn-outline-primary btn-sm">
-                                Créer l’évaluation
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
+              {% for period in missingEvaluations %}
+                <tr>
+                  <td>{{ period.periodNumber }}</td>
+                  <td>{{ period.startDate|date('d/m/Y') }} – {{ period.endDate|date('d/m/Y') }}</td>
+                  <td class="text-end">
+                    <a href="{{ path('app_create_student_evaluation', {'period': period.id}) }}"
+                       class="btn btn-outline-primary btn-sm">
+                      Créer l’évaluation
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
             </tbody>
-        </table>
-    {% else %}
-        <div class="w-100 text-center">
-            <p>Toutes vos périodes ont une évaluation étudiante ou sont en attente d'une évaluation par votre tuteur.</p>
+          </table>
         </div>
+      </div>
+    {% else %}
+      <div class="w-100 text-center mt-4">
+        <p>Toutes vos périodes ont une évaluation étudiante ou sont en attente d'une évaluation par votre tuteur.</p>
+      </div>
     {% endif %}
+  </div>
 </div>
 {% endblock %}

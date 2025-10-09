@@ -133,7 +133,7 @@ class EvaluationVisualizerController extends AbstractController
         $periodId = $request->query->get('period');
         $user = $this->getUser(); 
 
-        $classrooms = $classroomRepo->findAll();
+        $classrooms = $classroomRepo->findByActiveSchoolYear();
         $periods = $periodRepo->findByActiveSchoolYear();
 
         $selectedPeriod = $periodId ? $periodRepo->find($periodId) : ($periods[0] ?? null);

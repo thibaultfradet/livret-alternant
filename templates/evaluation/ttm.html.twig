@@ -3,28 +3,32 @@
 {% block title %}Evaluer un alternant{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <h1 class="mb-4 text-center">Evaluer l'alternant <b>{{student.lastName}} {{student.firstName}} </b></h1>
-    <h3 class="text-center">Période numéro {{period.periodNumber}}</h3>
+<div class="page-body d-flex">
+  <div class="container py-6 d-flex flex-column gap-4">
+    <h1 class="fw-bold text-primary text-center mb-4 display-5">
+      Evaluer l'alternant <b>{{ student.lastName }} {{ student.firstName }}</b>
+    </h1>
+    <h3 class="text-center mb-5">Période numéro {{ period.periodNumber }}</h3>
 
     {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': ''}}) }}
 
-    <div class="card shadow-sm mb-4 card-remark">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Remarque</h5>
-        </div>
-        <div class="card-body">
-            {{ form_widget(form.remarks) }}
-            {{ form_errors(form.remarks) }}
-        </div>
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-light">
+        <h5 class="card-title mb-0">Remarque</h5>
+      </div>
+      <div class="card-body">
+        {{ form_widget(form.remarks, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+        {{ form_errors(form.remarks) }}
+      </div>
     </div>
-    
+
     <div class="d-flex justify-content-center mt-4">
-        <button class="btn btn-submit btn-lg px-5 bg-primary">Valider mon évaluation</button>
+      <button class="btn btn-primary btn-lg px-5">Valider mon évaluation</button>
     </div>
 
     {{ form_widget(form._token) }}
 
     {{ form_end(form, {'render_rest': false}) }}
+  </div>
 </div>
 {% endblock %}
