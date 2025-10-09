@@ -4,11 +4,15 @@
 
 {% block body %}
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Périodes de l'année active</h1>
-        <a href="{{ path('app_period_new') }}" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Nouvelle période
-        </a>
+    <div class="row mb-4 align-items-center">
+        <div class="col text-center">
+            <h1 class="fw-bold text-primary mb-5 display-5 text-center">Périodes de l'année active</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ path('app_period_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouvelle période
+            </a>
+        </div>
     </div>
 
     {% if periods is not empty %}
@@ -20,7 +24,6 @@
                             <th scope="col">Numéro de période</th>
                             <th scope="col">Date de début</th>
                             <th scope="col">Date de fin</th>
-                            <th scope="col">Désactivée le</th>
                             <th scope="col" class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -30,14 +33,13 @@
                                 <td>{{ period.periodNumber }}</td>
                                 <td>{{ period.startDate ? period.startDate|date('d/m/Y') : '-' }}</td>
                                 <td>{{ period.endDate ? period.endDate|date('d/m/Y') : '-' }}</td>
-                                <td>{{ period.disabledAt ? period.disabledAt|date('d/m/Y') : '-' }}</td>
                                 <td class="text-end">
                                     <a href="{{ path('app_period_show', {'id': period.id}) }}" 
-                                       class="btn btn-outline-primary ">
+                                       class="btn btn-outline-primary me-2">
                                         <i class="bi bi-eye"></i> Voir
                                     </a>
                                     <a href="{{ path('app_period_edit', {'id': period.id}) }}" 
-                                       class="btn btn-outline-secondary ">
+                                       class="btn btn-primary">
                                         <i class="bi bi-pencil"></i> Modifier
                                     </a>
                                 </td>

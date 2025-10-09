@@ -4,45 +4,87 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h1 class="mb-4">Détail de l'utilisateur</h1>
 
-    <table class="table table-bordered table-striped">
-        <tbody>
-            <tr>
-                <th>ID</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Rôles</th>
-                <td>
-                    {% for role in user.roles %}
-                        <span class="badge bg-secondary">{{ role }}</span>
-                    {% endfor %}
-                </td>
-            </tr>
-            <tr>
-                <th>Prénom</th>
-                <td>{{ user.firstName }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ user.lastName }}</td>
-            </tr>
-            <tr>
-                <th>Désactivé le</th>
-                <td>{{ user.disabledAt ? user.disabledAt|date('Y-m-d') : '-' }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="mt-3">
-        <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
-        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-warning">Modifier</a>
-        {{ include('user/_delete_form.html.twig') }}
+    <!-- Page header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Détail de l'utilisateur</h1>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="{{ path('app_user_index') }}" class="btn btn-outline-primary">
+                <i class="ti ti-arrow-left"></i> Retour à la liste
+            </a>
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-outline-primary">
+                <i class="ti ti-edit"></i> Modifier
+            </a>
+        </div>
     </div>
+
+    <!-- Card with user info -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-vcenter table-striped table-hover align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="text-start w-25">ID</th>
+                            <td>{{ user.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rôles</th>
+                            <td>
+                                {% for role in user.roles %}
+                                    {% if role == 'ROLE_TTM' %}
+                                        <span class="text-white badge bg-info ">Équipe pédagogique</span>
+                                    {% elseif role == 'ROLE_PT' %}
+                                        <span class="text-white badge bg-warning">Professeur référent</span>
+                                    {% elseif role == 'ROLE_TUTOR' %}
+                                        <span class="text-white badge bg-success">Tuteur</span>
+                                    {% elseif role == 'ROLE_STUDENT' %}
+                                        <span class="text-white badge bg-primary">Alternant</span>
+                                    {% elseif role == 'ROLE_ADMIN' %}
+                                        <span class="text-white badge bg-danger">Administrateur</span>
+                                    {% elseif role == 'ROLE_USER' %}
+                                        {# No badge for basic users #}
+                                    {% else %}
+                                        <span class="text-white badge bg-secondary">{{ role }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Prénom</th>
+                            <td>{{ user.firstName }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nom</th>
+                            <td>{{ user.lastName }}</td>
+                        </tr>
+                        <tr>
+                            <th>Téléphone</th>
+                            <td>{{ user.phone ?: '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Désactivé le</th>
+                            <td>
+                                {% if user.disabledAt %}
+                                    <span class="text-white text-danger fw-semibold">{{ user.disabledAt|date('d/m/Y') }}</span>
+                                {% else %}
+                                    <span class="text-white text-muted">Actif</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end mt-4">
+                {{ include('user/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}

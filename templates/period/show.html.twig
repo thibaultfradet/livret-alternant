@@ -4,49 +4,61 @@
 
 {% block body %}
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Détails de la période</h1>
-        <div>
-            <a href="{{ path('app_period_index') }}" class="btn btn-outline-secondary me-2">
-                <i class="bi bi-arrow-left"></i> Retour à la liste
+
+    <!-- Page header -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Détails de la période</h1>
+        <div class="d-flex justify-content-center gap-2">
+            <a href="{{ path('app_period_index') }}" class="btn btn-outline-primary">
+                <i class="ti ti-arrow-left"></i> Retour à la liste
             </a>
-            <a href="{{ path('app_period_edit', {'id': period.id}) }}" class="btn btn-primary">
-                <i class="bi bi-pencil-square"></i> Modifier
+            <a href="{{ path('app_period_edit', {'id': period.id}) }}" class="btn btn-outline-primary">
+                <i class="ti ti-edit"></i> Modifier
             </a>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-body">
-            <table class="table table-borderless mb-0">
-                <tbody>
-                    <tr>
-                        <th class="text-muted" style="width: 30%">Identifiant</th>
-                        <td>{{ period.id }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted">Numéro de période</th>
-                        <td>{{ period.periodNumber }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted">Date de début</th>
-                        <td>{{ period.startDate ? period.startDate|date('d/m/Y') : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted">Date de fin</th>
-                        <td>{{ period.endDate ? period.endDate|date('d/m/Y') : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-muted">Désactivée le</th>
-                        <td>{{ period.disabledAt ? period.disabledAt|date('d/m/Y') : '-' }}</td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- Card with period info -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-vcenter table-striped table-hover align-middle">
+                    <tbody>
+                        <tr>
+                            <th class="text-start w-25">ID</th>
+                            <td>{{ period.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Numéro de période</th>
+                            <td>{{ period.periodNumber }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date de début</th>
+                            <td>{{ period.startDate ? period.startDate|date('d/m/Y') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date de fin</th>
+                            <td>{{ period.endDate ? period.endDate|date('d/m/Y') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Désactivée le</th>
+                            <td>
+                                {% if period.disabledAt %}
+                                    <span class="text-white text-danger fw-semibold">{{ period.disabledAt|date('d/m/Y') }}</span>
+                                {% else %}
+                                    <span class="text-white text-muted">Active</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end mt-4">
+                {{ include('period/_delete_form.html.twig', { 'button_label': 'Supprimer la période' }) }}
+            </div>
         </div>
     </div>
 
-    <div class="mt-4 d-flex justify-content-end">
-        {{ include('period/_delete_form.html.twig', { 'button_label': 'Supprimer la période' }) }}
-    </div>
 </div>
 {% endblock %}

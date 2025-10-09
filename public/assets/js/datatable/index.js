@@ -53,7 +53,18 @@ $(document).ready(function() {
 
     // --- School year list table ---
     if ($('#schoolYearTable').length) {
-        $('#schoolYearTable').DataTable(simpleTableConfig);
+        $('#schoolYearTable').DataTable({
+            ...simpleTableConfig,
+            columnDefs: [
+                { className: 'text-center align-middle', targets: '_all' }, // Center all text
+                { targets: 5, width: '300px', render: function(data, type, row) {
+                    if (type === 'display' && data.length > 100) {
+                        return data.substr(0, 100) + '...';
+                    }
+                    return data;
+                }}
+            ]
+        });
     }
 
     // --- Skill managment - Group summary ---

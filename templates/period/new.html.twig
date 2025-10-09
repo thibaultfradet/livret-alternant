@@ -4,15 +4,24 @@
 
 {% block body %}
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Créer une nouvelle période</h1>
-        <a href="{{ path('app_period_index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Retour à la liste
-        </a>
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold text-primary mb-5 display-5 text-center">Créer une nouvelle période</h1>
+        </div>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-3 p-4">
-        {{ include('period/_form.html.twig', {'button_label': 'Créer'}) }}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {{ include('period/_form.html.twig', {'button_label': 'Créer'}) }}
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <a href="{{ path('app_period_index') }}" class="btn btn-outline-primary">
+                Retour à la liste
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

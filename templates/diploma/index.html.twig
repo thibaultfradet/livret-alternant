@@ -3,37 +3,62 @@
 {% block title %}Gestion des diplômes{% endblock %}
 
 {% block body %}
-<div class="container mt-4">
-    <h1 class="mb-4">Gestion des diplômes</h1>
+<div class="container my-5">
 
-    {% if diplomas is not empty %}
-        <table id="diplomaTable" class="table table-striped table-hover align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Titre</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for diploma in diplomas %}
-                <tr>
-                    <td>{{ diploma.id }}</td>
-                    <td>{{ diploma.label }}</td>
-                    <td>{{ diploma.code }}</td>
-                    <td>
-                        <a class="btn  btn-outline-primary me-2" href="{{ path('app_diploma_show', {'id': diploma.id}) }}">Voir</a>
-                        <a class="btn  btn-outline-secondary" href="{{ path('app_diploma_edit', {'id': diploma.id}) }}">Modifier</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <div class="alert alert-info">Aucun diplôme trouvé.</div>
-    {% endif %}
+    <!-- Ligne 1 : titre centré -->
+    <div class="row mb-3">
+        <div class="col text-center">
+            <h1 class="fw-bold text-primary mb-5 display-5 text-center">Gestion des diplômes</h1>
+        </div>
+    </div>
 
-    <a class="btn btn-success mt-3" href="{{ path('app_diploma_new') }}">Ajouter un diplôme</a>
+    <!-- Ligne 2 : bouton aligné à droite -->
+    <div class="row mb-3">
+        <div class="col text-end">
+            <a href="{{ path('app_diploma_new') }}" class="btn btn-primary">Ajouter un diplôme</a>
+        </div>
+    </div>
+
+    <!-- Ligne 3 : tableau -->
+    <div class="row">
+        <div class="col">
+            {% if diplomas is not empty %}
+                <div class="card shadow-sm">
+                    <div class="table-responsive">
+                        <table id="diplomaTable" class="table table-hover text-center align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Code</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for diploma in diplomas %}
+                                <tr>
+                                    <td>{{ diploma.id }}</td>
+                                    <td>{{ diploma.label }}</td>
+                                    <td>{{ diploma.code }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ path('app_diploma_show', {'id': diploma.id}) }}" class="btn btn-outline-primary me-2">Voir</a>
+                                        <a href="{{ path('app_diploma_edit', {'id': diploma.id}) }}" class="btn btn-primary">Modifier</a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-muted">Aucun diplôme trouvé.</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">Aucun diplôme trouvé.</div>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 {% endblock %}

@@ -115,4 +115,23 @@ final class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+    #[Route('/{id}/disable', name: 'app_user_disable', methods: ['POST'])]
+    public function disable(User $user, EntityManagerInterface $entityManager): Response
+    {
+        // If user is already disabled, just redirect
+        if ($user->getDisabledAt() !== null) {
+            $this->addFlash('info', 'Cet utilisateur est déjà désactivé.');
+            return $this->redirectToRoute('app_user_index');
+        }
+
+        // Set the disabled date to now
+        $user->setDisabledAt(new \DateTimeImmutable());
+        $entityManager->flush();
+
+        $this->addFlash('success', 'L’utilisateur a été désactivé avec succès.');
+
+        return $this->redirectToRoute('app_user_index');
+    }
 }

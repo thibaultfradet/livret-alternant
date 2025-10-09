@@ -4,10 +4,10 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h1 class="mb-4">Créer un nouvel utilisateur</h1>
+    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Créer un nouvel utilisateur</h1>
 
     {{ include('user/_form.html.twig') }}
 
-    <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+    <a href="{{ path('app_user_index') }}" class="btn btn-outline-primary mt-3">Retour à la liste</a>
 </div>
 {% endblock %}

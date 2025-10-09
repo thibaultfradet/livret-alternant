@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="container mt-4">
-    <h1 class="mb-4">Classes de l'année {{ activeYear ? activeYear.label : 'inconnue' }}</h1>
+    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Classes de l'année {{ activeYear ? activeYear.label : 'inconnue' }}</h1>
 
     {% if classrooms is not empty %}
         <table id="classroomTable" class="table table-striped align-middle">            <thead>

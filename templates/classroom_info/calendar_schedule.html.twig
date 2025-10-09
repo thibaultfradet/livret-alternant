@@ -9,13 +9,13 @@
             {% if calendarFile or scheduleFile %}
                 {% if calendarFile %}
                     <div class="mb-4 text-center">
-                        <h1 class="card-title text-center mb-4">Calendrier</h1>
+                        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Calendrier</h1>
                         <img src="{{ asset(calendarFile) }}" alt="Calendrier" class="img-fluid rounded shadow-sm">
                     </div>
                 {% endif %}
                 {% if scheduleFile %}
                     <div class="text-center">
-                        <h1 class="card-title text-center mb-4">Emploi du temps</h1>
+                        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Emploi du temps</h1>
                         <img src="{{ asset(scheduleFile) }}" alt="Emploi du temps" class="img-fluid rounded shadow-sm">
                     </div>
                 {% endif %}
