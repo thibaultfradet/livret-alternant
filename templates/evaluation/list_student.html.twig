@@ -10,24 +10,32 @@
     </h1>
 
     {% if missingEvaluations is not empty %}
+      <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M12 9v2m0 4v.01" />
+          <path d="M5 19h14a2 2 0 0 0 1.73 -2.99l-7 -12a2 2 0 0 0 -3.46 0l-7 12a2 2 0 0 0 1.73 2.99" />
+        </svg>
+      <div>
+        <strong>Attention :</strong> Une ou plusieurs évaluation sont manquantes.
+      </div>
+      </div>
       <div class="card shadow-sm">
         <div class="table-responsive">
-          <table class="table table-striped align-middle mb-0">
+          <table id="missingEvaluationsTable" class="table table-striped align-middle mb-0">
             <thead class="table-light">
               <tr>
                 <th>Nom de la période</th>
-                <th>Dates</th>
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
             <tbody>
               {% for period in missingEvaluations %}
                 <tr>
-                  <td>{{ period.periodNumber }}</td>
-                  <td>{{ period.startDate|date('d/m/Y') }} – {{ period.endDate|date('d/m/Y') }}</td>
+                  <td> Période {{ period.periodNumber }} ({{ period.startDate|date('d/m/Y') }} - {{ period.endDate|date('d/m/Y') }})</td>
                   <td class="text-end">
                     <a href="{{ path('app_create_student_evaluation', {'period': period.id}) }}"
-                       class="btn btn-outline-primary btn-sm">
+                       class="btn btn-outline-primary ">
                       Créer l’évaluation
                     </a>
                   </td>

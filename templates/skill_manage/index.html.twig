@@ -79,7 +79,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3 class="text-start fw-bold mb-0">Groupe : {{ group.label }}</h3>
-                    <button class="btn btn-sm btn-primary"
+                    <button class="btn  btn-primary"
                             data-bs-toggle="modal" 
                             data-bs-target="#modalAddSkill"
                             data-group-id="{{ group.id }}"
@@ -133,7 +133,6 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/skill_group_management.js') }}"></script>
     <script src="{{ asset('js/level_management.js') }}"></script>
 

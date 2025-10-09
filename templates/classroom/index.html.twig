@@ -7,8 +7,7 @@
     <h1 class="mb-4">Classes de l'année {{ activeYear ? activeYear.label : 'inconnue' }}</h1>
 
     {% if classrooms is not empty %}
-        <table class="table table-striped align-middle">
-            <thead>
+        <table id="classroomTable" class="table table-striped align-middle">            <thead>
                 <tr>
                     <th scope="col">Diplôme</th>
                     <th scope="col" class="text-end">Actions</th>
@@ -20,12 +19,12 @@
                         <td>{{ classroom.diploma.label }}</td>
                         <td class="text-end">
                             <a href="{{ path('app_classroom_files', {'id': classroom.id}) }}" 
-                               class="btn btn-outline-primary btn-sm">
+                               class="btn btn-outline-primary ">
                                 Modifier les fichiers
                             </a>
                             
                             <a href="{{ path('app_classroom_tp', {'id': classroom.id}) }}" 
-                               class="btn btn-outline-primary btn-sm">
+                               class="btn btn-outline-primary ">
                                 Modifier le professeur référent
                             </a>
                         </td>
