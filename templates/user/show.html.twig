@@ -37,19 +37,19 @@
                             <td>
                                 {% for role in user.roles %}
                                     {% if role == 'ROLE_TTM' %}
-                                        <span class="text-white badge bg-info ">Équipe pédagogique</span>
+                                        <span class="text-white badge text-white bg-info ">Équipe pédagogique</span>
                                     {% elseif role == 'ROLE_PT' %}
-                                        <span class="text-white badge bg-warning">Professeur référent</span>
+                                        <span class="text-white badge text-white bg-warning">Professeur référent</span>
                                     {% elseif role == 'ROLE_TUTOR' %}
-                                        <span class="text-white badge bg-success">Tuteur</span>
+                                        <span class="text-white badge text-white bg-success">Tuteur</span>
                                     {% elseif role == 'ROLE_STUDENT' %}
-                                        <span class="text-white badge bg-primary">Alternant</span>
+                                        <span class="text-white badge text-white bg-primary">Alternant</span>
                                     {% elseif role == 'ROLE_ADMIN' %}
-                                        <span class="text-white badge bg-danger">Administrateur</span>
+                                        <span class="text-white badge text-white bg-danger">Administrateur</span>
                                     {% elseif role == 'ROLE_USER' %}
-                                        {# No badge for basic users #}
+                                        {# No badge text-white for basic users #}
                                     {% else %}
-                                        <span class="text-white badge bg-secondary">{{ role }}</span>
+                                        <span class="text-white badge text-white bg-secondary">{{ role }}</span>
                                     {% endif %}
                                 {% endfor %}
                             </td>
@@ -79,12 +79,7 @@
                     </tbody>
                 </table>
             </div>
-
-            <div class="text-end mt-4">
-                {{ include('user/_delete_form.html.twig') }}
-            </div>
         </div>
     </div>
-
 </div>
 {% endblock %}

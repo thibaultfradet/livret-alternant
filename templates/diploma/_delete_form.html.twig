@@ -1,3 +1,0 @@
-<form method="post" action="{{ path('app_diploma_delete', {'id': diploma.id}) }}" class="my-4" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce diplôme ?');">    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ diploma.id) }}">
-    <button class="btn btn-red">Supprimer</button>
-</form>

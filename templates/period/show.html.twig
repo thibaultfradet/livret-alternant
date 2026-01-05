@@ -12,7 +12,7 @@
             <a href="{{ path('app_period_index') }}" class="btn btn-outline-primary">
                 <i class="ti ti-arrow-left"></i> Retour à la liste
             </a>
-            <a href="{{ path('app_period_edit', {'id': period.id}) }}" class="btn btn-outline-primary">
+            <a href="{{ path('app_period_edit', {'id': period.id}) }}" class="btn btn-primary">
                 <i class="ti ti-edit"></i> Modifier
             </a>
         </div>
@@ -24,10 +24,7 @@
             <div class="table-responsive">
                 <table class="table table-vcenter table-striped table-hover align-middle">
                     <tbody>
-                        <tr>
-                            <th class="text-start w-25">ID</th>
-                            <td>{{ period.id }}</td>
-                        </tr>
+                       
                         <tr>
                             <th>Numéro de période</th>
                             <td>{{ period.periodNumber }}</td>
@@ -54,9 +51,6 @@
                 </table>
             </div>
 
-            <div class="text-end mt-4">
-                {{ include('period/_delete_form.html.twig', { 'button_label': 'Supprimer la période' }) }}
-            </div>
         </div>
     </div>
 

@@ -30,12 +30,6 @@ class PeriodType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => true,
             ])
-            ->add('disabledAt', DateType::class, [
-                'label' => 'Désactivée le',
-                'required' => false,
-                'widget' => 'single_text',
-                'html5' => true,
-            ])
             ->add('schoolYear', EntityType::class, [
                 'class' => SchoolYear::class,
                 'choice_label' => 'label',

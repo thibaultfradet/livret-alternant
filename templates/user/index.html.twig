@@ -41,15 +41,15 @@
                                 <td>
                                     {% for role in user.roles %}
                                         {% if role == 'ROLE_TTM' %}
-                                            <span class="badge bg-cyan text-white">Équipe pédagogique</span>
+                                            <span class="badge text-white bg-cyan text-white">Équipe pédagogique</span>
                                         {% elseif role == 'ROLE_PT' %}
-                                            <span class="badge bg-yellow text-white">Professeur référent</span>
+                                            <span class="badge text-white bg-yellow text-white">Professeur référent</span>
                                         {% elseif role == 'ROLE_TUTOR' %}
-                                            <span class="badge bg-green text-white">Tuteur</span>
+                                            <span class="badge text-white bg-green text-white">Tuteur</span>
                                         {% elseif role == 'ROLE_STUDENT' %}
-                                            <span class="badge bg-blue text-white">Alternant</span>
+                                            <span class="badge text-white bg-blue text-white">Alternant</span>
                                         {% elseif role == 'ROLE_ADMIN' %}
-                                            <span class="badge bg-red text-white">Administrateur</span>
+                                            <span class="badge text-white bg-red text-white">Administrateur</span>
                                         {% endif %}
                                     {% endfor %}
                                 </td>
@@ -57,9 +57,9 @@
                                 <td>{{ user.lastName }}</td>
                                 <td>
                                     {% if user.disabledAt %}
-                                        <span class="badge bg-secondary text-white">Désactivé</span>
+                                        <span class="badge text-white bg-secondary text-white">Désactivé</span>
                                     {% else %}
-                                        <span class="badge bg-success text-white">Actif</span>
+                                        <span class="badge text-white bg-success text-white">Actif</span>
                                     {% endif %}
                                 </td>
                                 <td>

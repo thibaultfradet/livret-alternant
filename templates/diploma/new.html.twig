@@ -7,7 +7,10 @@
     <h1 class="fw-bold text-primary mb-5 display-5 text-center">Ajouter un diplôme</h1>
 
     <div class="card p-4 mb-4">
-        {{ include('diploma/_form.html.twig', {'button_label': 'Créer'}) }}
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+        {{ form_end(form) }}
     </div>
 
     <a class="btn btn-outline-primary" href="{{ path('app_diploma_index') }}">Revenir à la liste</a>
