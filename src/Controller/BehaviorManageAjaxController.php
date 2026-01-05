@@ -7,6 +7,7 @@ use App\Entity\BehaviorLevel;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -174,5 +175,37 @@ final class BehaviorManageAjaxController extends AbstractController
                 'levels' => $levelsData,
             ],
         ]);
+    }
+
+    #[Route('/behavior/manage/disable/{id}', name: 'app_behavior_disable')]
+    public function disableBehavior(BehaviorCriteria $behavior, EntityManagerInterface $em): RedirectResponse
+    {
+        if (!$behavior) {
+            $this->addFlash('error', 'Le critère de comportement est introuvable.');
+            return $this->redirectToRoute('app_behavior_manage');
+        }
+
+        if ($behavior->getDisabledAt() !== null) {
+            $this->addFlash('warning', 'Ce comportement est déjà désactivé.');
+            return $this->redirectToRoute('app_behavior_manage');
+        }
+
+        // Disable the behavior criteria
+        $behavior->setDisabledAt(new \DateTime());
+
+        // Optionally, disable all associated levels
+        foreach ($behavior->getBehaviorLevels() as $level) {
+            if ($level->getDisabledAt() === null) {
+                $level->setDisabledAt(new \DateTime());
+                $em->persist($level);
+            }
+        }
+
+        $em->persist($behavior);
+        $em->flush();
+
+        $this->addFlash('success', 'Le comportement a été désactivé avec succès.');
+
+        return $this->redirectToRoute('app_behavior_manage');
     }
 }

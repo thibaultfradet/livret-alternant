@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un comportement{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+
+      <h1 class="mb-4">Ajouter un comportement</h1>
+
+      {{ form_start(form) }}
+
+        {{ form_row(form.label_behavior) }}
+        {{ form_row(form.niveau1) }}
+        {{ form_row(form.niveau2) }}
+        {{ form_row(form.niveau3) }}
+        {{ form_row(form.niveau4) }}
+        {{ form_row(form.niveau5) }}
+
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{{ path('app_behavior_manage') }}" class="btn btn-light">
+            Annuler
+          </a>
+          <button type="submit" class="btn btn-primary">
+            Valider
+          </button>
+        </div>
+
+      {{ form_end(form) }}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
