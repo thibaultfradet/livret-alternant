@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une compétence{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 600px;">
+    <h1 class="fw-bold text-primary mb-4 text-center">
+        Ajouter une compétence
+    </h1>
+
+    <p class="text-muted text-center mb-4">
+        Groupe : <strong>{{ group.label }}</strong>
+    </p>
+
+    {{ form_start(form) }}
+
+        <div class="mb-3">
+            {{ form_label(form.label) }}
+            {{ form_widget(form.label, { attr: { class: 'form-control' } }) }}
+            {{ form_errors(form.label) }}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ path('app_skill_management', { id: group.diploma.id }) }}" class="btn btn-light">
+                Annuler
+            </a>
+            <button class="btn btn-primary">
+                Ajouter
+            </button>
+        </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

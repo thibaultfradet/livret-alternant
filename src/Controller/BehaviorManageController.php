@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BehaviorCriteria;
 use App\Entity\BehaviorLevel;
+use App\Form\BehaviorLevelReplacementType;
 use App\Form\CreateBehaviorType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -87,7 +88,7 @@ final class BehaviorManageController extends AbstractController
             return $this->redirectToRoute('app_behavior_manage');
         }
 
-        $form = $this->createForm(\App\Form\BehaviorLevelReplacementType::class);
+        $form = $this->createForm(BehaviorLevelReplacementType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

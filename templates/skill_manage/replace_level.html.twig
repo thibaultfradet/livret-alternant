@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Remplacer un niveau{% endblock %}
+
+{% block body %}
+<div class="container mt-5" style="max-width: 650px;">
+    <h1 class="fw-bold text-danger mb-4 text-center">
+        Remplacement d’un niveau
+    </h1>
+
+    <div class="alert alert-warning">
+        <strong>Attention :</strong> cette action est irréversible.  
+        L’ancien niveau sera définitivement désactivé.
+    </div>
+
+    <div class="mb-4">
+        <label class="fw-bold">Ancien libellé :</label>
+        <p class="text-primary fw-bold mb-0">
+            {{ oldLevel.label }}
+        </p>
+    </div>
+
+    {{ form_start(form) }}
+
+        <div class="mb-3">
+            {{ form_label(form.label, 'Nouveau libellé') }}
+            {{ form_widget(form.label, { attr: { class: 'form-control' } }) }}
+            {{ form_errors(form.label) }}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ path('app_skill_management', { id: oldLevel.behaviorCriteria.id }) }}" class="btn btn-light">
+                Annuler
+            </a>
+            <button class="btn btn-danger">
+                Remplacer définitivement
+            </button>
+        </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

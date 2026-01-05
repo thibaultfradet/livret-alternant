@@ -49,15 +49,16 @@
                 <tbody>
                     {% for group in selectedDiploma.skillGroups %}
                         <tr data-group-id="{{ group.id }}">
-                            <td class="text-start">{{ group.label }}</td>
                             <td class="text-end">
-                                <div class="form-check form-switch d-inline-block">
-                                    <input class="form-check-input js-toggle-group-status" type="checkbox"
-                                        role="switch"
-                                        data-id="{{ group.id }}"
-                                        data-label="{{ group.label }}"
-                                        {% if group.disabledAt %}checked{% endif %}>
-                                </div>
+                                {% if group.disabledAt is null %}
+                                    <a href="{{ path('app_toggle_status', {type: 'group', id: group.id}) }}"
+                                    class="text-danger"
+                                    onclick="return confirm('Êtes-vous sûr de vouloir désactiver ce groupe ?');">
+                                        Désactiver
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">Désactivé</span>
+                                {% endif %}
                             </td>
                         </tr>
                     {% else %}
@@ -123,11 +124,6 @@
 
 </div>
 
-{# include modal #}
-{% include 'components/modal_add_level.html.twig' %}
-{% include 'components/modal_add_skill.html.twig' %}
-{% include 'components/modal_add_skillgroup.html.twig' %}
-{% include 'components/modal_level.html.twig' %}
 
 {% endblock %}
 
