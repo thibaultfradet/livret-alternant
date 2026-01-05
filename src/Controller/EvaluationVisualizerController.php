@@ -128,7 +128,7 @@ class EvaluationVisualizerController extends AbstractController
         StudentEvaluationRepository $studentEvalRepo,
         TutorEvaluationRepository $tutorEvalRepo,
         TTMEvaluationRepository $ttmEvalRepo,
-        int $classroomId = null
+        string $classroomId = null
     ): array {
         $periodId = $request->query->get('period');
         $user = $this->getUser(); 

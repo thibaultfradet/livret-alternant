@@ -11,14 +11,14 @@
     </h1>
 
     <div class="d-flex justify-content-end">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#behaviorModal">
+      <a href="{{ path('app_behavior_manage_create') }}" class="btn btn-primary">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus me-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
           <line x1="12" y1="5" x2="12" y2="19" />
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
         Ajouter comportement
-      </button>
+      </a>
     </div>
 
     <div class="card shadow-sm">
@@ -78,19 +78,19 @@
                     {% endif %}
                   </td>
                 {% endfor %}
-
                 <td class="text-end">
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      id="disableBehavior{{ behavior.id }}"
-                      {% if behavior.disabledAt is not null %}checked{% endif %}
+                  {% if behavior.disabledAt is null %}
+                    <a
+                      href="{{ path('app_behavior_disable', { id: behavior.id }) }}"
+                      class="text-danger"
+                      onclick="return confirm('Êtes-vous sûr de vouloir désactiver ce comportement ? Cette action est irréversible !');"
+                      title="Désactiver ce comportement"
                     >
-                    <label class="form-check-label" for="disableBehavior{{ behavior.id }}">
                       Désactiver
-                    </label>
-                  </div>
+                    </a>
+                  {% else %}
+                    <span class="text-muted">Désactivé</span>
+                  {% endif %}
                 </td>
               </tr>
             {% else %}
