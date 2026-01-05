@@ -12,11 +12,6 @@
 
     <div class="d-flex justify-content-end">
       <a href="{{ path('app_behavior_manage_create') }}" class="btn btn-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-plus me-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
         Ajouter comportement
       </a>
     </div>
@@ -39,6 +34,7 @@
             {% for behavior in behaviors %}
               <tr>
                 <td><strong>{{ behavior.label }}</strong></td>
+
                 {% set levels = {} %}
                 {% for level in behavior.behaviorLevels %}
                   {% if level.disabledAt is null %}
@@ -48,36 +44,28 @@
 
                 {% for i in 0..4 %}
                   <td>
-                    {{- levels[i] is defined ? levels[i].label : '-' -}}
-                    <span
-                      data-bs-toggle="modal"
-                      data-bs-target="#editLevelModal"
-                      data-level-id="{{ levels[i] is defined ? levels[i].id : '' }}"
-                      data-level-label="{{ levels[i] is defined ? levels[i].label : '' }}"
-                      data-level-number="{{ i }}"
-                      class="cursor-pointer me-2"
-                      style="cursor: pointer;">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14">
-                        <g fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z"/>
-                          <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
-                        </g>
-                      </svg>
-                    </span>
+                    {{ levels[i] is defined ? levels[i].label : '-' }}
+
+                    {# Lien vers page dédiée pour remplacer le niveau avec icône SVG #}
                     {% if levels[i] is defined %}
-                      <span
-                        data-bs-toggle="modal"
-                        data-bs-target="#editLevelModal"
-                        data-action="replace"
-                        data-level-id="{{ levels[i].id }}"
-                        data-level-label="{{ levels[i].label }}"
-                        class="text-danger cursor-pointer"
-                        style="cursor: pointer;">
-                        <i class="bi bi-arrow-repeat"></i>
-                      </span>
+                      <a
+                        href="{{ path('app_behavior_level_replace', { id: levels[i].id }) }}"
+                        class="text-danger ms-2"
+                        title="Remplacer ce niveau"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14">
+                          <g fill="none" stroke="#888888" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z"/>
+                            <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
+                          </g>
+                        </svg>
+                      </a>
                     {% endif %}
                   </td>
                 {% endfor %}
+
+                
+                {# Actions sur le critère #}
                 <td class="text-end">
                   {% if behavior.disabledAt is null %}
                     <a
@@ -92,6 +80,7 @@
                     <span class="text-muted">Désactivé</span>
                   {% endif %}
                 </td>
+
               </tr>
             {% else %}
               <tr>
@@ -105,12 +94,4 @@
 
   </div>
 </div>
-
-{% include 'components/behavior_manage/modal_add_behavior.html.twig' %}
-{% include 'components/behavior_manage/modal_edit_level.html.twig' %}
-{% endblock %}
-
-{% block javascripts %}
-  {{ parent() }}
-  <script src="{{ asset('js/behavior_management.js') }}"></script>
 {% endblock %}

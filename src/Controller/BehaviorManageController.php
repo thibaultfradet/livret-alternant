@@ -78,4 +78,43 @@ final class BehaviorManageController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/behavior/level/replace/{id}', name: 'app_behavior_level_replace', methods: ['GET','POST'])]
+    public function replaceLevel(BehaviorLevel $level, Request $request, EntityManagerInterface $em): Response
+    {
+        if ($level->getDisabledAt() !== null) {
+            $this->addFlash('warning', 'Ce niveau est déjà désactivé.');
+            return $this->redirectToRoute('app_behavior_manage');
+        }
+
+        $form = $this->createForm(\App\Form\BehaviorLevelReplacementType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $newLabel = $data['label_level_replacement'];
+
+            // Disable old level
+            $level->setDisabledAt(new \DateTime());
+
+            // Create replacement
+            $replacementLevel = new BehaviorLevel();
+            $replacementLevel->setLabel(trim($newLabel));
+            $replacementLevel->setLevelNumber($level->getLevelNumber());
+            $replacementLevel->setBehaviorCriteria($level->getBehaviorCriteria());
+            $replacementLevel->setDisabledAt(null);
+
+            $em->persist($replacementLevel);
+            $em->flush();
+
+            $this->addFlash('success', sprintf('Le niveau "%s" a été remplacé par "%s".', $level->getLabel(), $replacementLevel->getLabel()));
+
+            return $this->redirectToRoute('app_behavior_manage');
+        }
+
+        return $this->render('behavior_manage/replace_level.html.twig', [
+            'level' => $level,
+            'form' => $form->createView(),
+        ]);
+    }
 }
