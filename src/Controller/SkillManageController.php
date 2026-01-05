@@ -63,10 +63,10 @@ class SkillManageController extends AbstractController
             $em->persist($level);
             $em->flush();
             $this->addFlash('success', 'Niveau créé avec succès.');
-            return $this->redirectToRoute('app_skill_management', ['id' => $level->getId()]);
+            return $this->redirectToRoute('app_skill_level_manage');
         }
 
-        return $this->render('skill/form_level.html.twig', [
+        return $this->render('skill_manage/form_level.html.twig', [
             'form' => $form->createView()
         ]);
     }
@@ -87,7 +87,7 @@ class SkillManageController extends AbstractController
             return $this->redirectToRoute('app_skill_management', ['id' => $diploma->getId()]);
         }
 
-        return $this->render('skill/form_group.html.twig', [
+        return $this->render('skill_manage/form_group.html.twig', [
             'form' => $form->createView(),
             'diploma' => $diploma
         ]);
@@ -109,37 +109,94 @@ class SkillManageController extends AbstractController
             return $this->redirectToRoute('app_skill_management', ['id' => $group->getDiploma()->getId()]);
         }
 
-        return $this->render('skill/form_skill.html.twig', [
+        return $this->render('skill_manage/form_skill.html.twig', [
             'form' => $form->createView(),
             'group' => $group
         ]);
     }
 
-    // Toggle skill / group / level status
-    #[Route('/skill-manage/{type}/{id}/toggle', name: 'app_toggle_status', methods: ['POST'])]
-    public function toggleStatus(string $type, int $id, EntityManagerInterface $em): Response
-    {
+
+    // Toggle skill or group status (no levels here)
+    #[Route('/skill-manage/{type}/{id}/toggle', name: 'app_toggle_status')]
+    public function toggleStatus(
+        string $type,
+        int $id,
+        EntityManagerInterface $em
+    ): Response {
+
         switch ($type) {
             case 'skill':
                 $entity = $em->getRepository(SkillCriteria::class)->find($id);
                 break;
+
             case 'group':
                 $entity = $em->getRepository(SkillGroup::class)->find($id);
                 break;
-            case 'level':
-                $entity = $em->getRepository(SkillLevel::class)->find($id);
-                break;
+
             default:
-                throw $this->createNotFoundException('Type invalide');
+                throw $this->createNotFoundException('Invalid type');
         }
 
-        if (!$entity) throw $this->createNotFoundException('Entité introuvable');
+        if (!$entity) {
+            throw $this->createNotFoundException('Entity not found');
+        }
 
-        $entity->setDisabledAt($entity->getDisabledAt() ? null : new \DateTime());
+        // Toggle disabledAt status
+        $entity->setDisabledAt(
+            $entity->getDisabledAt() ? null : new \DateTime()
+        );
+
         $em->flush();
 
-        $this->addFlash('success', ucfirst($type) . ' mis à jour.');
-        return $this->redirectToRoute('app_skill_management', ['id' => $type === 'group' ? $entity->getDiploma()->getId() : $entity->getSkillGroup()->getDiploma()->getId()]);
+        $this->addFlash('success', "L'objet a été mis à jour avec succès.");
+
+        // Redirect back to skill management
+        $diplomaId = $type === 'group'
+            ? $entity->getDiploma()->getId()
+            : $entity->getSkillGroup()->getDiploma()->getId();
+
+        return $this->redirectToRoute('app_skill_management', [
+            'id' => $diplomaId
+        ]);
     }
 
+
+    // Toggle skill level status
+    #[Route('/skill-level/{id}/toggle', name: 'app_skill_level_toggle')]
+    public function toggleSkillLevel(
+        SkillLevel $level,
+        EntityManagerInterface $em
+    ): Response {
+
+        if (!$level) {
+            throw $this->createNotFoundException('Level not found');
+        }
+
+        // Toggle disabledAt
+        $level->setDisabledAt(
+            $level->getDisabledAt() ? null : new \DateTime()
+        );
+
+        $em->flush();
+
+        $this->addFlash('success', 'Niveau mis à jour avec succès.');
+
+        // Redirect back to level management page
+        return $this->redirectToRoute('app_skill_level_manage');
+    }
+
+
+    #[Route('/skill-levels', name: 'app_skill_level_manage')]
+    public function manageLevels(
+        SkillLevelRepository $repository,
+        DiplomaRepository $diplomaRepository
+    ): Response {
+        return $this->render('skill_manage/level_manage.html.twig', [
+            'levels' => $repository->findBy(
+                ['disabledAt' => null],
+                ['label' => 'ASC']
+            ),
+            'diploma' => $diplomaRepository->findOneBy([]), // diplôme courant si nécessaire
+        ]);
+    }
 }

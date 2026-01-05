@@ -3,57 +3,61 @@
 {% block title %}Gestion des compétences{% endblock %}
 
 {% block body %}
-<div class="container mt-4 text-center text-primary">
-    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Gestion des critères, niveaux et groupes de compétence</h1>
+<div class="container mt-4 text-primary">
 
+    <h1 class="fw-bold text-primary mb-5 display-5 text-center">
+        Gestion des critères, niveaux et groupes de compétence
+    </h1>
+
+    {# Top actions & diploma filter #}
     <div class="d-flex align-items-center justify-content-between mb-4 p-3 rounded">
-        {# filter diplome #}
         <div>
             <select class="form-select" onchange="window.location.href=this.value">
                 {% for diploma in diplomas %}
-                    <option value="{{ path('app_skill_management', {id: diploma.id}) }}"
+                    <option value="{{ path('app_skill_management', { id: diploma.id }) }}"
                         {% if diploma.id == selectedDiploma.id %}selected{% endif %}>
                         {{ diploma.label }}
                     </option>
                 {% endfor %}
             </select>
         </div>
-        {# general manage actions #}
-        <div>
-            <button class="btn btn-warning" 
-                data-bs-toggle="modal" 
-                data-bs-target="#modalAddSkillGroup"
-                id="btn-create-group"
-                data-diploma-id="{{ selectedDiploma.id }}"
-            >
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_skill_group_create', { diploma: selectedDiploma.id }) }}"
+               class="btn btn-warning">
                 + Créer un groupe
-            </button>
-            <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalLevel">
+            </a>
+
+           <a href="{{ path('app_skill_level_manage') }}"
+                class="btn btn-primary">
                 Gérer les niveaux
-            </button>
+            </a>
         </div>
     </div>
-    <hr style="border: 2px solid black; margin: 2rem 0;">
 
-    {# Card synthétique des groupes #}
+    <hr class="border border-dark border-2 my-4">
+
+    {# Groups summary #}
     <div class="card mb-4">
         <div class="card-body">
             <h3 class="text-start fw-bold mb-3">Groupes de compétence</h3>
-            <table id="groups-summary" class="table table-bordered align-middle">
+
+            <table class="table table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th class="text-start">Groupe de compétence</th>
-                        <th class="text-end">Désactivé</th>
+                        <th class="text-start">Groupe</th>
+                        <th class="text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for group in selectedDiploma.skillGroups %}
-                        <tr data-group-id="{{ group.id }}">
+                        <tr>
+                            <td class="text-start">{{ group.label }}</td>
                             <td class="text-end">
                                 {% if group.disabledAt is null %}
-                                    <a href="{{ path('app_toggle_status', {type: 'group', id: group.id}) }}"
-                                    class="text-danger"
-                                    onclick="return confirm('Êtes-vous sûr de vouloir désactiver ce groupe ?');">
+                                    <a href="{{ path('app_toggle_status', { type: 'group', id: group.id }) }}"
+                                       class="text-danger"
+                                       onclick="return confirm('Désactiver ce groupe ? Action irréversible.');">
                                         Désactiver
                                     </a>
                                 {% else %}
@@ -63,7 +67,9 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="2" class="text-center text-muted">Aucun groupe défini pour ce diplôme.</td>
+                            <td colspan="2" class="text-center text-muted">
+                                Aucun groupe défini pour ce diplôme.
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -71,29 +77,29 @@
         </div>
     </div>
 
+    <hr class="border border-dark border-2 my-4">
 
-    <hr style="border: 2px solid black; margin: 2rem 0;">
-
-    {# for each group we show skills label && add skills to group #}
+    {# Skills per group #}
     {% for group in selectedDiploma.skillGroups %}
-        <div class="card mb-4" id="group-card-{{ group.id }}">
+        <div class="card mb-4">
             <div class="card-body">
+
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="text-start fw-bold mb-0">Groupe : {{ group.label }}</h3>
-                    <button class="btn  btn-primary"
-                            data-bs-toggle="modal" 
-                            data-bs-target="#modalAddSkill"
-                            data-group-id="{{ group.id }}"
-                            data-group-label="{{ group.label }}">
+                    <h3 class="fw-bold mb-0">
+                        Groupe : {{ group.label }}
+                    </h3>
+
+                    <a href="{{ path('app_skill_criteria_create', { group: group.id }) }}"
+                       class="btn btn-primary">
                         + Ajouter compétence
-                    </button>
+                    </a>
                 </div>
-                
-                <table class="table table-bordered mt-2 align-middle">
+
+                <table class="table table-bordered align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th class="text-start">Libellé</th>
-                            <th class="text-end">Désactivé</th>
+                            <th class="text-start">Compétence</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,17 +107,22 @@
                             <tr>
                                 <td class="text-start">{{ skill.label }}</td>
                                 <td class="text-end">
-                                    <div class="form-check form-switch d-inline-block">
-                                        <input class="form-check-input js-toggle-status" type="checkbox"
-                                            role="switch"
-                                            data-id="{{ skill.id }}"
-                                            {% if skill.disabledAt %}checked{% endif %}>
-                                    </div>
+                                    {% if skill.disabledAt is null %}
+                                        <a href="{{ path('app_toggle_status', { type: 'skill', id: skill.id }) }}"
+                                           class="text-danger"
+                                           onclick="return confirm('Désactiver cette compétence ? Action irréversible.');">
+                                            Désactiver
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Désactivée</span>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="2" class="text-center text-muted">Aucune compétence.</td>
+                                <td colspan="2" class="text-center text-muted">
+                                    Aucune compétence.
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -119,17 +130,10 @@
             </div>
         </div>
     {% else %}
-        <p class="text-muted text-center">Aucun groupe défini pour ce diplôme.</p>
+        <p class="text-muted text-center">
+            Aucun groupe défini pour ce diplôme.
+        </p>
     {% endfor %}
 
 </div>
-
-
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('js/skill_group_management.js') }}"></script>
-    <script src="{{ asset('js/level_management.js') }}"></script>
-
 {% endblock %}
