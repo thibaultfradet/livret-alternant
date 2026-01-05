@@ -14,15 +14,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class TermsAcceptanceController extends AbstractController
 {
-    /**
-     * Route to see what the user valid
-     */
+    
     #[Route('/terms-acceptance', name: 'app_terms_acceptance')]
     public function index(Request $request, SchoolYearRepository $SYRepo): Response
     {
         $activeYear = $SYRepo->findActive();
         $termsContent = $activeYear->getTermsContent();
-
+        
         return $this->render('terms_acceptance/index.html.twig', [
             'termsContent' => $termsContent
         ]);

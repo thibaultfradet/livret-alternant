@@ -33,8 +33,10 @@ class SchoolYearType extends AbstractType
             ->add('termsContent', TextareaType::class, [
                 'label' => 'Conditions générales',
                 'required' => false,
-            ])
-        ;
+                'attr' => [
+                    'class' => 'summernote',
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -26,3 +26,21 @@
     </div>
 </div>
 {% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {# Summernote CSS et JS depuis CDN #}
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $('.summernote').summernote({
+                height: 200,
+                placeholder: 'Entrez les conditions générales...',
+            });
+        });
+    </script>
+{% endblock %}

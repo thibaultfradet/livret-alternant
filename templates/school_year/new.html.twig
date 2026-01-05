@@ -13,16 +13,49 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             {{ form_start(form) }}
-                {{ form_widget(form) }}
-                <div class="d-flex justify-content-between mt-4">
-                    <a href="{{ path('app_school_year_index') }}" class="btn btn-outline-primary">
-                        Retourner à la liste
-                    </a>
-                    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
-                </div>
-            {{ form_end(form) }}
 
+            {{ form_row(form.label) }}
+
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.startDate) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.endDate) }}
+                </div>
+            </div>
+
+            {{ form_row(form.active) }}
+
+            {# Summernote pour termsContent #}
+            {{ form_row(form.termsContent, {'attr': {'class': 'summernote'}}) }}
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('app_school_year_index') }}" class="btn btn-outline-primary">
+                    Retourner à la liste
+                </a>
+                <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+            </div>
+
+            {{ form_end(form) }}
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {# Summernote CSS et JS depuis CDN #}
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            $('.summernote').summernote({
+                height: 200,
+                placeholder: 'Entrez les conditions générales...',
+            });
+        });
+    </script>
 {% endblock %}
