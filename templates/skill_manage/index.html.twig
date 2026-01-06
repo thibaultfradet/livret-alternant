@@ -50,28 +50,30 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% set hasGroups = false %}
                     {% for group in selectedDiploma.skillGroups %}
-                        <tr>
-                            <td class="text-start">{{ group.label }}</td>
-                            <td class="text-end">
-                                {% if group.disabledAt is null %}
+                        {% if group.disabledAt is null %}
+                            {% set hasGroups = true %}
+                            <tr>
+                                <td class="text-start">{{ group.label }}</td>
+                                <td class="text-end">
                                     <a href="{{ path('app_toggle_status', { type: 'group', id: group.id }) }}"
                                        class="text-danger"
                                        onclick="return confirm('Désactiver ce groupe ? Action irréversible.');">
                                         Désactiver
                                     </a>
-                                {% else %}
-                                    <span class="text-muted">Désactivé</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% else %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if not hasGroups %}
                         <tr>
                             <td colspan="2" class="text-center text-muted">
-                                Aucun groupe défini pour ce diplôme.
+                                Aucun groupe actif pour ce diplôme.
                             </td>
                         </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
@@ -80,60 +82,68 @@
     <hr class="border border-dark border-2 my-4">
 
     {# Skills per group #}
+    {% set hasActiveGroups = false %}
     {% for group in selectedDiploma.skillGroups %}
-        <div class="card mb-4">
-            <div class="card-body">
+        {% if group.disabledAt is null %}
+            {% set hasActiveGroups = true %}
+            <div class="card mb-4">
+                <div class="card-body">
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="fw-bold mb-0">
-                        Groupe : {{ group.label }}
-                    </h3>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3 class="fw-bold mb-0">
+                            Groupe : {{ group.label }}
+                        </h3>
 
-                    <a href="{{ path('app_skill_criteria_create', { group: group.id }) }}"
-                       class="btn btn-primary">
-                        + Ajouter compétence
-                    </a>
+                        <a href="{{ path('app_skill_criteria_create', { group: group.id }) }}"
+                           class="btn btn-primary">
+                            + Ajouter compétence
+                        </a>
+                    </div>
+
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-start">Compétence</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set hasSkills = false %}
+                            {% for skill in group.skillCriteria %}
+                                {% if skill.disabledAt is null %}
+                                    {% set hasSkills = true %}
+                                    <tr>
+                                        <td class="text-start">{{ skill.label }}</td>
+                                        <td class="text-end">
+                                            <a href="{{ path('app_toggle_status', { type: 'skill', id: skill.id }) }}"
+                                               class="text-danger"
+                                               onclick="return confirm('Désactiver cette compétence ? Action irréversible.');">
+                                                Désactiver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if not hasSkills %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">
+                                        Aucune compétence active.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
-
-                <table class="table table-bordered align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="text-start">Compétence</th>
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for skill in group.skillCriteria %}
-                            <tr>
-                                <td class="text-start">{{ skill.label }}</td>
-                                <td class="text-end">
-                                    {% if skill.disabledAt is null %}
-                                        <a href="{{ path('app_toggle_status', { type: 'skill', id: skill.id }) }}"
-                                           class="text-danger"
-                                           onclick="return confirm('Désactiver cette compétence ? Action irréversible.');">
-                                            Désactiver
-                                        </a>
-                                    {% else %}
-                                        <span class="text-muted">Désactivée</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="2" class="text-center text-muted">
-                                    Aucune compétence.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
-        </div>
-    {% else %}
-        <p class="text-muted text-center">
-            Aucun groupe défini pour ce diplôme.
-        </p>
+        {% endif %}
     {% endfor %}
+
+    {% if not hasActiveGroups %}
+        <p class="text-muted text-center">
+            Aucun groupe actif pour ce diplôme.
+        </p>
+    {% endif %}
 
 </div>
 {% endblock %}

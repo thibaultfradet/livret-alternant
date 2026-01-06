@@ -39,14 +39,11 @@ class SkillManageController extends AbstractController
                 throw $this->createNotFoundException('Le diplôme n\'existe pas.');
             }
         }
-
-
-        $levels = $skillLevelRepo->findAll();
+    
 
         return $this->render('skill_manage/index.html.twig', [
             'diplomas' => $diplomas,
             'selectedDiploma' => $selectedDiploma,
-            'levels' => $levels,
         ]);
     }
 
