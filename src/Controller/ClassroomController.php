@@ -5,11 +5,12 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Classroom;
 use App\Form\ClassroomFilesType;
+use App\Form\ClassroomNewType;
 use App\Form\ClassroomPrincipalTeacherType;
 use App\Repository\ClassroomRepository;
 use App\Repository\SchoolYearRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,7 +24,6 @@ class ClassroomController extends AbstractController
     #[Route('/classroom', name: 'app_classroom_index')]
     public function index(ClassroomRepository $classroomRepository, SchoolYearRepository $schoolYearRepository): Response
     {
-        // Get the active school year (assuming you have a boolean "isActive" field)
         $activeYear = $schoolYearRepository->findActive();
 
         // If no active year found, show an error or empty list
@@ -41,6 +41,35 @@ class ClassroomController extends AbstractController
         return $this->render('classroom/index.html.twig', [
             'classrooms' => $classrooms,
             'activeYear' => $activeYear,
+        ]);
+    }
+
+
+
+    #[Route('/classroom/new', name: 'app_classroom_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, SchoolYearRepository $schoolYearRepository, EntityManagerInterface $em): Response
+    {
+        $classroom = new Classroom();
+
+        // Get the active school year
+        $activeYear = $schoolYearRepository->findActive();
+
+        $form = $this->createForm(ClassroomNewType::class, $classroom, [
+            'activeSchoolYear' => $activeYear, // pass default
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->persist($classroom);
+            $em->flush();
+
+            $this->addFlash('success', 'Classe créée avec succès.');
+            return $this->redirectToRoute('app_classroom_index');
+        }
+
+        return $this->render('classroom/new.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 

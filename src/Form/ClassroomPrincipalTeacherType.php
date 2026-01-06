@@ -15,18 +15,27 @@ class ClassroomPrincipalTeacherType extends AbstractType
     {
         $builder
             ->add('principalTeacher', EntityType::class, [
+                // Field label displayed in the form (French)
+                'label' => 'Professeur principal',
+
                 'class' => User::class,
-                'choice_label' => fn(User $user) => $user->getLastName() . " " . $user->getFirstName(),
+
+                // Display last name followed by first name
+                'choice_label' => fn(User $user) => $user->getLastName() . ' ' . $user->getFirstName(),
+
+                // Placeholder shown when no teacher is selected
                 'placeholder' => 'Aucun',
-                'query_builder' => function($repo) {
+
+                // Exclude students from the list
+                'query_builder' => function ($repo) {
                     return $repo->createQueryBuilder('u')
                         ->where('u.roles NOT LIKE :role')
                         ->setParameter('role', '%ROLE_STUDENT%')
                         ->orderBy('u.lastName', 'ASC');
                 },
+
                 'required' => false,
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
