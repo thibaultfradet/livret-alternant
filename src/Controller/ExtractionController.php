@@ -6,6 +6,7 @@ use App\Entity\SchoolYear;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\SchoolYearRepository;
+use App\Service\PdfService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -66,6 +67,54 @@ final class ExtractionController extends AbstractController
             'calendarPath' => $calendarImgPath,
             'termsContent' => $termsContent,
             ]);
+    }
+
+
+    #[Route('/extraction/{student}/pdf', name: 'app_extraction_student_pdf')]
+    public function studentPdf(
+        User $student,
+        UserRepository $userRepository,
+        SchoolYearRepository $schoolYearRepository,
+        PdfService $pdfService
+    ): Response {
+
+        // Récupération de l'année active
+        $activeYear = $schoolYearRepository->findActive();
+        if (!$activeYear) {
+            throw $this->createNotFoundException('No active school year found.');
+        }
+
+        // Récupération des données complètes de l'étudiant
+        $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
+        if (!$student) {
+            throw $this->createNotFoundException('Student not found.');
+        }
+
+        // Chemins des images
+        $formationCenterImgPath = sprintf('/uploads/general/formation-center-%d.png', $activeYear->getId());
+        $ttmImgPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
+        $calendarImgPath = sprintf('/uploads/classroom/calendar-%d.png', $student->getClassroom()->getId());
+
+        $termsContent = $activeYear->getTermsContent();
+        $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);
+
+        // On génère le HTML depuis le même template que la page HTML
+        $html = $this->renderView('extraction/pdf_student.html.twig', [
+            'controller_name' => 'Extraction',
+            'student' => $student,
+            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
+            'formationCenterPath' => $formationCenterImgPath,
+            'ttmPath' => $ttmImgPath,
+            'calendarPath' => $calendarImgPath,
+            'termsContent' => $termsContent,
+            'isPdf' => true, // optionnel, pour adapter certains styles si besoin
+        ]);
+
+        // Génération du PDF
+        $pdfService->generatePdf($html, sprintf('livret_%s.pdf', $student->getLastName()));
+
+        // Dompdf envoie déjà le PDF, donc on retourne une Response vide
+        return new Response();
     }
 
 

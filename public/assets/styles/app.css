@@ -34,14 +34,6 @@ h2 {
     border-color: var(--common-blue-beaupeyrat) !important;
 }
 
-.page-break {
-    page-break-before: always;
-}
-.field-input {
-    width: 400px;
-    display: inline-block;
-}
-
 .table {
     width: 100% !important;
     border-collapse: collapse !important;

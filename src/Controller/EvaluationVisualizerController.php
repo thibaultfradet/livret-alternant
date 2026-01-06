@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Period;
+use App\Entity\User;
 use App\Form\NotifierEvaluationType;
 use App\Repository\ClassroomRepository;
 use App\Repository\PeriodRepository;
@@ -154,7 +155,6 @@ class EvaluationVisualizerController extends AbstractController
                 continue;
             }
             foreach ($classroom->getStudents() as $student) {
-                dump($student);
                 $tutorEval = $tutorEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
                 $ttmEval = $ttmEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
                 $studentEval = $studentEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);

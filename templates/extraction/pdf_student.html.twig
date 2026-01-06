@@ -1,0 +1,207 @@
+{% extends 'pdf.html.twig' %}
+
+{% block body %}
+
+<div style="padding:20px; font-family:Arial, sans-serif; font-size:12px; color:#333;">
+
+    <h2 style="margin-bottom:15px;">I. Acteurs et informations générales</h2>
+
+    {# --- Informations Alternant ---#}
+    <div class="section-header bg-beaupeyrat">1. INFORMATIONS ALTERNANT</div>
+    <div class="section-body border border-beaupeyrat">
+        <table class="info-table">
+            <tr>
+                <td>Section :</td>
+                <td><input type="text" class="field-input" value="{{ student.classroom.diploma.label|default('') }}" disabled></td>
+            </tr>
+            <tr>
+                <td>Nom Prénom :</td>
+                <td><input type="text" class="field-input" value="{{ (student.lastName ~ ' ' ~ student.firstName)|default('') }}" disabled></td>
+            </tr>
+            <tr>
+                <td>Email :</td>
+                <td><input type="email" class="field-input" value="{{ student.email|default('') }}" disabled></td>
+            </tr>
+        </table>
+    </div>
+
+    {# --- Informations Employeur ---#}
+    {% set tutorContract = student.studentContracts|first %}
+    {% set tutor = tutorContract ? tutorContract.tutor : null %}
+    <div class="section-body" style="border:1px solid var(--common-blue-beaupeyrat); border-radius:4px; margin-top:10px;">
+        <div class="section-header bg-beaupeyrat">2. INFORMATIONS EMPLOYEUR</div>
+        <table class="info-table">
+            <tr>
+                <td>Nom de l'entreprise :</td>
+                <td><input type="text" class="field-input" value="{{ tutor.companyName|default('') }}" disabled></td>
+            </tr>
+            <tr>
+                <td>Adresse de l'entreprise :</td>
+                <td><input type="text" class="field-input" value="{{ tutor.companyAddress|default('') }}" disabled></td>
+            </tr>
+            <tr>
+                <td>Nom du tuteur :</td>
+                <td><input type="text" class="field-input" value="{{ tutor.lastName ~ ' ' ~ tutor.firstName|default('') }}" disabled></td>
+            </tr>
+            <tr>
+                <td>Email du tuteur :</td>
+                <td><input type="text" class="field-input" value="{{ tutor.email|default('') }}" disabled></td>
+            </tr>
+            <tr>
+                <td>Dates du contrat :</td>
+                {% set contractDates = tutorContract ? tutorContract.dateDebutContract|date('d/m/Y') ~ ' - ' ~ tutorContract.dateFinContract|date('d/m/Y') : '' %}
+                <td><input type="text" class="field-input" value="{{ contractDates }}" disabled></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="page-break"></div>
+
+    {# --- Centre de formation ---#}
+    <div class="section-header bg-beaupeyrat">3. LE CENTRE DE FORMATION</div>
+    <div class="section-body border border-beaupeyrat">
+        <img src="file://{{ formationCenterPath }}" style="width:100%;" alt="Centre de formation">
+    </div>
+
+    <div class="page-break"></div>
+
+    {# --- Équipe pédagogique ---#}
+    <div class="section-body" style="border:1px solid var(--common-blue-beaupeyrat); border-radius:4px; margin-bottom:10px;">
+        <div class="section-header bg-beaupeyrat">4. Équipe pédagogique</div>
+        <img src="file://{{ ttmPath }}" style="width:100%;" alt="Equipe pédagogique">
+    </div>
+
+    <div class="page-break"></div>
+
+    {# --- Modalités du livret ---#}
+    <div>
+        <div class="section-header bg-beaupeyrat">5. MODALITÉS D'UTILISATION DU LIVRET</div>
+        <div class="section-body">
+            {{ termsContent|raw }}
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    {# --- Informations pédagogiques ---#}
+    <h2>II. Informations pédagogiques</h2>
+    <div class="section-header bg-beaupeyrat">Calendrier d'alternance</div>
+    <img src="file://{{ calendarPath }}" style="width:100%;" alt="Calendrier">
+
+    {# --- Suivi de la formation / évaluations ---#}
+    <h2>III. Suivi de la formation</h2>
+
+    {% for period in student.classroom.schoolYear.periods %}
+        <h3>Période {{ period.periodNumber }} - Du {{ period.startDate|date('d/m/Y') }} au {{ period.endDate|date('d/m/Y') }}</h3>
+
+        {% set tutorEvalsForPeriod = student.tutorEvaluationsReceived|filter(e => e.period == period) %}
+
+        {% if tutorEvalsForPeriod is empty %}
+            <div style="padding:10px; background-color:#f8f9fa; color:#6c757d; border:1px solid #e9ecef; border-radius:4px; margin-bottom:10px; text-align:center;">
+                Aucune évaluation enregistrée pour cette période.
+            </div>
+        {% else %}
+            {% for tutorEval in tutorEvalsForPeriod %}
+
+                {# --- Évaluation du comportement ---#}
+                <div class="card">
+                    <div class="card-header">APPRECIATION DU COMPORTEMENT AU TRAVAIL</div>
+                    <table style="border-collapse:collapse; width:100%;">
+                        {% for behaviorEval in tutorEval.behaviorEvaluation %}
+                            <tr>
+                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                    {{ behaviorEval.behaviorCriteria.label }}
+                                </td>
+                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                    <input type="text" class="field-input" value="{{ behaviorEval.behaviorLevel.label|default('') }}" disabled>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+
+                {# --- Évaluation des compétences ---#}
+                <div class="card">
+                    <div class="card-header">EVALUATION DES COMPETENCES AU REGARD DES OBJECTIFS DE LA FORMATION</div>
+                    {% for periodNumber, skillGroups in skillEvaluationsByPeriod %}
+                        {% if periodNumber == period.periodNumber %}
+                            {% for groupId, groupData in skillGroups %}
+                                <table style="border-collapse:collapse; width:100%; margin-bottom:10px;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" style="text-align:center; color:white; background-color:#4c8fba; padding:4px;">
+                                                {{ groupData.label }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for criteria in groupData.criteria %}
+                                            <tr>
+                                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                                    {{ criteria.label }}
+                                                </td>
+                                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
+                                                    <input type="text" class="field-input" value="{{ criteria.level|default('') }}" disabled>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {# --- Points forts / faibles / objectifs ---#}
+                <div class="card">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <tbody>
+                            <tr>
+                                <td style="width:25%; font-weight:bold; padding:10px; border:1px solid #ccc;">Points forts</td>
+                                <td style="padding:10px; border:1px solid #ccc;">{{ tutorEval.strengths|default('') }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:25%; font-weight:bold; padding:10px; border:1px solid #ccc;">Points faibles</td>
+                                <td style="padding:10px; border:1px solid #ccc;">{{ tutorEval.weaknesses|default('') }}</td>
+                            </tr>
+                            <tr>
+                                <td style="width:25%; font-weight:bold; padding:10px; border:1px solid #ccc;">Objectifs à atteindre à la prochaine période</td>
+                                <td style="padding:10px; border:1px solid #ccc;">{{ tutorEval.goals|default('') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            {% endfor %}
+
+            {# --- Remarques de l'étudiant ---#}
+            {% for studentEval in student.studentEvaluations %}
+                {% if studentEval.period == period %}
+                    <div class="remarks-card">
+                        <div class="remarks-header">Remarque de l'alternant et attendus</div>
+                        <div class="remarks-content">{{ studentEval.remarks }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            {# --- Remarques TTM ---#}
+            {% for ttmEval in student.TtmEvaluationsReceived %}
+                {% if ttmEval.period == period %}
+                   <div class="remarks-card">
+                        <div class="remarks-header">Remarques de l'équipe pédagogique et attendus</div>
+                        <div class="remarks-content">{{ ttmEval.remarks|default('Aucune remarque') }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+        {% endif %}
+
+        {% if not loop.last %}
+            <div class="page-break"></div>
+        {% endif %}
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
