@@ -34,54 +34,58 @@ class UserRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u');
 
-        // Tutor contract
         $qb->leftJoin('u.studentContracts', 'ts')
             ->addSelect('ts')
             ->leftJoin('ts.tutor', 'tutor')
             ->addSelect('tutor');
 
-
-        // Tutor Evaluations received
-        $qb->leftJoin('u.tutorEvaluationsReceived', 'te')
+        $qb->leftJoin(
+                'u.tutorEvaluationsReceived',
+                'te',
+                'WITH',
+                'te.period IN (
+                    SELECT p1.id FROM App\Entity\Period p1
+                    WHERE p1.schoolYear = :activeSchoolYearId
+                )'
+            )
             ->addSelect('te')
             ->leftJoin('te.skillEvaluation', 'tes')
             ->addSelect('tes')
             ->leftJoin('te.behaviorEvaluation', 'teb')
-            ->addSelect('teb')
-            ->leftJoin('te.period', 'tp')
-            ->addSelect('tp')
-            ->leftJoin('tp.schoolYear', 'sy_te')
-            ->addSelect('sy_te')
-            ->andWhere('sy_te.id = :activeSchoolYearId');
+            ->addSelect('teb');
 
-        // Student Evaluations
-        $qb->leftJoin('u.studentEvaluations', 'se')
-            ->addSelect('se')
-            ->leftJoin('se.period', 'sp')
-            ->addSelect('sp')
-            ->leftJoin('sp.schoolYear', 'sy_se')
-            ->addSelect('sy_se')
-            ->andWhere('sy_se.id = :activeSchoolYearId');
+        $qb->leftJoin(
+                'u.studentEvaluations',
+                'se',
+                'WITH',
+                'se.period IN (
+                    SELECT p2.id FROM App\Entity\Period p2
+                    WHERE p2.schoolYear = :activeSchoolYearId
+                )'
+            )
+            ->addSelect('se');
 
-        // TTMEvaluations
-        $qb->leftJoin('u.ttmEvaluationsReceived', 'tte')
-            ->addSelect('tte')
-            ->leftJoin('tte.period', 'tp_ttm')
-            ->addSelect('tp_ttm')
-            ->leftJoin('tp_ttm.schoolYear', 'sy_ttm')
-            ->addSelect('sy_ttm')
-            ->andWhere('sy_ttm.id = :activeSchoolYearId');
+        $qb->leftJoin(
+                'u.ttmEvaluationsReceived',
+                'tte',
+                'WITH',
+                'tte.period IN (
+                    SELECT p3.id FROM App\Entity\Period p3
+                    WHERE p3.schoolYear = :activeSchoolYearId
+                )'
+            )
+            ->addSelect('tte');
 
-        // Terms acceptance
-        $qb->leftJoin('u.termsAcceptances', 'ta')
-            ->addSelect('ta')
-            ->leftJoin('ta.schoolYear', 'sy_ta')
-            ->addSelect('sy_ta')
-            ->andWhere('sy_ta.id = :activeSchoolYearId');
+        $qb->leftJoin(
+                'u.termsAcceptances',
+                'ta',
+                'WITH',
+                'ta.schoolYear = :activeSchoolYearId'
+            )
+            ->addSelect('ta');
 
         $qb->where('u.id = :studentId')
             ->setParameter('studentId', $studentId)
-            ->andWhere('(sy_te.id = :activeSchoolYearId OR sy_se.id = :activeSchoolYearId OR sy_ttm.id = :activeSchoolYearId OR sy_ta.id = :activeSchoolYearId)')
             ->setParameter('activeSchoolYearId', $activeSchoolYearId);
 
         return $qb->getQuery()->getOneOrNullResult();

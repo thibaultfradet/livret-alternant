@@ -47,7 +47,19 @@
       </div>
     {% else %}
       <div class="w-100 text-center mt-4">
-        <p>Toutes vos périodes ont une évaluation étudiante ou sont en attente d'une évaluation par votre tuteur.</p>
+        {% if missingEvaluations is empty %}
+          {% if student.classroom and student.classroom.schoolYear %}
+            {% if not student.classroom.schoolYear.isActive %}
+              <p class="text-muted fst-italic">
+                Votre année scolaire n'est pas active. Aucune période n'est disponible pour l'évaluation.
+              </p>
+            {% else %}
+              <p class="text-muted fst-italic">
+              Toutes vos périodes ont une évaluation étudiante ou sont en attente d'une évaluation par votre tuteur.
+            </p>
+            {% endif %}
+          {% endif %}
+        {% endif %}      
       </div>
     {% endif %}
   </div>

@@ -3,24 +3,29 @@
 {% block title %}Calendrier et emploi du temps{% endblock %}
 
 {% block body %}
-<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
-    <div class="card shadow-lg w-100">
-        <div class="card-body">
-            {% if calendarFile or scheduleFile %}
+{% if hasData %}
+    <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
+        <div class="card shadow-lg w-100">
+            <div class="card-body">
+
                 {% if calendarFile %}
-                    <div class="mb-4 text-center">
-                        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Calendrier</h1>
-                        <img src="{{ asset(calendarFile) }}" alt="Calendrier" class="img-fluid rounded shadow-sm">
-                    </div>
+                    <h1 class="fw-bold text-primary mb-4 text-center">Calendrier</h1>
+                    <img src="{{ asset(calendarFile) }}" class="img-fluid rounded mb-5">
                 {% endif %}
+
                 {% if scheduleFile %}
-                    <div class="text-center">
-                        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Emploi du temps</h1>
-                        <img src="{{ asset(scheduleFile) }}" alt="Emploi du temps" class="img-fluid rounded shadow-sm">
-                    </div>
+                    <h1 class="fw-bold text-primary mb-4 text-center">Emploi du temps</h1>
+                    <img src="{{ asset(scheduleFile) }}" class="img-fluid rounded">
                 {% endif %}
-            {% endif %}
+
+            </div>
         </div>
     </div>
-</div>
+{% else %}
+    <div class="container text-center py-5">
+        <p class="text-muted fst-italic">
+            Aucun calendrier ou emploi du temps disponible pour le moment.
+        </p>
+    </div>
+{% endif %}
 {% endblock %}

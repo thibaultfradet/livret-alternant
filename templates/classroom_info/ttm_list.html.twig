@@ -3,20 +3,23 @@
 {% block title %}Liste de l'équipe pédagogique{% endblock %}
 
 {% block body %}
-<div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
-    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Liste de l'équipe pédagogique</h1>
-    <div class="card shadow-lg w-100" style="max-width: 900px;">
-        <div class="card-body p-3">
-            {% if teacherListFile %}
-                <div class="card mb-3">
-                    <div class="card-body p-2">
-                        <img src="{{ asset(teacherListFile) }}" alt="Logo" class="img-fluid w-100" style="max-width: 100%;">
-                    </div>
-                </div>
-            {% else %}
-                <p class="text-muted fst-italic">Non existant</p>
-            {% endif %}
+{% if hasData %}
+    <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
+        <h1 class="fw-bold text-primary mb-5 text-center">
+            Liste de l'équipe pédagogique
+        </h1>
+
+        <div class="card shadow-lg w-100" style="max-width: 900px;">
+            <div class="card-body p-3">
+                <img src="{{ asset(teacherListFile) }}" class="img-fluid w-100">
+            </div>
         </div>
     </div>
-</div>
+{% else %}
+    <div class="container text-center py-5">
+        <p class="text-muted fst-italic">
+            Aucune liste d'équipe pédagogique disponible.
+        </p>
+    </div>
+{% endif %}
 {% endblock %}

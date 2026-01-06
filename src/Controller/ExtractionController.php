@@ -27,7 +27,7 @@ final class ExtractionController extends AbstractController
 
         // Get the student with all related data
         $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
-        dump($student);
+
         // Student not found
         if (!$student) {
             throw $this->createNotFoundException('Student not found.');
@@ -35,13 +35,24 @@ final class ExtractionController extends AbstractController
 
        
         // formation center path
-        $formationCenterPath = sprintf('/uploads/general/formation-center-%d.png', $activeYear->getId());
+        $formationCenterImgPath = sprintf(
+            '/uploads/general/formation-center-%d.png',
+            $activeYear->getId()
+        );
 
-        //full teaching team path
-        $ttmPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
+        // full teaching team path
+        $ttmImgPath = sprintf(
+            '/uploads/classroom/teacher-list-%d.png',
+            $student->getClassroom()->getId()
+        );
 
+        // classroom calendar path
+        $calendarImgPath = sprintf(
+            '/uploads/classroom/calendar-%d.png',
+            $student->getClassroom()->getId()
+        );
 
-
+        $termsContent = $activeYear->getTermsContent();
 
         $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear,$student);
 
@@ -50,8 +61,10 @@ final class ExtractionController extends AbstractController
             'controller_name' => 'Extraction',
             'student' => $student,
             'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
-            'formationCenterPath' => $formationCenterPath,
-            'ttmPath' => $ttmPath,
+            'formationCenterPath' => $formationCenterImgPath,
+            'ttmPath' => $ttmImgPath,
+            'calendarPath' => $calendarImgPath,
+            'termsContent' => $termsContent,
             ]);
     }
 

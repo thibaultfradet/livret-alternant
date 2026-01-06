@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Period;
+use App\Entity\StudentEvaluation;
 use App\Entity\TutorEvaluation;
 use App\Entity\TTMEvaluation;
 use App\Entity\User;
@@ -222,37 +223,50 @@ final class EvaluationListController extends AbstractController
     #[Route('/evaluations/student', name: 'app_evaluation_list_student')]
     public function studentList(
         Security $security,
-        PeriodRepository $periodRepo,
         EntityManagerInterface $em
     ): Response {
 
         /** @var User $student */
         $student = $security->getUser();
 
-        // Récupère toutes les périodes de l'année scolaire active
-        $periods = $periodRepo->createQueryBuilder('p')
-            ->join('p.schoolYear', 'sy')
-            ->where('sy.active = true')
-            ->orderBy('p.startDate', 'ASC')
-            ->getQuery()
-            ->getResult();
+        // Safety checks: user, classroom and school year must exist
+        $schoolYear = $student?->getClassroom()?->getSchoolYear();
+
+        if (!$schoolYear || !$schoolYear->isActive()) {
+            // If no school year or the year is not active, return empty list
+            return $this->render('evaluation/list_student.html.twig', [
+                'student' => $student,
+                'missingEvaluations' => [],
+            ]);
+        }
+
+        // Get periods from the student's classroom school year
+        $periods = $schoolYear->getPeriods()->toArray();
+
+        // Sort periods by start date
+        usort($periods, fn($a, $b) => $a->getStartDate() <=> $b->getStartDate());
 
         $missingEvaluations = [];
 
         foreach ($periods as $period) {
-            // Vérifie si une évaluation du tuteur existe déjà
-            $alreadyTutorEvaluation = $em->getRepository(\App\Entity\TutorEvaluation::class)->findOneBy([
-                'student' => $student,
-                'period'  => $period,
-            ]);
 
-            // Vérifie si l’étudiant a déjà fait son évaluation
-            $alreadyStudentEvaluation = $em->getRepository(\App\Entity\StudentEvaluation::class)->findOneBy([
-                'student' => $student,
-                'period'  => $period,
-            ]);
+            // Check if tutor evaluation exists
+            $alreadyTutorEvaluation = $em
+                ->getRepository(TutorEvaluation::class)
+                ->findOneBy([
+                    'student' => $student,
+                    'period'  => $period,
+                ]);
 
-            // On ajoute la période uniquement si le tuteur a évalué mais pas encore l’étudiant
+            // Check if student evaluation exists
+            $alreadyStudentEvaluation = $em
+                ->getRepository(StudentEvaluation::class)
+                ->findOneBy([
+                    'student' => $student,
+                    'period'  => $period,
+                ]);
+
+            // Add period only if tutor evaluated but student has not
             if ($alreadyTutorEvaluation && !$alreadyStudentEvaluation) {
                 $missingEvaluations[] = $period;
             }

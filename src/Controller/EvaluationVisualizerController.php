@@ -128,7 +128,7 @@ class EvaluationVisualizerController extends AbstractController
         StudentEvaluationRepository $studentEvalRepo,
         TutorEvaluationRepository $tutorEvalRepo,
         TTMEvaluationRepository $ttmEvalRepo,
-        string $classroomId = null
+        ?string $classroomId = null
     ): array {
         $periodId = $request->query->get('period');
         $user = $this->getUser(); 
@@ -154,6 +154,7 @@ class EvaluationVisualizerController extends AbstractController
                 continue;
             }
             foreach ($classroom->getStudents() as $student) {
+                dump($student);
                 $tutorEval = $tutorEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
                 $ttmEval = $ttmEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
                 $studentEval = $studentEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);

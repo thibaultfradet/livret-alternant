@@ -119,7 +119,7 @@ class ClassroomController extends AbstractController
                 if (!in_array($calendarFile->getMimeType(), $allowedImageTypes)) {
                     $this->addFlash('error', 'Le fichier Calendrier doit être une image (JPG, PNG, GIF, WebP).');
                 } else {
-                    $newFilename = sprintf('calendar-%d.%s', $id, $calendarFile->guessExtension());
+                    $newFilename = sprintf('calendar-%d.%s', $id, "png");
                     $calendarFile->move($storagePath, $newFilename);
                     $this->addFlash('success', 'Calendrier mis à jour.');
                     $this->sendUpdateEmails($id, $mailer, $em, 'Calendrier');
@@ -131,7 +131,7 @@ class ClassroomController extends AbstractController
                 if (!in_array($scheduleFile->getMimeType(), $allowedImageTypes)) {
                     $this->addFlash('error', 'Le fichier Emploi du temps doit être une image (JPG, PNG, GIF, WebP).');
                 } else {
-                    $newFilename = sprintf('schedule-%d.%s', $id, $scheduleFile->guessExtension());
+                    $newFilename = sprintf('schedule-%d.%s', $id, "png");
                     $scheduleFile->move($storagePath, $newFilename);
                     $this->addFlash('success', 'Emploi du temps mis à jour.');
                     $this->sendUpdateEmails($id, $mailer, $em, 'Emploi du temps');
@@ -143,7 +143,7 @@ class ClassroomController extends AbstractController
                 if (!in_array($teacherListFile->getMimeType(), $allowedImageTypes)) {
                     $this->addFlash('error', 'Le fichier Liste des professeurs doit être une image (JPG, PNG, GIF, WebP).');
                 } else {
-                    $newFilename = sprintf('teacher-list-%d.%s', $id, $teacherListFile->guessExtension());
+                    $newFilename = sprintf('teacher-list-%d.%s', $id, "png");
                     $teacherListFile->move($storagePath, $newFilename);
                     $this->addFlash('success', 'Liste des professeurs mis à jour.');
                 }
@@ -157,9 +157,9 @@ class ClassroomController extends AbstractController
         }
 
         // Prepare file paths for display
-        $calendarPath = sprintf('/uploads/classroom/calendar-%d.jpg', $id);
-        $schedulePath = sprintf('/uploads/classroom/schedule-%d.jpg', $id);
-        $teacherListPath = sprintf('/uploads/classroom/teacher-list-%d.jpg', $id);
+        $calendarPath = sprintf('/uploads/classroom/calendar-%d.png', $id);
+        $schedulePath = sprintf('/uploads/classroom/schedule-%d.png', $id);
+        $teacherListPath = sprintf('/uploads/classroom/teacher-list-%d.png', $id);
 
         return $this->render('classroom/files.html.twig', [
             'id' => $id,
