@@ -132,26 +132,7 @@
     </div>
     <div>
          <p>
-            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
-            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
-            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
-            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
-            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
-            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
-            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
-            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
-            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
-            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
-            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
-            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
-            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
-            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
-            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
-            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
-            Lorem ipsum dolor sit amet, A galisum iusto qui beatae esse rem debitis unde sed accusantium
-            facilis 33 libero placeat 33 tempora asperiores a similique voluptatem. Ab omnis unde ratione
-            et eaque iste id itaque voluptatem sit minus est distinctio recusandae. Aut maiores earum et
-            provident voluptatem voluptatum molestiae. Quo aut tenetur non distinctio. <br><br>
+            {{ termsContent|raw }}
         </p>
     </div>
     <table class="table table-bordered">
@@ -186,7 +167,7 @@
 {# --- Calendar / schedule --- #}
 <div>
     <h2 class="mb-3">II. Informations pédagogiques</h2>
-    <img src="/uploads/classroom/calendar-{{ student.classroom.id }}.png" style="width:100%;">
+    <img src="{{ asset(ttmPath) }}" style="width:100%;">
 </div>
 
 
@@ -340,22 +321,35 @@
                     {% set ttmEval = student.TtmEvaluationsReceived|filter(e => e.period == period)|first %}
 
                     <tr>
-                        <td class="text-center" style="border:1px solid #000; padding:4px;">Tuteur</td>
-                        <td class="text-center" style="border:1px solid #000; padding:4px;">
-                            A validé les données le  {{ tutorEval ? tutorEval.validationDate|date('d/m/Y') : 'Non validé' }}
-                        </td>
-                    </tr>
-                    <tr>
                         <td class="text-center" style="border:1px solid #000; padding:4px;">Alternant</td>
                         <td class="text-center" style="border:1px solid #000; padding:4px;">
-                        A validé les données le  {{ studentEval ? studentEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                            {% if studentEval and studentEval.validationDate %}
+                                A validé les données le {{ studentEval.validationDate|date('d/m/Y') }}
+                            {% else %}
+                                Non validé
+                            {% endif %}
                         </td>
                     </tr>
-                    
+
+                    <tr>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">Tuteur</td>
+                        <td class="text-center" style="border:1px solid #000; padding:4px;">
+                            {% if tutorEval and tutorEval.validationDate %}
+                                A validé les données le {{ tutorEval.validationDate|date('d/m/Y') }}
+                            {% else %}
+                                Non validé
+                            {% endif %}
+                        </td>
+                    </tr>
+
                     <tr>
                         <td class="text-center" style="border:1px solid #000; padding:4px;">Équipe pédagogique</td>
                         <td class="text-center" style="border:1px solid #000; padding:4px;">
-                            A validé les données le {{ ttmEval ? ttmEval.validationDate|date('d/m/Y') : 'Non validé' }}
+                            {% if ttmEval and ttmEval.validationDate %}
+                                A validé les données le {{ ttmEval.validationDate|date('d/m/Y') }}
+                            {% else %}
+                                Non validé
+                            {% endif %}
                         </td>
                     </tr>
                 </tbody>
