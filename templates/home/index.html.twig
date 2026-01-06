@@ -1,15 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Bienvenue sur le livret de l'alternant{% endblock %}
+{% block title %}
+    {% if is_granted('ROLE_TUTOR') %}
+        Bienvenue sur le livret du tuteur
+    {% else %}
+        Bienvenue sur le livret de l'alternant
+    {% endif %}
+{% endblock %}
 
 {% block body %}
 <div class="page-body d-flex ">
   <div class="container text-center py-6 d-flex flex-column gap-4">
-    {# --- Navigation Cards --- #}
 
     {# --- Page Title --- #}
     <h1 class="fw-bold text-primary mb-5 display-4 text-center">
-      Bienvenue sur le livret de l'alternant
+      {% if is_granted('ROLE_TUTOR') %}
+        Bienvenue sur le livret du tuteur
+      {% else %}
+        Bienvenue sur le livret de l'alternant
+      {% endif %}
     </h1>
 
     {# --- Logo --- #}
@@ -22,7 +31,7 @@
     {# --- Cards Section --- #}
     <div class="row g-4 justify-content-center">
 
-      {# Auto-évaluation #}
+      {# Auto-évaluation / Évaluations à remplir #}
       <div class="col-sm-6 col-md-4 col-lg-3">
         <a href="#" class="card card-link h-100">
           <div class="card-body d-flex flex-column align-items-center justify-content-center">
@@ -39,14 +48,25 @@
                 <path d="M20 18v.01" />
               </svg>
             </span>
-            <h3 class="card-title fw-bold">Auto-évaluation</h3>
-            <p class="text-secondary">M'évaluer sur une période</p>
+            <h3 class="card-title fw-bold">
+              {% if is_granted('ROLE_TUTOR') %}
+                Évaluations des étudiants
+              {% else %}
+                Auto-évaluation
+              {% endif %}
+            </h3>
+            <p class="text-secondary">
+              {% if is_granted('ROLE_TUTOR') %}
+                Évaluer vos alternants pour une période
+              {% else %}
+                M'évaluer sur une période
+              {% endif %}
+            </p>
           </div>
         </a>
       </div>
 
-
-      {# Équipe pédagogique #}
+      {# Équipe pédagogique / Liste alternants #}
       <div class="col-sm-6 col-md-4 col-lg-3">
         <a href="#" class="card card-link h-100">
           <div class="card-body d-flex flex-column align-items-center justify-content-center">
@@ -59,13 +79,25 @@
                 <path d="M3 21v-2a4 4 0 0 1 4 -4h6a4 4 0 0 1 4 4v2" />
               </svg>
             </span>
-            <h3 class="card-title fw-bold">Équipe pédagogique</h3>
-            <p class="text-secondary">Voir la liste des membres</p>
+            <h3 class="card-title fw-bold">
+              {% if is_granted('ROLE_TUTOR') %}
+                Mes alternants
+              {% else %}
+                Équipe pédagogique
+              {% endif %}
+            </h3>
+            <p class="text-secondary">
+              {% if is_granted('ROLE_TUTOR') %}
+                Voir la liste des alternants
+              {% else %}
+                Voir la liste des membres
+              {% endif %}
+            </p>
           </div>
         </a>
       </div>
 
-      {# Calendrier & EDT (pour les étudiants) #}
+      {# Calendrier / EDT (optionnel pour tuteur aussi) #}
       <div class="col-sm-6 col-md-4 col-lg-3">
         <a href="#" class="card card-link h-100">
           <div class="card-body d-flex flex-column align-items-center justify-content-center">
@@ -79,8 +111,20 @@
                 <path d="M8 15h2v2h-2z" />
               </svg>
             </span>
-            <h3 class="card-title fw-bold">Calendrier & EDT</h3>
-            <p class="text-secondary">Consulter mes événements</p>
+            <h3 class="card-title fw-bold">
+              {% if is_granted('ROLE_TUTOR') %}
+                Calendrier & EDT
+              {% else %}
+                Calendrier & EDT
+              {% endif %}
+            </h3>
+            <p class="text-secondary">
+              {% if is_granted('ROLE_TUTOR') %}
+                Consulter les périodes et emplois du temps des alternants
+              {% else %}
+                Consulter mes événements
+              {% endif %}
+            </p>
           </div>
         </a>
       </div>
