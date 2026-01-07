@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class TutorEvaluationSkillFormType extends AbstractType
 {
@@ -18,12 +19,23 @@ class TutorEvaluationSkillFormType extends AbstractType
             ->add('skillCriteria', EntityType::class, [
                 'class' => SkillCriteria::class,
                 'choice_label' => 'label',
+                'required' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de sélectionner une compétence.',
+                    ]),
+                ],
             ])
             ->add('skillLevel', EntityType::class, [
                 'class' => SkillLevel::class,
                 'choice_label' => 'label',
                 'placeholder' => 'Sélectionnez un niveau',
-
+                'required' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de sélectionner un niveau de compétence.',
+                    ]),
+                ],
             ]);
     }
 

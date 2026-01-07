@@ -152,7 +152,6 @@ final class EvaluationListController extends AbstractController
 
         
 
-        $ttm = $this->getUser();
         $qb = $userRepo->createQueryBuilder('s')
             ->join('s.classroom', 'c')
             ->join('c.schoolYear', 'sy') // join the school year
@@ -173,7 +172,7 @@ final class EvaluationListController extends AbstractController
         $students = $qb->orderBy('s.lastName', 'ASC')
                     ->getQuery()
                     ->getResult();
-
+                    
         foreach ($students as $student) {
             $already = $em->getRepository(TTMEvaluation::class)->findOneBy([
                 'student' => $student,

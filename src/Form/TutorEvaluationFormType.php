@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class TutorEvaluationFormType extends AbstractType
 {
@@ -28,15 +29,35 @@ class TutorEvaluationFormType extends AbstractType
             ])
             ->add('strengths', TextareaType::class, [
                 'label' => 'Forces',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de renseigner les forces.',
+                    ]),
+                ],
             ])
             ->add('weaknesses', TextareaType::class, [
                 'label' => 'Faiblesses',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de renseigner les faiblesses.',
+                    ]),
+                ],
             ])
             ->add('goals', TextareaType::class, [
                 'label' => 'Objectifs',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de renseigner les objectifs.',
+                    ]),
+                ],
             ])
             ->add('remarks', TextareaType::class, [
                 'label' => 'Remarques',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Merci de renseigner les remarques.',
+                    ]),
+                ],
             ]);
     }
 
