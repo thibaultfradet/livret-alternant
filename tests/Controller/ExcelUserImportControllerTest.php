@@ -9,7 +9,7 @@ final class ExcelUserImportControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/excel/user/import');
+        $client->request('GET', '/import-user');
 
         self::assertResponseIsSuccessful();
     }
