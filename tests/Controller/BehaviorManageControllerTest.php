@@ -9,7 +9,7 @@ final class BehaviorManageControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/behavior/manage');
+        $client->request('GET', '/behavior-manage');
 
         self::assertResponseIsSuccessful();
     }

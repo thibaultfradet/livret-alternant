@@ -9,7 +9,7 @@ final class ExtractionControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/extraction');
+        $client->request('GET', '/extraction/{student}');
 
         self::assertResponseIsSuccessful();
     }

@@ -9,7 +9,7 @@ final class SkillManageControllerTest extends WebTestCase
     public function testIndex(): void
     {
         $client = static::createClient();
-        $client->request('GET', '/skill/manage');
+        $client->request('GET', '/skill-manage');
 
         self::assertResponseIsSuccessful();
     }
