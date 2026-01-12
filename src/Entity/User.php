@@ -110,6 +110,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    public function getCleanedRoles() : array
+    {
+        return array_diff($this->roles, array("ROLE_USER"));
+    }
+
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;

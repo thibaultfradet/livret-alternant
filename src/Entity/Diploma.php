@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\DiplomaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DiplomaRepository::class)]
@@ -32,6 +33,9 @@ class Diploma
 
     #[ORM\Column(length: 255)]
     private ?string $code = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $disabled_at = null;
 
     public function __construct()
     {
@@ -124,6 +128,18 @@ class Diploma
     public function setCode(string $code): static
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function getDisabledAt(): ?\DateTime
+    {
+        return $this->disabled_at;
+    }
+
+    public function setDisabledAt(?\DateTime $disabled_at): static
+    {
+        $this->disabled_at = $disabled_at;
 
         return $this;
     }

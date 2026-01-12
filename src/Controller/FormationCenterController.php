@@ -35,7 +35,7 @@ class FormationCenterController extends AbstractController
                 $allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
                 if (!in_array($uploadedFile->getMimeType(), $allowedImageTypes)) {
-                    $this->addFlash('error', 'Le fichier doit être une image (JPG, PNG, GIF, WebP).');
+                    $this->addFlash('error', 'Le fichier doit être une image (JPEG, JPG, PNG, GIF, WebP).');
                 } else {
                     // Generate new file name (formation-center-ID.extension)
                     $newFilename = sprintf('formation-center-%d.%s', $activeSchoolYear->getId(), "png");

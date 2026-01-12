@@ -49,6 +49,9 @@ class SchoolYear
     #[ORM\Column(type: Types::TEXT)]
     private ?string $termsContent = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $disabled_at = null;
+
     public function __construct()
     {
         $this->classrooms = new ArrayCollection();
@@ -200,6 +203,18 @@ class SchoolYear
     public function setTermsContent(string $termsContent): static
     {
         $this->termsContent = $termsContent;
+
+        return $this;
+    }
+
+    public function getDisabledAt(): ?\DateTime
+    {
+        return $this->disabled_at;
+    }
+
+    public function setDisabledAt(?\DateTime $disabled_at): static
+    {
+        $this->disabled_at = $disabled_at;
 
         return $this;
     }

@@ -122,7 +122,7 @@ class EvaluationVisualizerController extends AbstractController
     
 
     // return the data based on the request (get params) to filter with period and classroom
-  private function getEvaluationData(
+    private function getEvaluationData(
         Request $request,
         ClassroomRepository $classroomRepo,
         PeriodRepository $periodRepo,

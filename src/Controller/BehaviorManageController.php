@@ -148,7 +148,7 @@ final class BehaviorManageController extends AbstractController
         $em->persist($behavior);
         $em->flush();
 
-        $this->addFlash('success', 'Le comportement a été désactivé avec succès.');
+        $this->addFlash('success', 'Le comportement a été supprimé avec succès.');
 
         return $this->redirectToRoute('app_behavior_manage');
     }

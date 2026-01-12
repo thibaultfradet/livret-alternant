@@ -146,7 +146,7 @@ class ClassroomController extends AbstractController
             // Handle calendar image upload
             if ($calendarFile) {
                 if (!in_array($calendarFile->getMimeType(), $allowedImageTypes)) {
-                    $this->addFlash('error', 'Le fichier Calendrier doit être une image (JPG, PNG, GIF, WebP).');
+                    $this->addFlash('error', 'Le fichier Calendrier doit être une image (JPEG, JPG, PNG, GIF, WebP).');
                 } else {
                     $newFilename = sprintf('calendar-%d.%s', $id, "png");
                     $calendarFile->move($storagePath, $newFilename);
@@ -158,7 +158,7 @@ class ClassroomController extends AbstractController
             // Handle schedule image upload
             if ($scheduleFile) {
                 if (!in_array($scheduleFile->getMimeType(), $allowedImageTypes)) {
-                    $this->addFlash('error', 'Le fichier Emploi du temps doit être une image (JPG, PNG, GIF, WebP).');
+                    $this->addFlash('error', 'Le fichier Emploi du temps doit être une image (JPEG , JPG, PNG, GIF, WebP).');
                 } else {
                     $newFilename = sprintf('schedule-%d.%s', $id, "png");
                     $scheduleFile->move($storagePath, $newFilename);
@@ -170,7 +170,7 @@ class ClassroomController extends AbstractController
 
             if ($teacherListFile) {
                 if (!in_array($teacherListFile->getMimeType(), $allowedImageTypes)) {
-                    $this->addFlash('error', 'Le fichier Liste des professeurs doit être une image (JPG, PNG, GIF, WebP).');
+                    $this->addFlash('error', 'Le fichier Liste des professeurs doit être une image (JPEG, JPG, PNG, GIF, WebP).');
                 } else {
                     $newFilename = sprintf('teacher-list-%d.%s', $id, "png");
                     $teacherListFile->move($storagePath, $newFilename);

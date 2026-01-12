@@ -130,7 +130,7 @@ final class UserController extends AbstractController
         $user->setDisabledAt(new \DateTimeImmutable());
         $entityManager->flush();
 
-        $this->addFlash('success', 'L’utilisateur a été désactivé avec succès.');
+        $this->addFlash('success', 'L’utilisateur a été supprimé avec succès.');
 
         return $this->redirectToRoute('app_user_index');
     }
