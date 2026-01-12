@@ -7,18 +7,30 @@
 {% block body %}
     {% set addLink = '' %}
     {% set addTxt = '' %}
+    {% set dropdownLink = '' %}
+    {% set dropdownContent = '' %}
     {% set tabContent = '' %}
 
-    {# Set tab content and add links depending on currentTab #}
+    {# Define add buttons / dropdowns based on currentTab #}
     {% if currentTab == 'classroom' %}
+        {% set addTxt = 'Nouvelle classe' %}
+        {% set addLink = path('app_classroom_new') %}
         {% set tabContent = 'trainings/parameters/tab_classroom.html.twig' %}
     {% elseif currentTab == 'diploma' %}
+        {% set addTxt = 'Nouveau diplôme' %}
+        {% set addLink = path('app_diploma_new') %}
         {% set tabContent = 'trainings/parameters/tab_diploma.html.twig' %}
     {% elseif currentTab == 'period' %}
+        {% set addTxt = 'Nouvelle période' %}
+        {% set addLink = path('app_period_new') %}
         {% set tabContent = 'trainings/parameters/tab_period.html.twig' %}
     {% elseif currentTab == 'schoolYear' %}
+        {% set addTxt = 'Nouvelle année scolaire' %}
+        {% set addLink = path('app_school_year_new') %}
         {% set tabContent = 'trainings/parameters/tab_schoolYear.html.twig' %}
     {% elseif currentTab == 'user' %}
+        {% set addTxt = 'Nouvel utilisateur' %}
+        {% set addLink = path('app_user_new') %}
         {% set tabContent = 'trainings/parameters/tab_user.html.twig' %}
     {% endif %}
 
@@ -26,9 +38,7 @@
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
-                    <h1 class="">
-                        Paramétrage
-                    </h1>
+                    <h1>Paramétrage</h1>
                 </div>
             </div>
         </div>
@@ -54,4 +64,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts_bottom %}
+     {{ encore_entry_script_tags('datatable') }}
 {% endblock %}
