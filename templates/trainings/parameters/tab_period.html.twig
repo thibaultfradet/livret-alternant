@@ -1,0 +1,61 @@
+<div class="table-responsive">
+    <table class="table card-table table-vcenter text-nowrap datatable" id="periodsTable" style="width:100%">
+        <thead>
+            <tr>
+                <th>Numéro de période</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th class="text-end w-1">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for period in periods %}
+                <tr>
+                    <td class="text-center">{{ period.periodNumber }}</td>
+                    <td>{{ period.startDate ? period.startDate|date('d/m/Y') : '-' }}</td>
+                    <td>{{ period.endDate ? period.endDate|date('d/m/Y') : '-' }}</td>
+                    <td class="text-center">
+                        <div class="btn-list d-flex flex-nowrap justify-content-center gap-1">
+                            <!-- View -->
+                            <a href="{{ path('app_period_show', {'id': period.id}) }}" class="btn btn-primary btn-icon" title="Voir">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zm-8 4a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                                    <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/>
+                                </svg>
+                            </a>
+
+                            <!-- Edit -->
+                            <a href="{{ path('app_period_edit', {'id': period.id}) }}" class="btn btn-warning btn-icon" title="Modifier">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 12.5 5.293 10.707 3.5 11.207 3zM3 10.707V13h2.293l9.147-9.146-2.293-2.293L3 10.707z"/>
+                                </svg>
+                            </a>
+
+                            <!-- Disable -->
+                            <form class="d-inline" method="post" action="{{ path('app_period_disable', {'id': period.id}) }}" onsubmit="return confirmDisable();">
+                                <input type="hidden" name="_token" value="{{ csrf_token('disable' ~ period.id) }}">
+                                <button type="submit" class="btn btn-danger btn-icon" title="Désactiver">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0-1A6 6 0 1 1 8 2a6 6 0 0 1 0 12z"/>
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L11 10.293a.5.5 0 0 1-.708.708L4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">Aucune période trouvée</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function confirmDisable() {
+    return confirm("⚠️ Êtes-vous sûr de vouloir désactiver cette période ?") &&
+           confirm("Cette action est irréversible. Confirmez à nouveau pour continuer.");
+}
+</script>

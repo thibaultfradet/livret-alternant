@@ -78,4 +78,29 @@ final class DiplomaController extends AbstractController
 
         return $this->redirectToRoute('app_diploma_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+    #[Route('/disable/{id}', name: 'app_diploma_disable')]
+    public function disable(Diploma $diploma, EntityManagerInterface $em)
+    {
+        if (!$diploma) {
+            $this->addFlash('error', 'Le diplôme est introuvable.');
+            return $this->redirectToRoute('training_parameters_diploma');
+        }
+
+        if ($diploma->getDisabledAt() !== null) {
+            $this->addFlash('warning', 'Ce diplôme est déjà désactivé.');
+            return $this->redirectToRoute('training_parameters_diploma');
+        }
+
+        // Disable the diploma
+        $diploma->setDisabledAt(new \DateTime());
+
+        $em->persist($diploma);
+        $em->flush();
+
+        $this->addFlash('success', 'Le diplôme a été supprimé avec succès.');
+
+        return $this->redirectToRoute('training_parameters_period');
+    }
 }

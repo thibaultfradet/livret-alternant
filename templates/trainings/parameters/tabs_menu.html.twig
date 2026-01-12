@@ -1,0 +1,36 @@
+<ul class="nav nav-pills card-header-pills d-print-none" role="tablist">
+     <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_classroom') }}"
+           class="nav-link {{ (currentTab == 'classroom') ? 'active' : '' }}">
+            Les classes
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_diploma') }}"
+           class="nav-link {{ (currentTab == 'diploma') ? 'active' : '' }}">
+            Les diplômes
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_period') }}"
+           class="nav-link {{ (currentTab == 'period') ? 'active' : '' }}">
+            Les périodes
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_schoolYear') }}"
+           class="nav-link {{ (currentTab == 'schoolYear') ? 'active' : '' }}">
+            Les années scolaires
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_user') }}"
+           class="nav-link {{ (currentTab == 'user') ? 'active' : '' }}">
+            Les utilisateurs
+        </a>
+    </li>
+</ul>

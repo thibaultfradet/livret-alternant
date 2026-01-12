@@ -85,4 +85,28 @@ final class PeriodController extends AbstractController
 
         return $this->redirectToRoute('app_period_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/disable/{id}', name: 'app_period_disable')]
+    public function disable(Period $period, EntityManagerInterface $em)
+    {
+        if (!$period) {
+            $this->addFlash('error', 'La période est introuvable.');
+            return $this->redirectToRoute('training_parameters_period');
+        }
+
+        if ($period->getDisabledAt() !== null) {
+            $this->addFlash('warning', 'Cette période est déjà désactivée.');
+            return $this->redirectToRoute('training_parameters_period');
+        }
+
+        // Disable the period
+        $period->setDisabledAt(new \DateTime());
+
+        $em->persist($period);
+        $em->flush();
+
+        $this->addFlash('success', 'La période a été supprimé avec succès.');
+
+        return $this->redirectToRoute('training_parameters_period');
+    }
 }

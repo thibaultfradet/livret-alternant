@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Paramétrage
+{% endblock %}
+
+{% block body %}
+    {% set addLink = '' %}
+    {% set addTxt = '' %}
+    {% set tabContent = '' %}
+
+    {# Set tab content and add links depending on currentTab #}
+    {% if currentTab == 'classroom' %}
+        {% set tabContent = 'trainings/parameters/tab_classroom.html.twig' %}
+    {% elseif currentTab == 'diploma' %}
+        {% set tabContent = 'trainings/parameters/tab_diploma.html.twig' %}
+    {% elseif currentTab == 'period' %}
+        {% set tabContent = 'trainings/parameters/tab_period.html.twig' %}
+    {% elseif currentTab == 'schoolYear' %}
+        {% set tabContent = 'trainings/parameters/tab_schoolYear.html.twig' %}
+    {% elseif currentTab == 'user' %}
+        {% set tabContent = 'trainings/parameters/tab_user.html.twig' %}
+    {% endif %}
+
+    <div class="page-header d-print-none">
+        <div class="container-xl">
+            <div class="row g-2 align-items-center">
+                <div class="col">
+                    <h1 class="">
+                        Paramétrage
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-body">
+        <div class="container-xl">
+            <div class="row row-deck row-cards">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            {% include('trainings/parameters/tabs_menu.html.twig') %}
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active show">
+                                    {% include(tabContent) %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

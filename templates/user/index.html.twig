@@ -69,16 +69,16 @@
                                         <span class="badge text-white bg-success text-white">Actif</span>
                                     {% endif %}
                                 </td>
-                                <td>
+                                <td class="d-flex flex-column gap-1">
                                     {% if 'ROLE_ADMIN' in app.user.roles %}
                                         <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-info text-white me-1">Voir</a>
                                         <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-outline-primary me-1">Modifier</a>
 
                                         {% if not user.disabledAt %}
-                                            <form method="post" action="{{ path('app_user_disable', {'id': user.id}) }}" 
+                                            <form class="w-100 me-1" method="post" action="{{ path('app_user_disable', {'id': user.id}) }}" 
                                                   style="display:inline;" onsubmit="return confirmDisable();">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('disable' ~ user.id) }}">
-                                                <button class="btn btn-outline-danger">Désactiver</button>
+                                                <button class="btn btn-danger w-100 me-1">Désactiver</button>
                                             </form>
                                         {% endif %}
                                     {% else %}

@@ -78,4 +78,29 @@ final class SchoolYearController extends AbstractController
 
         return $this->redirectToRoute('app_school_year_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+    #[Route('/disable/{id}', name: 'app_school_year_disable')]
+    public function disable(SchoolYear $schoolYear, EntityManagerInterface $em)
+    {
+        if (!$schoolYear) {
+            $this->addFlash('error', "L'année scolaire est introuvable.");
+            return $this->redirectToRoute('training_parameters_schoolYear');
+        }
+
+        if ($schoolYear->getDisabledAt() !== null) {
+            $this->addFlash('warning', 'Cette année scolaire est déjà désactivé.');
+            return $this->redirectToRoute('training_parameters_schoolYear');
+        }
+
+        // Disable the school year
+        $schoolYear->setDisabledAt(new \DateTime());
+
+        $em->persist($schoolYear);
+        $em->flush();
+
+        $this->addFlash('success', "L'année scolaire a été supprimé avec succès.");
+
+        return $this->redirectToRoute('training_parameters_schoolYear');
+    }
 }
