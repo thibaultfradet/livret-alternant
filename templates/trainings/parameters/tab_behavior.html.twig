@@ -1,0 +1,91 @@
+<div class="table-responsive">
+  <table
+    class="table card-table table-vcenter text-nowrap datatable"
+    id="behavior-table"
+    style="width:100%"
+  >
+    <thead>
+      <tr>
+        <th>Libellé</th>
+        <th>Niveau 1</th>
+        <th>Niveau 2</th>
+        <th>Niveau 3</th>
+        <th>Niveau 4</th>
+        <th>Niveau 5</th>
+        <th class="text-center w-1">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for behavior in behaviors %}
+        <tr class="{% if behavior.disabledAt %}table-danger{% endif %}">
+          <td><strong>{{ behavior.label }}</strong></td>
+
+          {% set levels = {} %}
+          {% for level in behavior.behaviorLevels %}
+            {% if level.disabledAt is null %}
+              {% set levels = levels|merge({
+                (level.levelNumber): {
+                  'id': level.id,
+                  'label': level.label
+                }
+              }) %}
+            {% endif %}
+          {% endfor %}
+
+          {% for i in 0..4 %}
+            <td>
+              {{ levels[i] is defined ? levels[i].label : '-' }}
+
+              {% if levels[i] is defined %}
+                <a
+                  href="{{ path('app_behavior_level_replace', { id: levels[i].id }) }}"
+                  class="text-warning ms-2"
+                  title="Remplacer ce niveau"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14">
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m7.5 9l-3 .54L5 6.5L10.73.79a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1 0 1.42Z"/>
+                      <path d="M12 9.5v3a1 1 0 0 1-1 1H1.5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h3"/>
+                    </g>
+                  </svg>
+                </a>
+              {% endif %}
+            </td>
+          {% endfor %}
+
+          <td class="text-center">
+            <div class="btn-list d-flex flex-nowrap justify-content-center gap-1">
+              {% if behavior.disabledAt is null %}
+                <form
+                  method="post"
+                  action="{{ path('app_behavior_disable', { id: behavior.id }) }}"
+                  onsubmit="return confirmDisableBehavior();"
+                >
+                  <button
+                    type="submit"
+                    class="btn btn-danger btn-icon"
+                    title="Désactiver"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0-1A6 6 0 1 1 8 2a6 6 0 0 1 0 12z"/>
+                      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L11 10.293a.5.5 0 0 1-.708.708L4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                  </button>
+                </form>
+              {% else %}
+                <span class="text-muted">Désactivé</span>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-muted">
+            Aucun critère de comportement trouvé
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

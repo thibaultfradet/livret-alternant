@@ -28,6 +28,13 @@
     </li>
 
     <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_behavior') }}"
+           class="nav-link {{ (currentTab == 'behavior') ? 'active' : '' }}">
+            Les comportements
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
         <a href="{{ path('training_parameters_user') }}"
            class="nav-link {{ (currentTab == 'user') ? 'active' : '' }}">
             Les utilisateurs

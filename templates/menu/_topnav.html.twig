@@ -31,9 +31,20 @@
         'links': [
             { 'label': 'Validations des livrets', 'path': 'app_evaluation_visualizer' },
             { 'label': 'Évaluer un alternant (livret)', 'path': 'app_evaluation_list_ttm' },
-            { 'label': 'Paramétrage', 'path': 'training_parameters' },
-            { 'label': 'Compétences', 'path': 'app_skill_management' },
-            { 'label': 'Centre de formation','path':'app_formation_center_file' },
+            {
+                'label': 'Gestion',
+                'is_dropdown': true,
+                'links': [
+                    { 'label': 'Classes', 'path': 'app_classroom_index' },
+                    { 'label': 'Compétences', 'path': 'app_skill_management' },
+                    { 'label': 'Comportements', 'path': 'app_behavior_manage' },
+                    { 'label': 'Années scolaires', 'path': 'app_school_year_index' },
+                    { 'label': 'Périodes','path':'app_period_index' },
+                    { 'label': 'Centre de formation','path':'app_formation_center_file' },                
+                    { 'label': 'Diplômes', 'path': 'app_diploma_index' },
+                    { 'label': 'Utilisateurs', 'path': 'app_user_index' }
+                ]
+            }
         ]
     }
 } %}

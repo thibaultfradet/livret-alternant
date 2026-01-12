@@ -28,6 +28,10 @@
         {% set addTxt = 'Nouvelle année scolaire' %}
         {% set addLink = path('app_school_year_new') %}
         {% set tabContent = 'trainings/parameters/tab_schoolYear.html.twig' %}
+    {% elseif currentTab == 'behavior' %}
+        {% set addTxt = 'Nouveau comportement' %}
+        {% set addLink = path('app_behavior_manage_create') %}
+        {% set tabContent = 'trainings/parameters/tab_behavior.html.twig' %}
     {% elseif currentTab == 'user' %}
         {% set addTxt = 'Nouvel utilisateur' %}
         {% set addLink = path('app_user_new') %}

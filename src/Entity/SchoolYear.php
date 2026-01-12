@@ -50,7 +50,7 @@ class SchoolYear
     private ?string $termsContent = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $disabled_at = null;
+    private ?\DateTime $disabledAt = null;
 
     public function __construct()
     {
@@ -209,12 +209,12 @@ class SchoolYear
 
     public function getDisabledAt(): ?\DateTime
     {
-        return $this->disabled_at;
+        return $this->disabledAt;
     }
 
-    public function setDisabledAt(?\DateTime $disabled_at): static
+    public function setDisabledAt(?\DateTime $disabledAt): static
     {
-        $this->disabled_at = $disabled_at;
+        $this->disabledAt = $disabledAt;
 
         return $this;
     }
