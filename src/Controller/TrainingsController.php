@@ -33,7 +33,9 @@ class TrainingsController extends AbstractController
     #[Route('/training/parameters/classroom', name: 'training_parameters_classroom')]
     public function parametersClassroom(ClassroomRepository $classroomRepository): Response
     {
-        $classrooms = $classroomRepository->findAll();
+        $classrooms = $classroomRepository->findBy([
+            'disabledAt' => null,
+        ]);
 
         return $this->render('trainings/parameters.html.twig', [
             'menuTrainings' => 'active',
@@ -45,7 +47,9 @@ class TrainingsController extends AbstractController
     #[Route('/training/parameters/diploma', name: 'training_parameters_diploma')]
     public function parametersDiploma(DiplomaRepository $diplomaRepository): Response
     {
-        $diplomas = $diplomaRepository->findAll();
+        $diplomas = $diplomaRepository->findBy([
+            'disabledAt' => null,
+        ]);
 
         return $this->render('trainings/parameters.html.twig', [
             'menuTrainings' => 'active',
@@ -57,7 +61,9 @@ class TrainingsController extends AbstractController
     #[Route('/training/parameters/period', name: 'training_parameters_period')]
     public function parametersPeriod(PeriodRepository $periodRepository): Response
     {
-        $periods = $periodRepository->findAll();
+        $periods = $periodRepository->findBy([
+            'disabledAt' => null,
+        ]);
 
         return $this->render('trainings/parameters.html.twig', [
             'menuTrainings' => 'active',
@@ -69,7 +75,9 @@ class TrainingsController extends AbstractController
     #[Route('/training/parameters/schoolYear', name: 'training_parameters_schoolYear')]
     public function parametersSchoolYear(SchoolYearRepository $schoolYearRepository): Response
     {
-        $schoolYears = $schoolYearRepository->findAll();
+        $schoolYears = $schoolYearRepository->findBy([
+            'disabledAt' => null,
+        ]);
 
         return $this->render('trainings/parameters.html.twig', [
             'menuTrainings' => 'active',
@@ -81,7 +89,9 @@ class TrainingsController extends AbstractController
     #[Route('/training/parameters/user', name: 'training_parameters_user')]
     public function parametersUser(UserRepository $usersTrainingsRepository): Response
     {
-        $users = $usersTrainingsRepository->findAll();
+        $users = $usersTrainingsRepository->findBy([
+            'disabledAt' => null,
+        ]);
 
         return $this->render('trainings/parameters.html.twig', [
             'menuTrainings' => 'active',

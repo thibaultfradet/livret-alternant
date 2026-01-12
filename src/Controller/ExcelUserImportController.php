@@ -78,9 +78,20 @@ final class ExcelUserImportController extends AbstractController
                             $em->flush();
                         }
 
-                        // Skip if student already exists
-                        $existingStudent = $em->getRepository(User::class)->findOneBy(['email' => $studentEmail]);
+                        // Check if student already exists
+                        $existingStudent = $em->getRepository(User::class)->findOneBy([
+                            'email' => $studentEmail,
+                        ]);
+
                         if ($existingStudent) {
+                            // Reactivate student if previously disabled
+                            if ($existingStudent->getDisabledAt() !== null) {
+                                $existingStudent->setDisabledAt(null);
+                                $em->persist($existingStudent);
+                                $em->flush();
+                            }
+
+                            // Skip creation since student already exists
                             continue;
                         }
 
@@ -104,6 +115,13 @@ final class ExcelUserImportController extends AbstractController
                             $em->persist($tutor);
                             $em->flush();
                         } else {
+                            // Reactivate tutor if previously disabled
+                            if ($existingTutor->getDisabledAt() !== null) {
+                                $existingTutor->setDisabledAt(null);
+                                $em->persist($existingTutor);
+                                $em->flush();
+                            }
+
                             $tutor = $existingTutor;
                         }
 
