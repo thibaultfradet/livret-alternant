@@ -33,9 +33,15 @@ class TrainingsController extends AbstractController
     }
 
     #[Route('/parameters/classroom', name: 'training_parameters_classroom')]
-    public function parametersClassroom(ClassroomRepository $classroomRepository): Response
-    {
-        $classrooms = $classroomRepository->findAll();
+    public function parametersClassroom(
+        ClassroomRepository $classroomRepository,
+        SchoolYearRepository $schoolYearRepository
+    ): Response {
+        $activeSchoolYear = $schoolYearRepository->findActive();
+
+        $classrooms = $classroomRepository->findBy([
+            'schoolYear' => $activeSchoolYear,
+        ]);
 
         return $this->render('trainings/parameters.html.twig', [
             'menuTrainings' => 'active',
@@ -43,6 +49,7 @@ class TrainingsController extends AbstractController
             'classrooms' => $classrooms,
         ]);
     }
+
 
     #[Route('/parameters/diploma', name: 'training_parameters_diploma')]
     public function parametersDiploma(DiplomaRepository $diplomaRepository): Response
@@ -59,9 +66,14 @@ class TrainingsController extends AbstractController
     }
 
     #[Route('/parameters/period', name: 'training_parameters_period')]
-    public function parametersPeriod(PeriodRepository $periodRepository): Response
-    {
+    public function parametersPeriod(
+        PeriodRepository $periodRepository,
+        SchoolYearRepository $schoolYearRepository
+    ): Response {
+        $activeSchoolYear = $schoolYearRepository->findActive();
+
         $periods = $periodRepository->findBy([
+            'schoolYear' => $activeSchoolYear,
             'disabledAt' => null,
         ]);
 
