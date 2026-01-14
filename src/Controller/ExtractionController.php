@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\SchoolYear;
+use App\Entity\SkillLevel;
 use App\Entity\User;
+use App\Repository\SkillLevelRepository;
 use App\Repository\TermsAcceptanceRepository;
 use App\Repository\UserRepository;
 use App\Repository\SchoolYearRepository;
@@ -21,6 +23,7 @@ final class ExtractionController extends AbstractController
         UserRepository $userRepository,
         SchoolYearRepository $schoolYearRepository,
         TermsAcceptanceRepository $termsAcceptanceRepository,
+        SkillLevelRepository $skillLevelRepository,
         PdfService $pdfService
     ): Response {
 
@@ -91,7 +94,9 @@ final class ExtractionController extends AbstractController
             $acceptances['principalTeacher'] = $accept ? $accept->getValidationDate() : null;
         }
 
-
+        $allSkillsLevels = $skillLevelRepository->findBy([
+            'disabledAt' => null,
+        ]);
 
         // generate html
         $html = $this->renderView('extraction/pdf_student.html.twig', [
@@ -106,6 +111,7 @@ final class ExtractionController extends AbstractController
             'acceptances' => $acceptances,
             'tutor' => $tutor,
             'principalTeacher' => $principalTeacher,
+            'allSkillsLevels' => $allSkillsLevels,
         ]);
 
         // Génération du PDF
@@ -158,7 +164,7 @@ final class ExtractionController extends AbstractController
 
                 $skillEvaluationsByPeriod[$periodKey][$groupId]['criteria'][] = [
                     'label' => $skillCriteria->getLabel(),
-                    'level' => $skill->getSkillLevel() ? $skill->getSkillLevel()->getLabel() : null
+                    'level' => $skill->getSkillLevel()
                 ];
             }
         }

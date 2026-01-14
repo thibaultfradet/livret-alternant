@@ -150,29 +150,41 @@
                     </table>
                 </div>
 
-                {# --- Évaluation des compétences ---#}
+                {# --- Grille des compétences par critère ---#}
                 <div class="card">
-                    <div class="card-header">EVALUATION DES COMPETENCES AU REGARD DES OBJECTIFS DE LA FORMATION</div>
+                    <div class="card-header">GRILLE DES COMPÉTENCES</div>
+
                     {% for periodNumber, skillGroups in skillEvaluationsByPeriod %}
                         {% if periodNumber == period.periodNumber %}
                             {% for groupId, groupData in skillGroups %}
-                                <table style="border-collapse:collapse; width:100%; margin-bottom:10px;">
+                                <h4 style="margin:10px 0 5px 0;">{{ groupData.label }}</h4>
+                                <table style="border-collapse:collapse; width:100%; margin-bottom:15px;">
                                     <thead>
                                         <tr>
-                                            <th colspan="2" style="text-align:center; color:white; background-color:#4c8fba; padding:4px;">
-                                                {{ groupData.label }}
-                                            </th>
+                                            <th style="border:1px solid #ccc; padding:4px; width:30%;">Compétence</th>
+                                            {% for level in allSkillsLevels %}
+                                                <th style="border:1px solid #ccc; padding:4px; text-align:center;">
+                                                    {{ level.label }}
+                                                </th>
+                                            {% endfor %}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for criteria in groupData.criteria %}
                                             <tr>
-                                                <td style="width:25%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                                                <td style="border:1px solid #ccc; padding:6px;">
                                                     {{ criteria.label }}
                                                 </td>
-                                                <td style="width:75%; padding:6px; border:1px solid #ccc;">
-                                                    <input type="text" class="field-input" value="{{ criteria.level|default('') }}" disabled>
-                                                </td>
+                                                {% for level in allSkillsLevels %}
+                                                    {% set isSelected = criteria.level and criteria.level.id == level.id %}
+                                                    {% set cellColor = isSelected and level.color ? level.color : '#ffffff' %}
+                                                    <td style="border:1px solid #ccc; padding:6px; text-align:center; background-color: {{ cellColor }};">
+                                                        {% if isSelected %}
+                                                        {% else %}
+                                                            &nbsp;
+                                                        {% endif %}
+                                                    </td>
+                                                {% endfor %}
                                             </tr>
                                         {% endfor %}
                                     </tbody>
