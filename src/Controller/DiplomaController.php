@@ -14,14 +14,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/diploma')]
 final class DiplomaController extends AbstractController
 {
-    #[Route(name: 'app_diploma_index', methods: ['GET'])]
-    public function index(DiplomaRepository $diplomaRepository): Response
-    {
-        return $this->render('diploma/index.html.twig', [
-            'diplomas' => $diplomaRepository->findAll(),
-        ]);
-    }
-
     #[Route('/new', name: 'app_diploma_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -33,7 +25,7 @@ final class DiplomaController extends AbstractController
             $entityManager->persist($diploma);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_diploma_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_diploma', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('diploma/new.html.twig', [
@@ -59,7 +51,7 @@ final class DiplomaController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_diploma_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_diploma', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('diploma/edit.html.twig', [
@@ -76,7 +68,7 @@ final class DiplomaController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_diploma_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('training_parameters_diploma', [], Response::HTTP_SEE_OTHER);
     }
 
 

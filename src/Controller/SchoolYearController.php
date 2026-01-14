@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\SchoolYear;
 use App\Form\SchoolYearType;
-use App\Repository\SchoolYearRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,13 +13,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/school-year')]
 final class SchoolYearController extends AbstractController
 {
-    #[Route(name: 'app_school_year_index', methods: ['GET'])]
-    public function index(SchoolYearRepository $schoolYearRepository): Response
-    {
-        return $this->render('school_year/index.html.twig', [
-            'school_years' => $schoolYearRepository->findAll(),
-        ]);
-    }
 
     #[Route('/new', name: 'app_school_year_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -33,7 +25,7 @@ final class SchoolYearController extends AbstractController
             $entityManager->persist($schoolYear);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_school_year_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_schoolYear', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('school_year/new.html.twig', [
@@ -59,7 +51,7 @@ final class SchoolYearController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_school_year_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_schoolYear', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('school_year/edit.html.twig', [
@@ -76,7 +68,7 @@ final class SchoolYearController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_school_year_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('training_parameters_schoolYear', [], Response::HTTP_SEE_OTHER);
     }
 
 

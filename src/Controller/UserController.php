@@ -14,17 +14,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-    #[Route(name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
-    {
-        // Retrieve all users
-        $allUsers = $userRepository->findAll();
-
-        return $this->render('user/index.html.twig', [
-            'users' => $allUsers,
-        ]);
-    }
-
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {

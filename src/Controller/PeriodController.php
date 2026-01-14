@@ -14,20 +14,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/period')]
 final class PeriodController extends AbstractController
 {
-    #[Route(name: 'app_period_index', methods: ['GET'])]
-    public function index(PeriodRepository $periodRepository): Response
-    {
-        $periods = $periodRepository->createQueryBuilder('p')
-            ->join('p.schoolYear', 'sy')
-            ->where('sy.active = true')
-            ->orderBy('p.startDate', 'ASC')
-            ->getQuery()
-            ->getResult();
-
-        return $this->render('period/index.html.twig', [
-            'periods' => $periods,
-        ]);
-    }
 
     #[Route('/new', name: 'app_period_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -40,7 +26,7 @@ final class PeriodController extends AbstractController
             $entityManager->persist($period);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_period_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_period', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('period/new.html.twig', [
@@ -66,7 +52,7 @@ final class PeriodController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_period_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_period', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('period/edit.html.twig', [
@@ -83,7 +69,7 @@ final class PeriodController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_period_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('training_parameters_period', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/disable/{id}', name: 'app_period_disable')]

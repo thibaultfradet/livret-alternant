@@ -22,31 +22,6 @@ use Symfony\Component\Mime\Address;
 
 class ClassroomController extends AbstractController
 {
-    #[Route('/classroom', name: 'app_classroom_index')]
-    public function index(ClassroomRepository $classroomRepository, SchoolYearRepository $schoolYearRepository): Response
-    {
-        $activeYear = $schoolYearRepository->findActive();
-
-        // If no active year found, show an error or empty list
-        if (!$activeYear) {
-            $this->addFlash('warning', 'Aucune année active trouvée.');
-            return $this->render('user_classroom/index.html.twig', [
-                'classrooms' => [],
-                'activeYear' => null,
-            ]);
-        }
-
-        // Get all classrooms for that school year
-        $classrooms = $classroomRepository->findBy(['schoolYear' => $activeYear]);
-
-        return $this->render('classroom/index.html.twig', [
-            'classrooms' => $classrooms,
-            'activeYear' => $activeYear,
-        ]);
-    }
-
-
-
     #[Route('/classroom/new', name: 'app_classroom_new', methods: ['GET', 'POST'])]
     public function new(Request $request, SchoolYearRepository $schoolYearRepository, EntityManagerInterface $em): Response
     {
@@ -66,7 +41,7 @@ class ClassroomController extends AbstractController
             $em->flush();
 
             $this->addFlash('success', 'Classe créée avec succès.');
-            return $this->redirectToRoute('app_classroom_index');
+            return $this->redirectToRoute('training_parameters_classroom');
         }
 
         return $this->render('classroom/new.html.twig', [
@@ -89,7 +64,7 @@ class ClassroomController extends AbstractController
 
         if (!$classroom) {
             $this->addFlash('error', 'Classe introuvable.');
-            return $this->redirectToRoute('app_classroom_index');
+            return $this->redirectToRoute('training_parameters_classroom');
         }
 
         // Create form with a select of users who are not ROLE_STUDENT
@@ -101,7 +76,7 @@ class ClassroomController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Professeur principal mis à jour.');
-        return $this->redirectToRoute('app_classroom_index');
+        return $this->redirectToRoute('training_parameters_classroom');
     }
         
         return $this->render('classroom/principal_teacher.html.twig', [
@@ -222,7 +197,7 @@ class ClassroomController extends AbstractController
             $this->addFlash('success', 'Référent de formation mis à jour avec succès.');
 
             // Redirect after successful update
-            return $this->redirectToRoute('app_classroom_index');
+            return $this->redirectToRoute('training_parameters_classroom');
         }
 
         // Render the form
