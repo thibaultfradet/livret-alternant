@@ -4,7 +4,8 @@
 
 {% block body %}
 <div class="container mt-4">
-    <h2>Mise en ligne du fichier du centre de formation sur l'année {{activeYear.label}}</h2>
+    <h1 class="fw-bold text-primary mb-5 display-5 text-center">
+      Modifier le centre de formation sur l'année {{activeYear.label}}</h1>
 
     {{ form_start(form) }}
         {{ form_row(form.formation_center_file) }}

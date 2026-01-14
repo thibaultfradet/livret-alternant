@@ -7,6 +7,7 @@ use App\Entity\Classroom;
 use App\Form\ClassroomFilesType;
 use App\Form\ClassroomNewType;
 use App\Form\ClassroomPrincipalTeacherType;
+use App\Form\ClassroomTrainingContactType;
 use App\Repository\ClassroomRepository;
 use App\Repository\SchoolYearRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -196,6 +197,38 @@ class ClassroomController extends AbstractController
             'calendarFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $calendarPath) ? $calendarPath : null,
             'scheduleFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $schedulePath) ? $schedulePath : null,
             'teacherListFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $teacherListPath )? $teacherListPath : null,
+        ]);
+    }
+
+
+    
+    #[Route('/classroom/{id}/training-contact', name: 'app_classroom_training_contact')]
+    public function editTrainingContact(
+        Classroom $classroom,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Create the form bound to the Classroom entity
+        $form = $this->createForm(ClassroomTrainingContactType::class, $classroom);
+
+        // Handle request data
+        $form->handleRequest($request);
+
+        // If form is submitted and valid, persist changes
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($classroom);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Référent de formation mis à jour avec succès.');
+
+            // Redirect after successful update
+            return $this->redirectToRoute('app_classroom_index');
+        }
+
+        // Render the form
+        return $this->render('classroom/edit_training_contact.html.twig', [
+            'classroom' => $classroom,
+            'form' => $form->createView(),
         ]);
     }
 

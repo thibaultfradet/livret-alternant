@@ -24,6 +24,7 @@ class TrainingsController extends AbstractController
             'training_parameters_diploma',
             'training_parameters_period',
             'training_parameters_schoolYear',
+            'training_parameters_behavior',
             'training_parameters_user',
         ];
 
@@ -87,7 +88,7 @@ class TrainingsController extends AbstractController
 
 
 
-    #[Route('/parameters/user', name: 'training_parameters_behavior')]
+    #[Route('/parameters/behavior', name: 'training_parameters_behavior')]
     public function index(EntityManagerInterface $em): Response
     {
         // get all active behavior with their levels

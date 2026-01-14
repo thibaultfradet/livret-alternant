@@ -8,6 +8,7 @@ use App\Entity\SchoolYear;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -25,18 +26,32 @@ class ClassroomNewType extends AbstractType
             ])
             ->add('schoolYear', EntityType::class, [
                 'class' => SchoolYear::class,
-                'choice_label' => fn(SchoolYear $year) => $year->getLabel() . ($year->isActive() ? ' (Active)' : ''),
+                'choice_label' => fn(SchoolYear $year) =>
+                    $year->getLabel() . ($year->isActive() ? ' (Active)' : ''),
                 'label' => 'Année scolaire',
                 'placeholder' => 'Sélectionner une année scolaire',
                 'required' => true,
-                'data' => $options['activeSchoolYear'] ?? null, // default value
+                'data' => $options['activeSchoolYear'] ?? null,
             ])
             ->add('principalTeacher', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => fn(User $user) => $user->getFirstName() . ' ' . $user->getLastName(),
+                'choice_label' => fn(User $user) =>
+                    $user->getFirstName() . ' ' . $user->getLastName(),
                 'label' => 'Professeur principal',
                 'required' => false,
                 'placeholder' => 'Sélectionner un professeur principal',
+            ])
+
+            // Training contact name (stored in JSON field)
+            ->add('trainingContactName', TextType::class, [
+                'label' => 'Nom du référent de formation',
+                'required' => false,
+            ])
+
+            // Training contact phone (stored in JSON field)
+            ->add('trainingContactPhone', TextType::class, [
+                'label' => 'Téléphone du référent de formation',
+                'required' => false,
             ]);
     }
 
@@ -44,7 +59,7 @@ class ClassroomNewType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Classroom::class,
-            'activeSchoolYear' => null, // default option
+            'activeSchoolYear' => null,
         ]);
     }
 }

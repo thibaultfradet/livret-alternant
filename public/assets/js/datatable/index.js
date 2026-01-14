@@ -19,7 +19,7 @@ const baseTableConfig = {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
     },
     pageLength: 50,
-    lengthMenu: [10, 25, 50, 100], 
+    lengthMenu: [10, 25, 50, 100],
     responsive: true,
     stripeClasses: ['table-striped', 'table-hover'],
     columnDefs: [
@@ -27,15 +27,17 @@ const baseTableConfig = {
     ],
     dom:
         '<"card-body border-bottom py-3 d-flex justify-content-between align-items-center"' +
-            '<"dataTables_length"l>' + 
-            '<"dataTables_filter"f>' + 
+            '<"dataTables_length"l>' +
+            '<"dataTables_filter"f>' +
         '>' +
         't' +
         '<"card-footer d-flex align-items-center"' +
-            '<"m-0 text-secondary"i>' + 
-            '<"pagination m-0 ms-auto"p>' + 
+            '<"m-0 text-secondary"i>' +
+            '<"pagination m-0 ms-auto"p>' +
         '>'
 };
+
+
 
 /**
  * Helper to initialize a DataTable safely
@@ -53,6 +55,9 @@ function initDataTable(selector, config) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const tables = [
+        { id: 'behavior-table', config: (colNum) => ({
+            order: [[0, 'asc']]
+        }) },
         { id: 'users-table', config: (colNum) => ({
             order: [[0, 'asc']],
             columnDefs: [
