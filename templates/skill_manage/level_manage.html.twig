@@ -29,6 +29,7 @@
                 <thead class="table-light">
                     <tr>
                         <th>Libellé</th>
+                        <th>Couleur</th>
                         <th class="text-end">Statut</th>
                     </tr>
                 </thead>
@@ -36,6 +37,16 @@
                     {% for level in levels %}
                         <tr>
                             <td>{{ level.label }}</td>
+
+                            {# Color column #}
+                            <td>
+                                {% if level.color %}
+                                    <span style="display:inline-block;width:24px;height:24px;border-radius:4px;background-color:{{ level.color }};"></span>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
+
                             <td class="text-end">
                                 {% if level.disabledAt is null %}
                                     <a href="{{ path('app_skill_level_toggle', { type: 'level', id: level.id }) }}"
@@ -50,7 +61,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="2" class="text-center text-muted">
+                            <td colspan="3" class="text-center text-muted">
                                 Aucun niveau défini.
                             </td>
                         </tr>

@@ -25,6 +25,9 @@ class SkillLevel
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
 
+    #[ORM\Column(length: 15)]
+    private ?string $color = null;
+
     public function __construct()
     {
         $this->tutorEvaluationSkills = new ArrayCollection();
@@ -85,6 +88,18 @@ class SkillLevel
                 $tutorEvaluationSkill->setSkillLevel(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): static
+    {
+        $this->color = $color;
 
         return $this;
     }
