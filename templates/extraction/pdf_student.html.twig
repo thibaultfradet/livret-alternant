@@ -79,6 +79,37 @@
         <div class="section-body">
             {{ termsContent|raw }}
         </div>
+        {# --- Validation des données (tuteur / alternant / équipe pédagogique) ---#}
+        <div class="validation-container">
+
+            <div class="validation-box">
+                <strong>Tuteur</strong><br>
+                {% if acceptances.tutor %}
+                    A validé les données le {{ acceptances.tutor|date('d/m/Y') }}
+                {% else %}
+                    N'a pas validé les données
+                {% endif %}
+            </div>
+
+            <div class="validation-box">
+                <strong>Alternant</strong><br>
+                {% if acceptances.student %}
+                    A validé les données le {{ acceptances.student|date('d/m/Y') }}
+                {% else %}
+                    N'a pas validé les données
+                {% endif %}
+            </div>
+
+            <div class="validation-box">
+                <strong>Équipe pédagogique</strong><br>
+                {% if acceptances.principalTeacher %}
+                    A validé les données le {{ acceptances.principalTeacher|date('d/m/Y') }}
+                {% else %}
+                    N'a pas validé les données
+                {% endif %}
+            </div>
+
+        </div>
     </div>
 
     <div class="page-break"></div>
@@ -151,7 +182,7 @@
                     {% endfor %}
                 </div>
 
-                {# --- Points forts / faibles / objectifs ---#}
+                {# --- Points forts / faibles / objectifs / remarques ---#}
                 <div class="card">
                     <table style="width:100%; border-collapse:collapse;">
                         <tbody>
@@ -166,6 +197,10 @@
                             <tr>
                                 <td style="width:25%; font-weight:bold; padding:10px; border:1px solid #ccc;">Objectifs à atteindre à la prochaine période</td>
                                 <td style="padding:10px; border:1px solid #ccc;">{{ tutorEval.goals|default('') }}</td>
+                            </tr>
+                             <tr>
+                                <td style="width:25%; font-weight:bold; padding:10px; border:1px solid #ccc;">Remarques et attendus du tuteur</td>
+                                <td style="padding:10px; border:1px solid #ccc;">{{ tutorEval.remarks|default('') }}</td>
                             </tr>
                         </tbody>
                     </table>

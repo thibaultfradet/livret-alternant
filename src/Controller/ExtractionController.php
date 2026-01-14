@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\SchoolYear;
 use App\Entity\User;
+use App\Repository\TermsAcceptanceRepository;
 use App\Repository\UserRepository;
 use App\Repository\SchoolYearRepository;
 use App\Service\PdfService;
@@ -13,84 +14,29 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class ExtractionController extends AbstractController
 {
-    #[Route('/extraction/{student}', name: 'app_extraction')]
-    public function index(
-        User $student,
-        UserRepository $userRepository,
-        SchoolYearRepository $schoolYearRepository
-    ): Response {
-
-        // Get the active school year
-        $activeYear = $schoolYearRepository->findActive();
-        if (!$activeYear) {
-            throw $this->createNotFoundException('No active school year found.');
-        }
-
-        // Get the student with all related data
-        $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
-
-        // Student not found
-        if (!$student) {
-            throw $this->createNotFoundException('Student not found.');
-        }
-
-       
-        // formation center path
-        $formationCenterImgPath = sprintf(
-            '/uploads/general/formation-center-%d.png',
-            $activeYear->getId()
-        );
-
-        // full teaching team path
-        $ttmImgPath = sprintf(
-            '/uploads/classroom/teacher-list-%d.png',
-            $student->getClassroom()->getId()
-        );
-
-        // classroom calendar path
-        $calendarImgPath = sprintf(
-            '/uploads/classroom/calendar-%d.png',
-            $student->getClassroom()->getId()
-        );
-
-        $termsContent = $activeYear->getTermsContent();
-
-        $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear,$student);
-
-        // Render the main Twig template
-        return $this->render('extraction/index.html.twig', [
-            'controller_name' => 'Extraction',
-            'student' => $student,
-            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
-            'formationCenterPath' => $formationCenterImgPath,
-            'ttmPath' => $ttmImgPath,
-            'calendarPath' => $calendarImgPath,
-            'termsContent' => $termsContent,
-            ]);
-    }
-
 
     #[Route('/extraction/{student}/pdf', name: 'app_extraction_student_pdf')]
     public function studentPdf(
         User $student,
         UserRepository $userRepository,
         SchoolYearRepository $schoolYearRepository,
+        TermsAcceptanceRepository $termsAcceptanceRepository,
         PdfService $pdfService
     ): Response {
 
-        // Récupération de l'année active
+        //get active year
         $activeYear = $schoolYearRepository->findActive();
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
 
-        // Récupération des données complètes de l'étudiant
+        //get student full data
         $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
         if (!$student) {
             throw $this->createNotFoundException('Student not found.');
         }
 
-        // Chemins des images
+        // image path
         $formationCenterImgPath = sprintf('/uploads/general/formation-center-%d.png', $activeYear->getId());
         $ttmImgPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
         $calendarImgPath = sprintf('/uploads/classroom/calendar-%d.png', $student->getClassroom()->getId());
@@ -98,7 +44,56 @@ final class ExtractionController extends AbstractController
         $termsContent = $activeYear->getTermsContent();
         $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);
 
-        // On génère le HTML depuis le même template que la page HTML
+
+        $tutor = null;
+        foreach ($student->getStudentContracts() as $tutorLink) {
+            $start = $tutorLink->getDateDebutContract();
+            $end = $tutorLink->getDateFinContract();
+
+            if (($start === null || $start <= new \DateTime()) &&
+                ($end === null || $end >= new \DateTime())) {
+                $tutor = $tutorLink->getTutor();
+                break;
+            }
+        }
+
+        // get training principal teacher 
+        $principalTeacher = $student->getClassroom() ? $student->getClassroom()->getPrincipalTeacher() : null;
+
+        // get current year terms acceptance
+        $acceptances = [
+            'tutor' => null,
+            'student' => null,
+            'principalTeacher' => null,
+        ];
+
+        if ($tutor) {
+            $accept = $termsAcceptanceRepository->findOneBy([
+                'schoolYear' => $activeYear,
+                'user' => $tutor,
+            ]);
+            $acceptances['tutor'] = $accept ? $accept->getValidationDate() : null;
+        }
+
+        //student
+        $accept = $termsAcceptanceRepository->findOneBy([
+            'schoolYear' => $activeYear,
+            'user' => $student,
+        ]);
+        $acceptances['student'] = $accept ? $accept->getValidationDate() : null;
+
+        // principal teacher
+        if ($principalTeacher) {
+            $accept = $termsAcceptanceRepository->findOneBy([
+                'schoolYear' => $activeYear,
+                'user' => $principalTeacher,
+            ]);
+            $acceptances['principalTeacher'] = $accept ? $accept->getValidationDate() : null;
+        }
+
+
+
+        // generate html
         $html = $this->renderView('extraction/pdf_student.html.twig', [
             'controller_name' => 'Extraction',
             'student' => $student,
@@ -107,7 +102,10 @@ final class ExtractionController extends AbstractController
             'ttmPath' => $ttmImgPath,
             'calendarPath' => $calendarImgPath,
             'termsContent' => $termsContent,
-            'isPdf' => true, // optionnel, pour adapter certains styles si besoin
+            'isPdf' => true, 
+            'acceptances' => $acceptances,
+            'tutor' => $tutor,
+            'principalTeacher' => $principalTeacher,
         ]);
 
         // Génération du PDF
