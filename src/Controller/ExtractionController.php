@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 use App\Repository\SchoolYearRepository;
 use App\Service\PdfService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -121,6 +122,82 @@ final class ExtractionController extends AbstractController
         return new Response();
     }
 
+
+    #[Route('/student/{student}/evaluations', name: 'app_student_evaluations')]
+    public function studentEvaluations(
+        User $student,
+        UserRepository $userRepository,
+        SkillLevelRepository $skillLevelRepository,
+        SchoolYearRepository $schoolYearRepository,
+        Request $request 
+    ): Response {
+
+        $user = $this->getUser();
+        $activeYear = $schoolYearRepository->findActive();
+        if (!$activeYear) {
+            throw $this->createNotFoundException('No active school year found.');
+        }
+
+        // Retrieve student with all data for the active year
+        $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
+        if (!$student) {
+            throw $this->createNotFoundException('Student not found.');
+        }
+
+        // Access check
+        $tutor = null;
+        foreach ($student->getStudentContracts() as $contract) {
+            $start = $contract->getDateDebutContract();
+            $end = $contract->getDateFinContract();
+
+            if (($start === null || $start <= new \DateTime()) &&
+                ($end === null || $end >= new \DateTime())) {
+                $tutor = $contract->getTutor();
+                break;
+            }
+        }
+
+        $principalTeacher = $student->getClassroom() ? $student->getClassroom()->getPrincipalTeacher() : null;
+
+        $hasAccess = $user === $student
+                    || ($principalTeacher && $user === $principalTeacher)
+                    || ($tutor && $user === $tutor)
+                    || in_array('ROLE_TTM', $user->getRoles(), true);
+
+        if (!$hasAccess) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        // Get the selected period from URL query, default to first period
+        $periodId = $request->query->get('period');
+        $selectedPeriod = null;
+        $periods = $student->getClassroom()->getSchoolYear()->getPeriods()->toArray();
+        usort($periods, fn($a, $b) => $a->getPeriodNumber() <=> $b->getPeriodNumber()); // sort chronologically
+
+        if ($periodId) {
+            foreach ($periods as $p) {
+                if ($p->getId() == $periodId) {
+                    $selectedPeriod = $p;
+                    break;
+                }
+            }
+        }
+        // default to first period if none selected
+        if (!$selectedPeriod && !empty($periods)) {
+            $selectedPeriod = $periods[0];
+        }
+
+        // Fetch evaluations grouped by period
+        $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);
+
+        return $this->render('extraction/student_evaluations.html.twig', [
+            'student' => $student,
+            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
+            'allSkillsLevels' => $skillLevelRepository->findBy(['disabledAt' => null]),
+            'selectedPeriod' => $selectedPeriod,
+            'periods' => $periods, // pass all periods for the dropdown
+        ]);
+    }
 
 
     private function getEvaluationData(SchoolYear $activeYear, User $student)

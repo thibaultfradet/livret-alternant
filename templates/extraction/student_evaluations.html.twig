@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Évaluations de l'étudiant{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+
+  {# --- Page title --- #}
+  <h1 class="fw-bold text-primary mb-2 display-5 text-center">
+    Évaluations de {{ student.firstName }} {{ student.lastName }}
+  </h1>
+  <p class="text-secondary text-center mb-5">
+    {{ student.classroom.diploma.label }} ({{ student.classroom.schoolYear.label }})
+  </p>
+
+  {# --- Period filter dropdown --- #}
+  <div class="mb-4 text-center">
+    <form method="get" id="periodFilterForm">
+      <label for="period" class="fw-semibold me-2">Sélectionner la période :</label>
+      <select id="period" name="period" class="form-select d-inline-block w-auto" onchange="document.getElementById('periodFilterForm').submit();">
+        {% for period in periods %}
+          <option value="{{ period.id }}" {% if selectedPeriod and period.id == selectedPeriod.id %}selected{% endif %}>
+            Période {{ period.periodNumber }} ({{ period.startDate|date('d/m/Y') }} - {{ period.endDate|date('d/m/Y') }})
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  {# --- Iterate over all periods --- #}
+  {% for periodNumber, skillGroups in skillEvaluationsByPeriod|sort %}
+    {% set period = periods|filter(p => p.periodNumber == periodNumber)|first %}
+
+    <div class="mb-5 pt-4">
+      <h2 class="fw-bold text-primary mb-3" style="font-size:1.8rem;">
+        Période {{ periodNumber }} 
+        {% if period %} ({{ period.startDate|date('d/m/Y') }} - {{ period.endDate|date('d/m/Y') }}){% endif %}
+      </h2>
+
+      {# --- Behavior evaluations --- #}
+      {% set tutorEvalsForPeriod = student.tutorEvaluationsReceived|filter(e => e.period == period) %}
+      <div class="card mb-4">
+        <div class="card-header fw-bold bg-light">Appréciation du comportement au travail</div>
+        <table class="table table-bordered mb-0 text-center">
+          <thead class="table-light">
+            <tr>
+              <th class="text-start">Critère</th>
+              <th>Évaluation</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if tutorEvalsForPeriod is empty %}
+              <tr>
+                <td colspan="2" class="text-muted">Aucune évaluation de comportement pour cette période</td>
+              </tr>
+            {% else %}
+              {% for tutorEval in tutorEvalsForPeriod %}
+                {% for behaviorEval in tutorEval.behaviorEvaluation %}
+                  <tr>
+                    <td class="text-start">{{ behaviorEval.behaviorCriteria.label }}</td>
+                    <td>{{ behaviorEval.behaviorLevel.label|default('') }}</td>
+                  </tr>
+                {% endfor %}
+              {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      {# --- Skill evaluation grid --- #}
+      {% if skillGroups is empty %}
+        <p class="text-muted">Aucune évaluation de compétences pour cette période.</p>
+      {% else %}
+        {% for groupId, groupData in skillGroups %}
+          <h4 class="fw-semibold mt-3">{{ groupData.label }}</h4>
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered text-center">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-start">Compétence</th>
+                  {% for level in allSkillsLevels %}
+                    <th>{{ level.label }}</th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for criteria in groupData.criteria %}
+                  <tr>
+                    <td class="text-start">{{ criteria.label }}</td>
+                    {% for level in allSkillsLevels %}
+                      {% set isSelected = criteria.level and criteria.level.id == level.id %}
+                      <td style="background-color: {{ isSelected ? level.color : 'transparent' }};">
+                        {% if isSelected %}&#10003;{% endif %}
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {# --- Strengths / Weaknesses / Goals / Remarks --- #}
+      {% if tutorEvalsForPeriod is not empty %}
+        {% for tutorEval in tutorEvalsForPeriod %}
+          <div class="card mb-4">
+            <div class="card-body p-3">
+              <table class="table table-bordered mb-0">
+                <tbody>
+                  <tr>
+                    <td class="fw-bold" style="width:25%;">Points forts</td>
+                    <td>{{ tutorEval.strengths|default('') }}</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Points faibles</td>
+                    <td>{{ tutorEval.weaknesses|default('') }}</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Objectifs à atteindre à la prochaine période</td>
+                    <td>{{ tutorEval.goals|default('') }}</td>
+                  </tr>
+                  <tr>
+                    <td class="fw-bold">Remarques et attendus du tuteur</td>
+                    <td>{{ tutorEval.remarks|default('') }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {# --- Student remarks --- #}
+      {% for studentEval in student.studentEvaluations %}
+        {% if studentEval.period == period %}
+          <div class="card mb-4">
+            <div class="card-header fw-bold">Remarques de l'alternant et attendus</div>
+            <div class="card-body">{{ studentEval.remarks|default('Aucune remarque') }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      {# --- TTM remarks ---#}
+      {% for ttmEval in student.TtmEvaluationsReceived %}
+        {% if ttmEval.period == period %}
+          <div class="card mb-4">
+            <div class="card-header fw-bold">Remarques de l'équipe pédagogique et attendus</div>
+            <div class="card-body">{{ ttmEval.remarks|default('Aucune remarque') }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    </div>
+  {% else %}
+    <p class="text-muted">Aucune évaluation pour cet étudiant.</p>
+  {% endfor %}
+
+</div>
+{% endblock %}
