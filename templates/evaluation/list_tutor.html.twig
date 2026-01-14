@@ -9,19 +9,6 @@
       Évaluez un alternant
     </h1>
 
-
-    {% if evaluations|length > 0 %}
-      <div class="alert alert-danger d-flex align-items-center" role="alert">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-          <path d="M12 9v2m0 4v.01" />
-          <path d="M5 19h14a2 2 0 0 0 1.73 -2.99l-7 -12a2 2 0 0 0 -3.46 0l-7 12a2 2 0 0 0 1.73 2.99" />
-        </svg>
-        <div>
-          <strong>Attention :</strong> Une ou plusieurs évaluations sont manquantes.
-        </div>
-      </div>
-    {% endif %}
     <form method="get" class="mb-4">
       <div class="card shadow-sm p-3">
         <div class="row g-3 align-items-center">
@@ -48,13 +35,26 @@
       </div>
     </form>
 
-    
+    {% for student in students %}
+      {% set alreadyEvaluated = false %}
+      {% for te in student.tutorEvaluationsReceived %}
+        {% if te.period.id == period.id %}
+          {% set alreadyEvaluated = true %}
+        {% endif %}
+      {% endfor %}
 
-    {% for eval in evaluations %}
       <div class="card shadow-sm">
         <div class="card-body d-flex justify-content-between align-items-center">
-          <p class="mb-0 fw-bold">{{ eval.label }}</p>
-          <a href="{{ eval.route }}" class="btn btn-outline-primary">Noter</a>
+          <p class="mb-0 fw-bold">{{ student.firstName }} {{ student.lastName }} - {{ student.classroom.diploma.label }}</p>
+          <div class="d-flex gap-2">
+            {% if not alreadyEvaluated %}
+              <a href="{{ path('app_create_evaluation', { 'student': student.id, 'period': period.id }) }}" class="btn btn-outline-primary">Noter</a>
+            {% endif %}
+
+            <a href="{{ path('app_student_evaluations', { 'student': student.id, 'period': period.id }) }}" class="btn btn-primary" target="_blank">
+              Voir le livret
+            </a>
+          </div>
         </div>
       </div>
     {% else %}

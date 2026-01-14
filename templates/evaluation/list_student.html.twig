@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes évaluations manquantes{% endblock %}
+{% block title %}Mon livret{% endblock %}
 
 {% block body %}
 <div class="page-body d-flex">
@@ -8,6 +8,19 @@
     <h1 class="fw-bold text-primary mb-5 display-5 text-center">
       Périodes sans évaluation étudiante
     </h1>
+
+    <div class="alert alert-info d-flex align-items-center" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M12 9v2m0 4v.01" />
+          <path d="M5 19h14a2 2 0 0 0 1.73 -2.99l-7 -12a2 2 0 0 0 -3.46 0l-7 12a2 2 0 0 0 1.73 2.99" />
+      </svg>
+      <div>
+          <a href="{{ path('app_student_evaluations', { 'student': student.id }) }}">
+              Voir mon livret complet
+          </a>
+      </div>
+    </div>
 
     {% if missingEvaluations is not empty %}
       <div class="alert alert-danger d-flex align-items-center" role="alert">
