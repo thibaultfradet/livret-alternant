@@ -7,6 +7,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,26 +23,31 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get roles from form checkboxes
-            $roles = $user->getRoles();
+            $roles = ['ROLE_USER']; // role par défaut
 
+            // Élève
+            if ($form->get('isAlternance')->getData() || $request->request->has('student-tab')) {
+                $roles[] = 'ROLE_STUDENT';
+            }
+
+            // Professeur référent
             if ($form->get('isProfPrincipal')->getData()) {
                 $roles[] = 'ROLE_PT';
             }
 
+            // Membre équipe pédagogique
             if ($form->get('isTeamMember')->getData()) {
                 $roles[] = 'ROLE_TTM';
             }
 
-            // Remove duplicates just in case
             $user->setRoles(array_unique($roles));
+            $user->setPassword('');
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
         }
-
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form,
@@ -85,7 +91,7 @@ final class UserController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('user/edit.html.twig', [
@@ -102,7 +108,7 @@ final class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
     }
 
 
@@ -112,7 +118,7 @@ final class UserController extends AbstractController
         // If user is already disabled, just redirect
         if ($user->getDisabledAt() !== null) {
             $this->addFlash('info', 'Cet utilisateur est déjà désactivé.');
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('training_parameters_user');
         }
 
         // Set the disabled date to now
@@ -121,6 +127,37 @@ final class UserController extends AbstractController
 
         $this->addFlash('success', 'L’utilisateur a été supprimé avec succès.');
 
-        return $this->redirectToRoute('app_user_index');
+        return $this->redirectToRoute('training_parameters_user');
+    }
+
+
+
+    #[Route('/modes/list', name: 'app_user_list_modes', methods: ['GET'])]
+    public function listModes(UserRepository $userRepo): Response
+    {
+        // Récupérer uniquement les utilisateurs qui ont ROLE_STUDENT
+        $users = $userRepo->createQueryBuilder('u')
+    ->andWhere('u.roles LIKE :role')
+    ->setParameter('role', '%ROLE_STUDENT%')
+    ->getQuery()
+    ->getResult();
+
+        return $this->render('user/list_modes.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
+    #[Route('/{id}/toggle-alternance', name: 'app_user_toggle_alternance', methods: ['POST'])]
+    public function toggleAlternance(User $user, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $isAlternance = filter_var($request->request->get('isAlternance'), FILTER_VALIDATE_BOOLEAN);
+
+        $user->setIsAlternance($isAlternance);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'isAlternance' => $user->isAlternance()
+        ]);
     }
 }

@@ -70,6 +70,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
+    #[ORM\Column]
+    private ?bool $is_alternance = null;
+
     public function __construct()
     {
         $this->tutorContracts = new ArrayCollection();
@@ -450,6 +453,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompanyAddress(?string $address): self
     {
         $this->company[1] = $address;
+        return $this;
+    }
+
+    public function isAlternance(): ?bool
+    {
+        return $this->is_alternance;
+    }
+
+    public function setIsAlternance(bool $is_alternance): static
+    {
+        $this->is_alternance = $is_alternance;
+
         return $this;
     }
 

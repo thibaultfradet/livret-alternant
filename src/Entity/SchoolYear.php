@@ -47,10 +47,13 @@ class SchoolYear
     private Collection $termsAcceptances;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $termsContent = null;
+    private ?string $termsContentAlternance = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $termsContentPro = null;
 
     public function __construct()
     {
@@ -195,14 +198,14 @@ class SchoolYear
         return $this;
     }
 
-    public function getTermsContent(): ?string
+    public function getTermsContentAlternance(): ?string
     {
-        return $this->termsContent;
+        return $this->termsContentAlternance;
     }
 
-    public function setTermsContent(string $termsContent): static
+    public function setTermsContentAlternance(string $termsContentAlternance): static
     {
-        $this->termsContent = $termsContent;
+        $this->termsContentAlternance = $termsContentAlternance;
 
         return $this;
     }
@@ -215,6 +218,18 @@ class SchoolYear
     public function setDisabledAt(?\DateTime $disabledAt): static
     {
         $this->disabledAt = $disabledAt;
+
+        return $this;
+    }
+
+    public function getTermsContentPro(): ?string
+    {
+        return $this->termsContentPro;
+    }
+
+    public function setTermsContentPro(string $termsContentPro): static
+    {
+        $this->termsContentPro = $termsContentPro;
 
         return $this;
     }

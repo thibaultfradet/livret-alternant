@@ -30,8 +30,15 @@ class SchoolYearType extends AbstractType
                 'label' => 'Année scolaire active',
                 'required' => false,
             ])
-            ->add('termsContent', TextareaType::class, [
-                'label' => 'Conditions générales',
+            ->add('termsContentAlternance', TextareaType::class, [
+                'label' => 'Conditions générales pour les contrats d\'alternance',
+                'required' => false,
+                'attr' => [
+                    'class' => 'summernote',
+                ],
+            ])
+            ->add('termsContentPro', TextareaType::class, [
+                'label' => 'Conditions générales pour les contrats de professionnalisation',
                 'required' => false,
                 'attr' => [
                     'class' => 'summernote',

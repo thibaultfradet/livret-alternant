@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Classroom;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -10,32 +12,49 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
+
 class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('email', EmailType::class)
-            ->add('firstName', TextType::class, [
-                'label' => 'Prénom',
-            ])
-            ->add('lastName', TextType::class, [
-                'label' => 'Nom',
-            ])
+            ->add('firstName', TextType::class, ['label' => 'Prénom'])
+            ->add('lastName', TextType::class, ['label' => 'Nom'])
+            
             // Checkbox for main teacher role
             ->add('isProfPrincipal', CheckboxType::class, [
                 'label' => 'Est un professeur référent',
                 'required' => false,
-                'mapped' => false, // Not a real entity field
+                'mapped' => false,
             ])
+            
             // Checkbox for teaching team member role
             ->add('isTeamMember', CheckboxType::class, [
                 'label' => 'Est un membre de l\'équipe pédagogique',
                 'required' => false,
-                'mapped' => false, // Not a real entity field
+                'mapped' => false,
+            ])
+            
+            // Checkbox for alternance student
+            ->add('isAlternance', CheckboxType::class, [
+                'label' => 'Contrat d\'alternance',
+                'required' => false,
+            ])
+            
+            // Select classroom for students
+            ->add('classroom', EntityType::class, [
+                'class' => Classroom::class,
+                'choice_label' => function($classroom) {
+                    return $classroom->getDiploma()->getLabel(); // display diploma label
+                },
+                'placeholder' => 'Sélectionnez une classe',
+                'required' => false,
+                'label' => 'Classe',
             ])
         ;
     }
+
 
     public function configureOptions(OptionsResolver $resolver): void
     {

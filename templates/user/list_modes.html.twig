@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+<div class="page page-center">
+    <div class="container py-6">
+
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-primary display-5">Liste des utilisateurs</h1>
+            <p class="text-muted">Choisissez le type de contrat pour chaque utilisateur</p>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-vcenter table-hover">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Diplôme</th>
+                        <th class="text-center">Alternance / Pro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr data-user-id="{{ user.id }}">
+                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                            <td>{{ user.classroom.diploma.label ?? '' }}</td>
+                            <td class="text-center">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input toggle-alternance" type="radio" 
+                                        name="type_{{ user.id }}" value="1" 
+                                        {% if user.isAlternance %}checked{% endif %}>
+                                    <label class="form-check-label">Alternance</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input toggle-alternance" type="radio" 
+                                        name="type_{{ user.id }}" value="0" 
+                                        {% if not user.isAlternance %}checked{% endif %}>
+                                    <label class="form-check-label">Pro</label>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+
+{% block javascripts_bottom %}
+<script>
+    $(function() {
+        $('.toggle-alternance').on('change', function() {
+            const $row = $(this).closest('tr');
+            const userId = $row.data('user-id');
+            const isAlternance = $(this).val();
+
+            $.ajax({
+                url: "{{ path('app_user_toggle_alternance', {'id': 'USER_ID'}) }}".replace('USER_ID', userId),
+                method: 'POST',
+                data: { isAlternance: isAlternance },
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Updated user ' + userId + ' to alternance=' + response.isAlternance);
+                    }
+                },
+                error: function() {
+                    alert('Erreur lors de la mise à jour de l’utilisateur.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

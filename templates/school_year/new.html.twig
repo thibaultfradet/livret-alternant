@@ -28,7 +28,8 @@
             {{ form_row(form.active) }}
 
             {# Summernote pour termsContent #}
-            {{ form_row(form.termsContent, {'attr': {'class': 'summernote'}}) }}
+            {{ form_row(form.termsContentAlternance, {'attr': {'class': 'summernote'}}) }}
+            {{ form_row(form.termsContentPro, {'attr': {'class': 'summernote'}}) }}
 
             <div class="d-flex justify-content-between mt-4">
                 <a href="{{ path('training_parameters_schoolYear') }}" class="btn btn-outline-primary">

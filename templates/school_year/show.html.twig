@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="page page-center">
-    <div class="container container-narrow py-6">
+    <div class="container">
 
         <div class="text-center mb-5">
             <h1 class="fw-bold text-primary display-5">
@@ -22,11 +22,11 @@
                 </h3>
 
                 {% if school_year.active %}
-                    <span class="badge text-white bg-success text-white">
+                    <span class="badge bg-success text-white">
                         Active
                     </span>
                 {% else %}
-                    <span class="badge text-white bg-secondary text-white">
+                    <span class="badge bg-secondary text-white">
                         Inactive
                     </span>
                 {% endif %}
@@ -34,7 +34,6 @@
 
             <div class="card-body">
                 <div class="row g-4">
-
                     <div class="col-12">
                         <div class="datagrid">
                             <div class="datagrid-item">
@@ -48,22 +47,44 @@
                         </div>
                     </div>
 
-                    {% if school_year.termsContent %}
-                        <div class="col-12">
-                            <div class="card mt-3">
-                                <div class="card-header">
-                                    <h4 class="card-title mb-0">
-                                        Conditions du livret sur l’année
-                                    </h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-muted">
-                                        {{ school_year.termsContent|raw }}
+                    <div class="col-12">
+                        <div class="row g-4">
+                            {% if school_year.termsContentAlternance %}
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            <h4 class="card-title mb-0">
+                                                Conditions du livret pour les contrats d'alternance
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-muted">
+                                                {{ school_year.termsContentAlternance|raw }}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            {% endif %}
+
+                            {% if school_year.termsContentPro %}
+                                <div class="col-md-6">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            <h4 class="card-title mb-0">
+                                                Conditions du livret pour contrats de professionnalisation
+                                            </h4>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-muted">
+                                                {{ school_year.termsContentPro|raw }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
-                    {% endif %}
+                    </div>
+
                 </div>
             </div>
 
