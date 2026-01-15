@@ -23,26 +23,31 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get roles from form checkboxes
-            $roles = $user->getRoles();
+            $roles = ['ROLE_USER']; // role par défaut
 
+            // Élève
+            if ($form->get('isAlternance')->getData() || $request->request->has('student-tab')) {
+                $roles[] = 'ROLE_STUDENT';
+            }
+
+            // Professeur référent
             if ($form->get('isProfPrincipal')->getData()) {
                 $roles[] = 'ROLE_PT';
             }
 
+            // Membre équipe pédagogique
             if ($form->get('isTeamMember')->getData()) {
                 $roles[] = 'ROLE_TTM';
             }
-            $user->setPassword('');
-            // Remove duplicates just in case
+
             $user->setRoles(array_unique($roles));
+            $user->setPassword('');
 
             $entityManager->persist($user);
             $entityManager->flush();
-//
+
             return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
         }
-
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form,

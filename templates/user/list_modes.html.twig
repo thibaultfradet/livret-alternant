@@ -24,7 +24,7 @@
                     {% for user in users %}
                         <tr data-user-id="{{ user.id }}">
                             <td>{{ user.firstName }} {{ user.lastName }}</td>
-                            <td>{{ user.classroom.diploma.label }}</td>
+                            <td>{{ user.classroom.diploma.label ?? '' }}</td>
                             <td class="text-center">
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input toggle-alternance" type="radio" 

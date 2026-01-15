@@ -6,11 +6,57 @@
 <div class="container mt-5">
     <h1 class="fw-bold text-primary mb-5 display-5 text-center">Créer un nouvel utilisateur</h1>
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
-    {{ form_end(form) }}
+    <div class="card">
+        {# Card header with tabs #}
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="userTypeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="student-tab" data-bs-toggle="tab" href="#student" role="tab">Élève</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="teacher-tab" data-bs-toggle="tab" href="#teacher" role="tab">Professeur référent</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="team-tab" data-bs-toggle="tab" href="#team" role="tab">Membre équipe pédagogique</a>
+                </li>
+            </ul>
+        </div>
 
-    <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-primary mt-3">Retour à la liste</a>
+        <div class="card-body">
+            {{ form_start(form) }}
+
+            {# Common fields for all user types #}
+            {{ form_row(form.email) }}
+            {{ form_row(form.firstName) }}
+            {{ form_row(form.lastName) }}
+
+            {# Tab content for role-specific fields #}
+            <div class="tab-content mt-3">
+                {# Student-specific checkbox with additional class for styling #}
+                <div class="tab-pane fade show active student-tab-content" id="student" role="tabpanel">
+                    {{ form_row(form.isAlternance, {'attr': {'class': 'student-checkbox'}}) }}
+                    {{ form_row(form.classroom) }}
+                </div>
+
+                {# Teacher-specific checkbox #}
+                <div class="tab-pane fade" id="teacher" role="tabpanel">
+                    {{ form_row(form.isProfPrincipal) }}
+                </div>
+
+                {# Teaching team member checkbox #}
+                <div class="tab-pane fade" id="team" role="tabpanel">
+                    {{ form_row(form.isTeamMember) }}
+                </div>
+            </div>
+        </div>
+
+        {# Card footer with buttons #}
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-primary">Retour à la liste</a>
+            <button class="btn btn-primary" type="submit">{{ button_label|default('Valider') }}</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
 </div>
 {% endblock %}
