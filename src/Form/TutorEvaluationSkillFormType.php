@@ -25,11 +25,13 @@ class TutorEvaluationSkillFormType extends AbstractType
                         'message' => 'Merci de sélectionner une compétence.',
                     ]),
                 ],
+                'attr' => [
+                    'class' => 'd-none',
+                ],
             ])
             ->add('skillLevel', EntityType::class, [
                 'class' => SkillLevel::class,
                 'choice_label' => 'label',
-                'placeholder' => 'Sélectionnez un niveau',
                 'required' => true,
                 'constraints' => [
                     new NotBlank([

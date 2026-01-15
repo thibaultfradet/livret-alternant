@@ -14,6 +14,7 @@ use App\Form\TTMEvaluationFormType;
 use App\Form\TutorEvaluationFormType;
 use App\Repository\BehaviorCriteriaRepository;
 use App\Repository\SkillCriteriaRepository;
+use App\Repository\SkillLevelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -32,7 +33,8 @@ final class EvaluationController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         SkillCriteriaRepository $SCRepo,
-        BehaviorCriteriaRepository $BCRepo
+        BehaviorCriteriaRepository $BCRepo,
+        SkillLevelRepository $SLRepo,
     ): Response {
 
         $tutor = $this->getUser();
@@ -93,18 +95,20 @@ final class EvaluationController extends AbstractController
         }
 
 
-        // create form data
+        $allSkillsLevels = $SLRepo->createQueryBuilder('sl')
+        ->where('sl.disabledAt IS NULL') 
+        ->getQuery()
+        ->getResult();
+
+        // create form
         $form = $this->createForm(TutorEvaluationFormType::class, $evaluation);
         $form->handleRequest($request);
 
-        // handle submit && create data
         if ($form->isSubmitted() && $form->isValid()) {
-
             $em->persist($evaluation);
             $em->flush();
 
             $this->addFlash('success', 'Évaluation enregistrée avec succès !');
-
             return $this->redirectToRoute('app_home');
         }
 
@@ -116,6 +120,7 @@ final class EvaluationController extends AbstractController
             'period' => $period,
             'skillsCriteria' => $skillsCriteria,
             'behaviorCriteriaList' => $behaviorCriteriaList,
+            'allSkillsLevels' => $allSkillsLevels,
         ]);
     }
 
