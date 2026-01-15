@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modification des fichiers de la classe {{ id }}{% endblock %}
+{% block title %}Modification des fichiers de la classe {{ classroom.diploma.label }}{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
-    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Modification de la classe {{ id }}</h1>
+    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Modification de la classe {{ classroom.diploma.label }}</h1>
 
     {% for label, messages in app.flashes %}
         {% for message in messages %}
