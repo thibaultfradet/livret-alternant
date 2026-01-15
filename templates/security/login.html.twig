@@ -17,6 +17,11 @@
         <div class="col-md-6 d-flex justify-content-center align-items-center">
             <div class="card shadow-sm border-0 w-75">
                 <div class="card-body m-3">
+                     {% if error %}
+                        <div class="alert alert-danger">
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
                     <h5 class="card-title mb-4 text-center">Connectez-vous à votre compte</h5>
 
                     <form method="post">
