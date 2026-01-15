@@ -254,12 +254,26 @@ class EvaluationVisualizerController extends AbstractController
             $periodLabel = $period->getPeriodNumber();
 
 
-            $tutorContract = $student->getStudentContracts()->first();
-            if (!$eval['tutor_validated'] && $tutorContract && $tutorContract->getTutor()) {
-                $user = $tutorContract->getTutor(); 
+            $tutor = null;
+
+            // Loop through the student's contracts to find an active tutor
+            foreach ($student->getStudentContracts() as $tutorLink) {
+                $start = $tutorLink->getDateDebutContract();
+                $end = $tutorLink->getDateFinContract();
+
+                if (($start === null || $start <= new \DateTime()) &&
+                    ($end === null || $end >= new \DateTime())) {
+                    $tutor = $tutorLink->getTutor();
+                    break;
+                }
+            }
+
+            // Decide which user to assign and the badge
+            if (!$eval['tutor_validated'] && $tutor) {
+                $user = $tutor;
                 $badge = 'Tuteur';
             } else {
-                $user = $student; 
+                $user = $student;
                 $badge = 'Alternant';
             }
 
