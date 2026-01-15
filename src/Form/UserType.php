@@ -34,6 +34,11 @@ class UserType extends AbstractType
                 'required' => false,
                 'mapped' => false, // Not a real entity field
             ])
+            // Checkbox for alternance student
+            ->add('isAlternance', CheckboxType::class, [
+                'label' => 'Contrat d\'alternance',
+                'required' => false,
+            ])
         ;
     }
 

@@ -7,6 +7,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -122,5 +123,36 @@ final class UserController extends AbstractController
         $this->addFlash('success', 'L’utilisateur a été supprimé avec succès.');
 
         return $this->redirectToRoute('training_parameters_user');
+    }
+
+
+
+    #[Route('/modes/list', name: 'app_user_list_modes', methods: ['GET'])]
+    public function listModes(UserRepository $userRepo): Response
+    {
+        // Récupérer uniquement les utilisateurs qui ont ROLE_STUDENT
+        $users = $userRepo->createQueryBuilder('u')
+    ->andWhere('u.roles LIKE :role')
+    ->setParameter('role', '%ROLE_STUDENT%')
+    ->getQuery()
+    ->getResult();
+
+        return $this->render('user/list_modes.html.twig', [
+            'users' => $users,
+        ]);
+    }
+
+    #[Route('/{id}/toggle-alternance', name: 'app_user_toggle_alternance', methods: ['POST'])]
+    public function toggleAlternance(User $user, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $isAlternance = filter_var($request->request->get('isAlternance'), FILTER_VALIDATE_BOOLEAN);
+
+        $user->setIsAlternance($isAlternance);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'isAlternance' => $user->isAlternance()
+        ]);
     }
 }
