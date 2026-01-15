@@ -32,14 +32,14 @@ final class UserController extends AbstractController
             if ($form->get('isTeamMember')->getData()) {
                 $roles[] = 'ROLE_TTM';
             }
-
+            $user->setPassword('');
             // Remove duplicates just in case
             $user->setRoles(array_unique($roles));
 
             $entityManager->persist($user);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+//
+            return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('user/new.html.twig', [
@@ -85,7 +85,7 @@ final class UserController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('user/edit.html.twig', [
@@ -102,7 +102,7 @@ final class UserController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
     }
 
 
@@ -112,7 +112,7 @@ final class UserController extends AbstractController
         // If user is already disabled, just redirect
         if ($user->getDisabledAt() !== null) {
             $this->addFlash('info', 'Cet utilisateur est déjà désactivé.');
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('training_parameters_user');
         }
 
         // Set the disabled date to now
@@ -121,6 +121,6 @@ final class UserController extends AbstractController
 
         $this->addFlash('success', 'L’utilisateur a été supprimé avec succès.');
 
-        return $this->redirectToRoute('app_user_index');
+        return $this->redirectToRoute('training_parameters_user');
     }
 }
