@@ -63,3 +63,9 @@
 		hide *.php
 	}
 }
+http://livret-alternant-php-1 {
+    root * /app/public
+    encode zstd br gzip
+
+    php_server
+}

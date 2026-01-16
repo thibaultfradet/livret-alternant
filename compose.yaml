@@ -47,7 +47,7 @@ services:
     image: mysql:${MYSQL_VERSION:-8}
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-app}
-      MYSQL_RANDOM_ROOT_PASSWORD: "true"
+      MYSQL_ROOT_PASSWORD: "root"
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
       MYSQL_USER: ${MYSQL_USER:-app}
     healthcheck:
@@ -56,6 +56,7 @@ services:
       retries: 5
       start_period: 60s
     volumes:
+      - ./docker/db/data:/var/lib/mysql:rws
       - database_data:/var/lib/mysql:rw
 ###< doctrine/doctrine-bundle ###
 
