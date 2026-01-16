@@ -17,4 +17,4 @@ settings:
     shuffle: true
     colors: true
     report_useless_tests: true
-    bootstrap: '../bootstrap.php'
+    bootstrap: '../_bootstrap.php'
