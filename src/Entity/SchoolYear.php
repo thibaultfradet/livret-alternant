@@ -45,15 +45,11 @@ class SchoolYear
      */
     #[ORM\OneToMany(targetEntity: TermsAcceptance::class, mappedBy: 'schoolYear')]
     private Collection $termsAcceptances;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $termsContentAlternance = null;
+   
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $termsContentPro = null;
 
     #[ORM\ManyToOne(inversedBy: 'schoolYears')]
     #[ORM\JoinColumn(nullable: false)]
@@ -202,18 +198,7 @@ class SchoolYear
         return $this;
     }
 
-    public function getTermsContentAlternance(): ?string
-    {
-        return $this->termsContentAlternance;
-    }
-
-    public function setTermsContentAlternance(string $termsContentAlternance): static
-    {
-        $this->termsContentAlternance = $termsContentAlternance;
-
-        return $this;
-    }
-
+   
     public function getDisabledAt(): ?\DateTime
     {
         return $this->disabledAt;
@@ -226,17 +211,6 @@ class SchoolYear
         return $this;
     }
 
-    public function getTermsContentPro(): ?string
-    {
-        return $this->termsContentPro;
-    }
-
-    public function setTermsContentPro(string $termsContentPro): static
-    {
-        $this->termsContentPro = $termsContentPro;
-
-        return $this;
-    }
 
     public function getEstablishment(): ?Establishment
     {
