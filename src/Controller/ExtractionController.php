@@ -134,10 +134,12 @@ final class ExtractionController extends AbstractController
         UserRepository $userRepository,
         SkillLevelRepository $skillLevelRepository,
         SchoolYearRepository $schoolYearRepository,
-        Request $request 
+        Request $request
     ): Response {
 
         $user = $this->getUser();
+
+        // Get active school year
         $activeYear = $schoolYearRepository->findActive();
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
@@ -149,7 +151,7 @@ final class ExtractionController extends AbstractController
             throw $this->createNotFoundException('Student not found.');
         }
 
-        // Access check
+        // Access control
         $tutor = null;
         foreach ($student->getStudentContracts() as $contract) {
             $start = $contract->getDateDebutContract();
@@ -162,45 +164,58 @@ final class ExtractionController extends AbstractController
             }
         }
 
-        $principalTeacher = $student->getClassroom() ? $student->getClassroom()->getPrincipalTeacher() : null;
+        $principalTeacher = $student->getClassroom()?->getPrincipalTeacher();
 
-        $hasAccess = $user === $student
-                    || ($principalTeacher && $user === $principalTeacher)
-                    || ($tutor && $user === $tutor)
-                    || in_array('ROLE_TTM', $user->getRoles(), true);
+        $hasAccess =
+            $user === $student ||
+            ($principalTeacher && $user === $principalTeacher) ||
+            ($tutor && $user === $tutor) ||
+            in_array('ROLE_TTM', $user->getRoles(), true);
 
         if (!$hasAccess) {
             return $this->redirectToRoute('app_home');
         }
 
-        // Get the selected period from URL query, default to first period
+        // Retrieve periods for dropdown
+        $periods = $student->getClassroom()->getSchoolYear()->getPeriods()->toArray();
+        usort($periods, fn ($a, $b) => $a->getPeriodNumber() <=> $b->getPeriodNumber());
+
+        // Get selected period from query
         $periodId = $request->query->get('period');
         $selectedPeriod = null;
-        $periods = $student->getClassroom()->getSchoolYear()->getPeriods()->toArray();
-        usort($periods, fn($a, $b) => $a->getPeriodNumber() <=> $b->getPeriodNumber()); // sort chronologically
 
         if ($periodId) {
-            foreach ($periods as $p) {
-                if ($p->getId() == $periodId) {
-                    $selectedPeriod = $p;
+            foreach ($periods as $period) {
+                if ($period->getId() == $periodId) {
+                    $selectedPeriod = $period;
                     break;
                 }
             }
         }
-        // default to first period if none selected
+
+        // Default to first period if none selected
         if (!$selectedPeriod && !empty($periods)) {
             $selectedPeriod = $periods[0];
         }
 
-        // Fetch evaluations grouped by period
+        // Fetch all evaluations grouped by period
         $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);
+
+        // Filter evaluations to only the selected period
+        $filteredSkillEvaluationsByPeriod = [];
+        if ($selectedPeriod) {
+            $periodNumber = $selectedPeriod->getPeriodNumber();
+            if (isset($skillEvaluationsByPeriod[$periodNumber])) {
+                $filteredSkillEvaluationsByPeriod[$periodNumber] = $skillEvaluationsByPeriod[$periodNumber];
+            }
+        }
 
         return $this->render('extraction/student_evaluations.html.twig', [
             'student' => $student,
-            'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
+            'skillEvaluationsByPeriod' => $filteredSkillEvaluationsByPeriod,
             'allSkillsLevels' => $skillLevelRepository->findBy(['disabledAt' => null]),
             'selectedPeriod' => $selectedPeriod,
-            'periods' => $periods, // pass all periods for the dropdown
+            'periods' => $periods,
         ]);
     }
 
