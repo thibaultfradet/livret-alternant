@@ -5,16 +5,41 @@
 {% block body %}
 <div class="container mt-5">
 
-    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Modifier une période</h1>
+    <h1 class="fw-bold text-primary mb-5 display-5 text-center">
+        Modifier une période
+    </h1>
 
     <div class="card shadow-sm border-0 rounded-3 p-4 mb-3">
         {{ form_start(form) }}
-            {{ form_widget(form) }}
-            <button class="btn btn-primary">{{ button_label|default('Mettre à jour') }}</button>
+
+        {# Period number + school year on the same line #}
+        <div class="row mb-3">
+            <div class="col-md-4">
+                {{ form_row(form.periodNumber) }}
+            </div>
+            <div class="col-md-8">
+                {{ form_row(form.schoolYear) }}
+            </div>
+        </div>
+
+        {# Start date + end date on the same line #}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                {{ form_row(form.startDate) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.endDate) }}
+            </div>
+        </div>
+
+        <button class="btn btn-primary">
+            {{ button_label|default('Mettre à jour') }}
+        </button>
+
         {{ form_end(form) }}
     </div>
 
-    <div class="mt-3">
+    <div class="mt-3 text-center">
         <a href="{{ path('training_parameters_period') }}" class="btn btn-outline-secondary">
             Retour à la liste
         </a>

@@ -6,32 +6,51 @@
 <div class="container mt-5">
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="fw-bold text-primary mb-5 display-5 text-center">Modifier une année scolaire</h1>
+            <h1 class="fw-bold text-primary mb-5 display-5 text-center">
+                Modifier une année scolaire
+            </h1>
         </div>
     </div>
 
-     <div class="row justify-content-center">
+    <div class="row justify-content-center">
         <div class="col-lg-8">
             {{ form_start(form) }}
-                {{ form_widget(form) }}
-                <div class="d-flex justify-content-between my-4">
-                    <a href="{{ path('training_parameters_schoolYear') }}" class="btn btn-outline-primary">
-                        Retourner à la liste
-                    </a>
-                    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+
+            {{ form_row(form.label) }}
+
+            {# Start date + end date on the same line #}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_row(form.startDate) }}
                 </div>
+                <div class="col-md-6">
+                    {{ form_row(form.endDate) }}
+                </div>
+            </div>
+
+            {{ form_row(form.active) }}
+
+            {{ form_row(form.termsContentAlternance, {'attr': {'class': 'summernote'}}) }}
+            {{ form_row(form.termsContentPro, {'attr': {'class': 'summernote'}}) }}
+
+            <div class="d-flex justify-content-between my-4">
+                <a href="{{ path('training_parameters_schoolYear') }}" class="btn btn-outline-primary">
+                    Retourner à la liste
+                </a>
+                <button class="btn btn-primary">
+                    {{ button_label|default('Enregistrer') }}
+                </button>
+            </div>
+
             {{ form_end(form) }}
-            
         </div>
     </div>
 </div>
 {% endblock %}
 
-
 {% block javascripts %}
     {{ parent() }}
 
-    {# Summernote CSS et JS depuis CDN #}
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
 
