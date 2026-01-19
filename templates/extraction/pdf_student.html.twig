@@ -77,7 +77,7 @@
     <div>
         <div class="section-header bg-beaupeyrat">5. MODALITÉS D'UTILISATION DU LIVRET</div>
         <div class="section-body">
-            {{ student.isAlternance ? termsContentAlternance|raw : termsContentPro|raw }}
+            {{ termsContent|raw}}
         </div>
 
         {# --- Validation des données (tuteur / alternant / équipe pédagogique) ---#}
