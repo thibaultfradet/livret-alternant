@@ -10,16 +10,16 @@ use Symfony\Component\Filesystem\Filesystem;
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
 
-$dotenv = new Dotenv();
-$dotenv->bootEnv(dirname(__DIR__).'/.env.test'); 
-$dotenv->load(dirname(__DIR__).'/.env.test.local'); 
+// $dotenv = new Dotenv();
+// $dotenv->bootEnv(dirname(__DIR__).'/.env.test'); 
+// $dotenv->load(dirname(__DIR__).'/.env.test.local'); 
 
 
 // Force l'environnement test et debug à 0
-$_SERVER['APP_ENV'] = 'test';
-$_ENV['APP_ENV'] = 'test';
-$_SERVER['APP_DEBUG'] = 0;
-$_ENV['APP_DEBUG'] = 0;
+// $_SERVER['APP_ENV'] = 'dev';
+// $_ENV['APP_ENV'] = 'dev';
+// $_SERVER['APP_DEBUG'] = 0;
+// $_ENV['APP_DEBUG'] = 0;
 
 // Clean up from previous runs
 try {
