@@ -55,6 +55,10 @@ class SchoolYear
     #[ORM\Column(type: Types::TEXT)]
     private ?string $termsContentPro = null;
 
+    #[ORM\ManyToOne(inversedBy: 'schoolYears')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Establishment $Establishment = null;
+
     public function __construct()
     {
         $this->classrooms = new ArrayCollection();
@@ -230,6 +234,18 @@ class SchoolYear
     public function setTermsContentPro(string $termsContentPro): static
     {
         $this->termsContentPro = $termsContentPro;
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->Establishment;
+    }
+
+    public function setEstablishment(?Establishment $Establishment): static
+    {
+        $this->Establishment = $Establishment;
 
         return $this;
     }
