@@ -23,11 +23,20 @@ class SkillManageController extends AbstractController
     public function index(DiplomaRepository $diplomaRepository, SkillLevelRepository $skillLevelRepo, ?int $id = null): Response
     {
 
-        // get all diplomas
-        $diplomas = $diplomaRepository->findAll();
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
+        // Filter by establishment
+        $diplomasQb = $diplomaRepository->createQueryBuilder('d')
+            ->where('d.disabledAt IS NULL')
+            ->andWhere('d.Establishment = :establishment')
+            ->setParameter('establishment', $establishment)
+            ->getQuery();
+
+        $diplomas = $diplomasQb->getResult();
 
         if (empty($diplomas)) {
-            throw $this->createNotFoundException('Aucun diplôme n\'est disponible.');
+            throw $this->createNotFoundException('Aucun diplôme n\'est disponible pour votre établissement.');
         }
 
         // if no parameter diploma take the first one of all
@@ -71,6 +80,14 @@ class SkillManageController extends AbstractController
     #[Route('/skill-manage/group/create/{diploma}', name: 'app_skill_group_create', methods: ['GET','POST'])]
     public function createGroup(Diploma $diploma, Request $request, EntityManagerInterface $em): Response
     {
+
+        $user = $this->getUser();
+
+        // Check diploma belongs to user's establishment
+        if ($diploma->getEstablishment() !== $user->getEstablishment()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les diplômes de votre établissement.');
+        }
+
         $group = new SkillGroup();
         $group->setDiploma($diploma);
 

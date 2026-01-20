@@ -20,11 +20,26 @@ final class UserController extends AbstractController
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $currentUser = $this->getUser();
+        $establishment = $currentUser->getEstablishment();
+
+        if (!$establishment) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas assigné à un établissement.');
+        }
+
         $user = new User();
+        // pre-set establishment
+        $user->setEstablishment($establishment);
+
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($user->getEstablishment() !== $establishment) {
+                throw $this->createAccessDeniedException('Vous ne pouvez créer des utilisateurs que pour votre établissement.');
+            }
+
             $roles = ['ROLE_USER']; // role par défaut
 
             // Élève
@@ -67,6 +82,14 @@ final class UserController extends AbstractController
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
+
+        $currentUser = $this->getUser();
+
+        // check same establishment
+        if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les utilisateurs de votre établissement.');
+        }
+        
         $form = $this->createForm(UserType::class, $user);
 
         // Pre-check checkboxes based on existing roles
@@ -76,6 +99,11 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //check again establishment change
+            if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
+                throw $this->createAccessDeniedException('Vous ne pouvez pas changer l\'établissement.');
+            }
+
             $roles = [];
 
             if ($form->get('isProfPrincipal')->getData()) {
