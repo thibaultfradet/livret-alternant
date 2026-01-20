@@ -59,6 +59,7 @@ security:
         - { path: ^/users, roles: ROLE_TTM }
         - { path: ^/diploma, roles: ROLE_TTM }
         - { path: ^/formation-center, roles: ROLE_TTM }
+        - { path: ^/establishment, roles: ROLE_TTM }
 
 
         # multiples roles
@@ -68,7 +69,7 @@ security:
         # ROLE_ADMIN
 
         # ROLE_SUPER_ADMIN
-        - { path: ^/super-admin, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
         # Toutes les autres routes nécessitent un utilisateur connecté
         - { path: ^/, roles: ROLE_USER }

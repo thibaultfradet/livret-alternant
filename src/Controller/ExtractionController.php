@@ -41,14 +41,13 @@ final class ExtractionController extends AbstractController
         }
 
         // image path
-        $formationCenterImgPath = sprintf('/uploads/general/formation-center-%d.png', $activeYear->getId());
         $ttmImgPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
         $calendarImgPath = sprintf('/uploads/classroom/calendar-%d.png', $student->getClassroom()->getId());
 
         if ($student->isAlternance()) {
-            $termsContent = $activeYear->getTermsContentAlternance();
+            $termsConditions = $student->getClassroom()->getTermsConditionsAlternance();
         } else {
-            $termsContent = $activeYear->getTermsContentPro();
+            $termsConditions = $student->getClassroom()->getTermsConditionsPro();
         }
         
         $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);
@@ -109,10 +108,10 @@ final class ExtractionController extends AbstractController
             'controller_name' => 'Extraction',
             'student' => $student,
             'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
-            'formationCenterPath' => $formationCenterImgPath,
+            'formationCenter' => $student->getEstablishment(),
             'ttmPath' => $ttmImgPath,
             'calendarPath' => $calendarImgPath,
-            'termsContent' => $termsContent,
+            'termsConditions' => $termsConditions,
             'isPdf' => true, 
             'acceptances' => $acceptances,
             'tutor' => $tutor,

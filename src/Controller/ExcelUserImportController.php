@@ -30,6 +30,9 @@ final class ExcelUserImportController extends AbstractController
             if ($excelFile) {
                 try {
 
+                    $currentUser = $this->getUser();
+
+
                     $activeSchoolYear = $schoolYearRepo->findActive();
 
                     // Load Excel file
@@ -74,6 +77,17 @@ final class ExcelUserImportController extends AbstractController
                             $classroom = new Classroom();
                             $classroom->setDiploma($diploma);
                             $classroom->setSchoolYear($activeSchoolYear);
+
+                            // Set terms && formation center from the current user's establishment
+                            /** @var \App\Entity\User $user */
+                            $user = $this->getUser();
+                            if ($user && $user->getEstablishment()) {
+                                $establishment = $user->getEstablishment();
+                                $classroom->setFormationCenter($establishment->getFormationCenter());
+                                $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
+                                $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+                            }
+
                             $em->persist($classroom);
                             $em->flush();
                         }
@@ -134,6 +148,7 @@ final class ExcelUserImportController extends AbstractController
                         $student->setRoles(['ROLE_STUDENT']);
                         $student->setPassword($passwordHasher->hashPassword($student, 'temporaryPassword123'));
                         $student->setClassroom($classroom);
+                        $student->setEstablishment($currentUser->getEstablishment());
                         $em->persist($student);
                         $em->flush();
 

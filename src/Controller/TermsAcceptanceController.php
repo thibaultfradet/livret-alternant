@@ -23,13 +23,13 @@ final class TermsAcceptanceController extends AbstractController
         $activeYear = $schoolYearRepository->findActive();
 
         if ($user->isAlternance()) {
-            $termsContent = $activeYear->getTermsContentAlternance();
+            $termsConditions = $user->getEstablishment()->getTermsConditionsAlternance();
         } else {
-            $termsContent = $activeYear->getTermsContentPro();
+            $termsConditions = $user->getEstablishment()->getTermsConditionsPro();
         }
         
         return $this->render('terms_acceptance/index.html.twig', [
-            'termsContent' => $termsContent,
+            'termsConditions' => $termsConditions,
         ]);
     }
 
@@ -79,15 +79,16 @@ final class TermsAcceptanceController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        if ($user->isAlternance()) {
-            $termsContent = $activeYear->getTermsContentAlternance();
+         if ($user->isAlternance()) {
+            $termsConditions = $user->getClassroom()->getTermsConditionsAlternance();
         } else {
-            $termsContent = $activeYear->getTermsContentPro();
+            $termsConditions = $user->getClassroom()->getTermsConditionsPro();
         }
+        
         return $this->render('terms_acceptance/validate.html.twig', [
             'schoolYear' => $activeYear,
             'user' => $user,
-            'termsContent' => $termsContent,
+            'termsConditions' => $termsConditions,
             'form' => $form->createView()
         ]);
     }

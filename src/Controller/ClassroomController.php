@@ -7,6 +7,7 @@ use App\Entity\Classroom;
 use App\Form\ClassroomFilesType;
 use App\Form\ClassroomNewType;
 use App\Form\ClassroomPrincipalTeacherType;
+use App\Form\ClassroomTermsType;
 use App\Form\ClassroomTrainingContactType;
 use App\Repository\ClassroomRepository;
 use App\Repository\SchoolYearRepository;
@@ -22,16 +23,34 @@ use Symfony\Component\Mime\Address;
 
 class ClassroomController extends AbstractController
 {
+
+
     #[Route('/classroom/new', name: 'app_classroom_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, SchoolYearRepository $schoolYearRepository, EntityManagerInterface $em): Response
-    {
+    public function new(
+        Request $request,
+        SchoolYearRepository $schoolYearRepository,
+        EntityManagerInterface $em
+    ): Response {
         $classroom = new Classroom();
 
-        // Get the active school year
+        // get current user establishment
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if ($user && $user->getEstablishment()) {
+            $establishment = $user->getEstablishment();
+
+            // set terms of establishment && formation center
+            $classroom->setFormationCenter($establishment->getFormationCenter());
+            $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
+            $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+        }
+
+        //Get current school year
         $activeYear = $schoolYearRepository->findActive();
 
         $form = $this->createForm(ClassroomNewType::class, $classroom, [
-            'activeSchoolYear' => $activeYear, // pass default
+            'activeSchoolYear' => $activeYear,
         ]);
 
         $form->handleRequest($request);
@@ -48,7 +67,6 @@ class ClassroomController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
 
 
 
@@ -239,5 +257,36 @@ class ClassroomController extends AbstractController
             // Send email
             $mailer->send($email);
         }
+    }
+
+
+    #[Route('/classroom/{id}/terms', name: 'app_classroom_terms', methods: ['GET', 'POST'])]
+    public function editTerms(
+        Classroom $classroom,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Create the form for editing classroom terms
+        $form = $this->createForm(ClassroomTermsType::class, $classroom);
+
+        // Handle form submission
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persist changes to the database
+            $entityManager->persist($classroom);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Classroom terms updated successfully.');
+
+            // Redirect back to classroom list or details page
+            return $this->redirectToRoute('training_parameters_classroom');
+        }
+
+        // Render the form template
+        return $this->render('classroom/edit_terms.html.twig', [
+            'classroom' => $classroom,
+            'form' => $form->createView(),
+        ]);
     }
 }

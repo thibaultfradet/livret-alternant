@@ -60,7 +60,108 @@
     {# --- Centre de formation ---#}
     <div class="section-header bg-beaupeyrat">3. LE CENTRE DE FORMATION</div>
     <div class="section-body border border-beaupeyrat">
-        <img src="file://{{ formationCenterPath }}" style="width:100%;" alt="Centre de formation">
+
+        {# --- Informations générales du centre ---#}
+        <div class="card">
+            <div class="card-header">Informations générales</div>
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Informations générales</td>
+                    <td style="padding:6px; border:1px solid #ccc;">
+                        {{ formationCenter.generalInfo|default('') }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        {# --- Directeur ---#}
+        {% set director = formationCenter.director %}
+        {% if director %}
+        <div class="card">
+            <div class="card-header">Directeur</div>
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ director.lastName ~ ' ' ~ director.firstName|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ director.email|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ director.phone|default('') }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {# --- Directeur de campus ---#}
+        {% set campusDirector = formationCenter.campusDirector %}
+        {% if campusDirector %}
+        <div class="card">
+            <div class="card-header">Directeur de campus</div>
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ campusDirector.lastName ~ ' ' ~ campusDirector.firstName|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ campusDirector.email|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ campusDirector.phone|default('') }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {# --- Responsable de l'alternance ---#}
+        {% set alternanceManager = formationCenter.alternanceManager %}
+        {% if alternanceManager %}
+        <div class="card">
+            <div class="card-header">Responsable de l'alternance</div>
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ alternanceManager.lastName ~ ' ' ~ alternanceManager.firstName|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ alternanceManager.email|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ alternanceManager.phone|default('') }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
+        {# --- Référent handicap ---#}
+        {% set handicapReferent = formationCenter.handicapReferent %}
+        {% if handicapReferent %}
+        <div class="card">
+            <div class="card-header">Référent handicap</div>
+            <table style="width:100%; border-collapse:collapse;">
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ handicapReferent.lastName ~ ' ' ~ handicapReferent.firstName|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ handicapReferent.email|default('') }}</td>
+                </tr>
+                <tr>
+                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
+                    <td style="padding:6px; border:1px solid #ccc;">{{ handicapReferent.phone|default('') }}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+
     </div>
 
     <div class="page-break"></div>
@@ -77,7 +178,7 @@
     <div>
         <div class="section-header bg-beaupeyrat">5. MODALITÉS D'UTILISATION DU LIVRET</div>
         <div class="section-body">
-            {{ termsContent|raw}}
+            {{ termsConditions|raw}}
         </div>
 
         {# --- Validation des données (tuteur / alternant / équipe pédagogique) ---#}

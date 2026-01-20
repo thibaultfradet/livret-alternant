@@ -73,6 +73,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $is_alternance = null;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Establishment $Establishment = null;
+
     public function __construct()
     {
         $this->tutorContracts = new ArrayCollection();
@@ -464,6 +467,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsAlternance(bool $is_alternance): static
     {
         $this->is_alternance = $is_alternance;
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->Establishment;
+    }
+
+    public function setEstablishment(?Establishment $Establishment): static
+    {
+        $this->Establishment = $Establishment;
 
         return $this;
     }
