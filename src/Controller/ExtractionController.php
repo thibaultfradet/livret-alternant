@@ -29,7 +29,7 @@ final class ExtractionController extends AbstractController
     ): Response {
 
         //get active year
-        $activeYear = $schoolYearRepository->findActive();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment();
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -139,7 +139,7 @@ final class ExtractionController extends AbstractController
         $user = $this->getUser();
 
         // Get active school year
-        $activeYear = $schoolYearRepository->findActive();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment();
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }

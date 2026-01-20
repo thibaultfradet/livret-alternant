@@ -41,7 +41,7 @@ class UserCheckSubscriber implements EventSubscriberInterface
         }
 
 
-        $year = $this->em->getRepository(SchoolYear::class)->findActive();
+        $year = $this->em->getRepository(SchoolYear::class)->findActiveByEstablishment();
         if (!$year) {
             return;
         }

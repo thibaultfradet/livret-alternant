@@ -20,7 +20,7 @@ final class TermsAcceptanceController extends AbstractController
     {
         $user = $this->getUser();
 
-        $activeYear = $schoolYearRepository->findActive();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment();
 
         if ($user->isAlternance()) {
             $termsConditions = $user->getEstablishment()->getTermsConditionsAlternance();
@@ -46,7 +46,7 @@ final class TermsAcceptanceController extends AbstractController
     ): Response
     {
         $user = $this->getUser();
-        $activeYear = $SYRepo->findActive();
+        $activeYear = $SYRepo->findActiveByEstablishment();
 
         $existingAcceptance = $termsRepo->findOneBy([
             'user' => $user,

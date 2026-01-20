@@ -23,15 +23,6 @@ final class SchoolYearController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // If the new SchoolYear is active, deactivate all others
-            if ($schoolYear->isActive()) {
-                $otherYears = $schoolYearRepository->findAll();
-                foreach ($otherYears as $otherYear) {
-                    $otherYear->setIsActive(false);
-                    $entityManager->persist($otherYear);
-                }
-            }
-
             $entityManager->persist($schoolYear);
             $entityManager->flush();
 
@@ -59,17 +50,6 @@ final class SchoolYearController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // If the edited SchoolYear is active, deactivate all others
-            if ($schoolYear->getIsActive()) {
-                $otherYears = $schoolYearRepository->findAll();
-                foreach ($otherYears as $otherYear) {
-                    if ($otherYear->getId() !== $schoolYear->getId()) { // skip the current one
-                        $otherYear->setIsActive(false);
-                        $entityManager->persist($otherYear);
-                    }
-                }
-            }
 
             $entityManager->flush();
 

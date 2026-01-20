@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\SchoolYear;
+use App\Entity\Establishment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,9 +20,24 @@ class SchoolYearRepository extends ServiceEntityRepository
 
     public function findActive(): ?SchoolYear
     {
+        
         return $this->createQueryBuilder('sy')
             ->andWhere('sy.active = :active')
             ->setParameter('active', true)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findActiveByEstablishment(): ?SchoolYear
+    {
+        $user = $this->getUser();
+        
+        return $this->createQueryBuilder('sy')
+            ->andWhere('sy.active = :active')
+            ->andWhere('sy.Establishment = :establishment')
+            ->setParameter('active', true)
+            ->setParameter('establishment', $user->getEstablishment())
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

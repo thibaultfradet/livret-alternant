@@ -47,7 +47,7 @@ class ClassroomController extends AbstractController
         }
 
         //Get current school year
-        $activeYear = $schoolYearRepository->findActive();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment();
 
         $form = $this->createForm(ClassroomNewType::class, $classroom, [
             'activeSchoolYear' => $activeYear,

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BehaviorCriteria;
+use App\Entity\User;
 use App\Repository\ClassroomRepository;
 use App\Repository\DiplomaRepository;
 use App\Repository\PeriodRepository;
@@ -37,7 +38,9 @@ class TrainingsController extends AbstractController
         ClassroomRepository $classroomRepository,
         SchoolYearRepository $schoolYearRepository
     ): Response {
-        $activeSchoolYear = $schoolYearRepository->findActive();
+        /** @var User $user */
+        $user = $this->getUser();
+        $activeSchoolYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
 
         $classrooms = $classroomRepository->findBy([
             'schoolYear' => $activeSchoolYear,
@@ -54,8 +57,12 @@ class TrainingsController extends AbstractController
     #[Route('/parameters/diploma', name: 'training_parameters_diploma')]
     public function parametersDiploma(DiplomaRepository $diplomaRepository): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
         $diplomas = $diplomaRepository->findBy([
             'disabledAt' => null,
+            'Establishment' => $user->getEstablishment(),
         ]);
 
         return $this->render('trainings/parameters.html.twig', [
@@ -70,7 +77,9 @@ class TrainingsController extends AbstractController
         PeriodRepository $periodRepository,
         SchoolYearRepository $schoolYearRepository
     ): Response {
-        $activeSchoolYear = $schoolYearRepository->findActive();
+        /** @var User $user */
+        $user = $this->getUser();
+        $activeSchoolYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
 
         $periods = $periodRepository->findBy([
             'schoolYear' => $activeSchoolYear,
@@ -87,8 +96,12 @@ class TrainingsController extends AbstractController
     #[Route('/parameters/schoolYear', name: 'training_parameters_schoolYear')]
     public function parametersSchoolYear(SchoolYearRepository $schoolYearRepository): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
         $schoolYears = $schoolYearRepository->findBy([
             'disabledAt' => null,
+            'Establishment' => $user->getEstablishment(),
         ]);
 
         return $this->render('trainings/parameters.html.twig', [
@@ -128,8 +141,12 @@ class TrainingsController extends AbstractController
     #[Route('/parameters/user', name: 'training_parameters_user')]
     public function parametersUser(UserRepository $usersTrainingsRepository): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
         $users = $usersTrainingsRepository->findBy([
             'disabledAt' => null,
+            'Establishment' => $user->getEstablishment(),
         ]);
 
         return $this->render('trainings/parameters.html.twig', [
