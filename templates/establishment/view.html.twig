@@ -1,0 +1,54 @@
+{# templates/establishment/view.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'établissement{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold text-primary mb-5 display-5">
+                Détails de l'établissement
+            </h1>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Nom de l'établissement</label>
+                <div class="border p-3 rounded" style="background-color: #f9f9f9;">
+                    {{ establishment.name }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Conditions générales - Contrats de professionnalisation</label>
+                <div class="border p-3 rounded" style="background-color: #f9f9f9;">
+                    {{ establishment.termsConditionsPro|raw }}
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold">Conditions générales - Contrats en alternance</label>
+                <div class="border p-3 rounded" style="background-color: #f9f9f9;">
+                    {{ establishment.termsConditionsAlternance|raw }}
+                </div>
+            </div>
+
+
+            <div class="d-flex justify-content-between mt-5">
+                <a href="{{ path('app_establishment_general') }}" class="btn btn-success">
+                    Modifier les informations générales
+                </a>
+                <a href="{{ path('app_establishment_center_edit') }}" class="btn btn-primary">
+                    Modifier le centre de formation
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

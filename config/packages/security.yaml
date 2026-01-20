@@ -59,6 +59,7 @@ security:
         - { path: ^/users, roles: ROLE_TTM }
         - { path: ^/diploma, roles: ROLE_TTM }
         - { path: ^/formation-center, roles: ROLE_TTM }
+        - { path: ^/establishment, roles: ROLE_TTM }
 
 
         # multiples roles

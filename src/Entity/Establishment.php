@@ -90,15 +90,60 @@ class Establishment
         return $this;
     }
 
-    public function getFormationCenter(): ?array
+    
+    public function getFormationCenter(): array
     {
-        return $this->formationCenter;
+        return $this->formationCenter ?? [];
     }
 
-    public function setFormationCenter(?array $formationCenter): static
+    public function setFormationCenter(array $data): self
     {
-        $this->formationCenter = $formationCenter;
+        $this->formationCenter = $data;
+        return $this;
+    }
 
+    // Helper methods for subfields
+    public function getDirector(): array
+    {
+        return $this->formationCenter['director'] ?? [];
+    }
+
+    public function setDirector(array $director): self
+    {
+        $this->formationCenter['director'] = $director;
+        return $this;
+    }
+
+    public function getCampusDirector(): array
+    {
+        return $this->formationCenter['campusDirector'] ?? [];
+    }
+
+    public function setCampusDirector(array $campusDirector): self
+    {
+        $this->formationCenter['campusDirector'] = $campusDirector;
+        return $this;
+    }
+
+    public function getAlternanceManager(): array
+    {
+        return $this->formationCenter['alternanceManager'] ?? [];
+    }
+
+    public function setAlternanceManager(array $alternanceManager): self
+    {
+        $this->formationCenter['alternanceManager'] = $alternanceManager;
+        return $this;
+    }
+
+    public function getHandicapReferent(): array
+    {
+        return $this->formationCenter['handicapReferent'] ?? [];
+    }
+
+    public function setHandicapReferent(array $handicapReferent): self
+    {
+        $this->formationCenter['handicapReferent'] = $handicapReferent;
         return $this;
     }
 
