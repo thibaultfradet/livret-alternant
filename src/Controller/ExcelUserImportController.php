@@ -30,6 +30,9 @@ final class ExcelUserImportController extends AbstractController
             if ($excelFile) {
                 try {
 
+                    $currentUser = $this->getUser();
+
+
                     $activeSchoolYear = $schoolYearRepo->findActive();
 
                     // Load Excel file
@@ -145,6 +148,7 @@ final class ExcelUserImportController extends AbstractController
                         $student->setRoles(['ROLE_STUDENT']);
                         $student->setPassword($passwordHasher->hashPassword($student, 'temporaryPassword123'));
                         $student->setClassroom($classroom);
+                        $student->setEstablishment($currentUser->getEstablishment());
                         $em->persist($student);
                         $em->flush();
 
