@@ -6,11 +6,15 @@
 <div class="container mt-5">
     <h1 class="fw-bold text-primary mb-5 display-5 text-center">Créer une classe</h1>
 
-   {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary">Créer</button>
-    {{ form_end(form) }}
+    <div class="card p-4 mb-4">
+        {{ form_start(form) }}
+            {{ form_widget(form) }}
 
-    <a href="{{ path('training_parameters_classroom') }}" class="btn btn-outline-secondary mt-3">Retour à la liste</a>
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('training_parameters_classroom') }}" class="btn btn-outline-secondary">Retour à la liste</a>
+                <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
 </div>
 {% endblock %}

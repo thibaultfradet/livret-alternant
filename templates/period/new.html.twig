@@ -35,19 +35,16 @@
             </div>
         </div>
 
-        <button class="btn btn-primary">
-            {{ button_label|default('Enregistrer') }}
-        </button>
-
-        {{ form_end(form) }}
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-12 text-center">
+        <div class="d-flex justify-content-between mt-4">
             <a href="{{ path('training_parameters_period') }}" class="btn btn-outline-secondary">
                 Retour à la liste
             </a>
+            <button class="btn btn-primary">
+                {{ button_label|default('Enregistrer') }}
+            </button>
         </div>
+
+        {{ form_end(form) }}
     </div>
 </div>
 {% endblock %}

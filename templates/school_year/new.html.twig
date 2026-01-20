@@ -14,32 +14,34 @@
 
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            {{ form_start(form) }}
+            <div class="card p-4">
+                {{ form_start(form) }}
 
-            {{ form_row(form.label) }}
+                {{ form_row(form.label) }}
 
-            {# Start date + end date on the same line #}
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    {{ form_row(form.startDate) }}
+                {# Start date + end date on the same line #}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        {{ form_row(form.startDate) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.endDate) }}
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    {{ form_row(form.endDate) }}
+
+                {{ form_row(form.active) }}
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ path('training_parameters_schoolYear') }}" class="btn btn-outline-secondary">
+                        Retour à la liste
+                    </a>
+                    <button class="btn btn-primary">
+                        {{ button_label|default('Enregistrer') }}
+                    </button>
                 </div>
+
+                {{ form_end(form) }}
             </div>
-
-            {{ form_row(form.active) }}
-
-            <div class="d-flex justify-content-between mt-4">
-                <a href="{{ path('training_parameters_schoolYear') }}" class="btn btn-outline-primary">
-                    Retourner à la liste
-                </a>
-                <button class="btn btn-primary">
-                    {{ button_label|default('Enregistrer') }}
-                </button>
-            </div>
-
-            {{ form_end(form) }}
         </div>
     </div>
 </div>
