@@ -41,7 +41,6 @@ final class ExtractionController extends AbstractController
         }
 
         // image path
-        $formationCenterImgPath = sprintf('/uploads/general/formation-center-%d.png', $activeYear->getId());
         $ttmImgPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
         $calendarImgPath = sprintf('/uploads/classroom/calendar-%d.png', $student->getClassroom()->getId());
 
@@ -109,7 +108,7 @@ final class ExtractionController extends AbstractController
             'controller_name' => 'Extraction',
             'student' => $student,
             'skillEvaluationsByPeriod' => $skillEvaluationsByPeriod,
-            'formationCenterPath' => $formationCenterImgPath,
+            'formationCenter' => $student->getEstablishment(),
             'ttmPath' => $ttmImgPath,
             'calendarPath' => $calendarImgPath,
             'termsConditions' => $termsConditions,

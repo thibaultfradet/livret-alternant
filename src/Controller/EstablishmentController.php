@@ -27,8 +27,26 @@ class EstablishmentController extends AbstractController
         $form = $this->createForm(EstablishmentGeneralType::class, $establishment);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+         if ($form->isSubmitted() && $form->isValid()) {
+            // Save establishment general info
+            $em->persist($establishment);
+
+            // Propagate to all classrooms in the active school year
+            foreach ($establishment->getSchoolYears() as $schoolYear) {
+                if ($schoolYear->isActive()) { 
+                    foreach ($schoolYear->getClassrooms() as $classroom) {
+                        // Update general fields for the classroom
+                        $classroom->setEstablishmentName($establishment->getName());
+                        $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
+                        $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+
+                        $em->persist($classroom);
+                    }
+                }
+            }
+
             $em->flush();
+
             $this->addFlash('success', 'Informations générales mises à jour avec succès.');
             return $this->redirectToRoute('app_establishment_general');
         }
@@ -52,8 +70,24 @@ class EstablishmentController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $establishment->setFormationCenter($form->getData());
+            $formationCenterData = $form->getData();
+
+            //Update establishment formation center data
+            $establishment->setFormationCenter($formationCenterData);
             $em->persist($establishment);
+
+
+            // Travel years to find active one && update classroom formation center content
+            foreach ($establishment->getSchoolYears() as $schoolYear) {
+                if ($schoolYear->isActive()) { 
+                    foreach ($schoolYear->getClassrooms() as $classroom) {
+                        $classroom->setFormationCenter($formationCenterData);
+                        $em->persist($classroom);
+                    }
+                }
+            }
+
+
             $em->flush();
 
             $this->addFlash('success', 'Centre de formation mis à jour avec succès.');

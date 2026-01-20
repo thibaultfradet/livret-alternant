@@ -90,7 +90,7 @@ class Establishment
         return $this;
     }
 
-    
+
     public function getFormationCenter(): array
     {
         return $this->formationCenter ?? [];
@@ -101,6 +101,18 @@ class Establishment
         $this->formationCenter = $data;
         return $this;
     }
+
+    public function getGeneralInfo(): string
+    {
+        return $this->formationCenter['generalInfo'] ?? [];
+    }
+
+    public function setGeneralInfo(string $generalInfo): self
+    {
+        $this->formationCenter['generalInfo'] = $generalInfo;
+        return $this;
+    }
+    
 
     // Helper methods for subfields
     public function getDirector(): array
