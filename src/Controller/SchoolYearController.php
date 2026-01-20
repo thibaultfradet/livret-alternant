@@ -15,13 +15,23 @@ final class SchoolYearController extends AbstractController
 {
 
     #[Route('/new', name: 'app_school_year_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SchoolYearRepository $schoolYearRepository): Response
     {
         $schoolYear = new SchoolYear();
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // If the new SchoolYear is active, deactivate all others
+            if ($schoolYear->isActive()) {
+                $otherYears = $schoolYearRepository->findAll();
+                foreach ($otherYears as $otherYear) {
+                    $otherYear->setIsActive(false);
+                    $entityManager->persist($otherYear);
+                }
+            }
+
             $entityManager->persist($schoolYear);
             $entityManager->flush();
 
@@ -43,12 +53,24 @@ final class SchoolYearController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_school_year_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, SchoolYear $schoolYear, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, SchoolYear $schoolYear, EntityManagerInterface $entityManager, SchoolYearRepository $schoolYearRepository): Response
     {
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // If the edited SchoolYear is active, deactivate all others
+            if ($schoolYear->getIsActive()) {
+                $otherYears = $schoolYearRepository->findAll();
+                foreach ($otherYears as $otherYear) {
+                    if ($otherYear->getId() !== $schoolYear->getId()) { // skip the current one
+                        $otherYear->setIsActive(false);
+                        $entityManager->persist($otherYear);
+                    }
+                }
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('training_parameters_schoolYear', [], Response::HTTP_SEE_OTHER);

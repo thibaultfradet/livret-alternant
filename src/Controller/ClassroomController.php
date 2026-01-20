@@ -7,6 +7,7 @@ use App\Entity\Classroom;
 use App\Form\ClassroomFilesType;
 use App\Form\ClassroomNewType;
 use App\Form\ClassroomPrincipalTeacherType;
+use App\Form\ClassroomTermsType;
 use App\Form\ClassroomTrainingContactType;
 use App\Repository\ClassroomRepository;
 use App\Repository\SchoolYearRepository;
@@ -256,5 +257,36 @@ class ClassroomController extends AbstractController
             // Send email
             $mailer->send($email);
         }
+    }
+
+
+    #[Route('/classroom/{id}/terms', name: 'app_classroom_terms', methods: ['GET', 'POST'])]
+    public function editTerms(
+        Classroom $classroom,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Create the form for editing classroom terms
+        $form = $this->createForm(ClassroomTermsType::class, $classroom);
+
+        // Handle form submission
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persist changes to the database
+            $entityManager->persist($classroom);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Classroom terms updated successfully.');
+
+            // Redirect back to classroom list or details page
+            return $this->redirectToRoute('training_parameters_classroom');
+        }
+
+        // Render the form template
+        return $this->render('classroom/edit_terms.html.twig', [
+            'classroom' => $classroom,
+            'form' => $form->createView(),
+        ]);
     }
 }
