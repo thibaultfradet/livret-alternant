@@ -29,22 +29,8 @@ class SchoolYearType extends AbstractType
             ->add('active', CheckboxType::class, [
                 'label' => 'Année scolaire active',
                 'required' => false,
-            ])
-            ->add('termsContentAlternance', TextareaType::class, [
-                'label' => 'Conditions générales pour les contrats d\'alternance',
-                'required' => false,
-                'attr' => [
-                    'class' => 'summernote',
-                ],
-            ])
-            ->add('termsContentPro', TextareaType::class, [
-                'label' => 'Conditions générales pour les contrats de professionnalisation',
-                'required' => false,
-                'attr' => [
-                    'class' => 'summernote',
-                ],
             ]);
-    }
+        }
 
     public function configureOptions(OptionsResolver $resolver): void
     {

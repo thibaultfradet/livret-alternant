@@ -52,7 +52,6 @@ final class SchoolYearControllerTest extends WebTestCase
             'school_year[startDate]' => 'Testing',
             'school_year[endDate]' => 'Testing',
             'school_year[active]' => 'Testing',
-            'school_year[termsContent]' => 'Testing',
         ]);
 
         self::assertResponseRedirects($this->path);
@@ -68,7 +67,6 @@ final class SchoolYearControllerTest extends WebTestCase
         $fixture->setStartDate('My Title');
         $fixture->setEndDate('My Title');
         $fixture->setActive('My Title');
-        $fixture->setTermsContent('My Title');
 
         $this->manager->persist($fixture);
         $this->manager->flush();
@@ -89,8 +87,7 @@ final class SchoolYearControllerTest extends WebTestCase
         $fixture->setStartDate('Value');
         $fixture->setEndDate('Value');
         $fixture->setActive('Value');
-        $fixture->setTermsContent('Value');
-
+        
         $this->manager->persist($fixture);
         $this->manager->flush();
 
@@ -101,7 +98,6 @@ final class SchoolYearControllerTest extends WebTestCase
             'school_year[startDate]' => 'Something New',
             'school_year[endDate]' => 'Something New',
             'school_year[active]' => 'Something New',
-            'school_year[termsContent]' => 'Something New',
         ]);
 
         self::assertResponseRedirects('/school-year/');
@@ -112,7 +108,6 @@ final class SchoolYearControllerTest extends WebTestCase
         self::assertSame('Something New', $fixture[0]->getStartDate());
         self::assertSame('Something New', $fixture[0]->getEndDate());
         self::assertSame('Something New', $fixture[0]->getActive());
-        self::assertSame('Something New', $fixture[0]->getTermsContent());
     }
 
     public function testRemove(): void
@@ -123,8 +118,7 @@ final class SchoolYearControllerTest extends WebTestCase
         $fixture->setStartDate('Value');
         $fixture->setEndDate('Value');
         $fixture->setActive('Value');
-        $fixture->setTermsContent('Value');
-
+        
         $this->manager->persist($fixture);
         $this->manager->flush();
 
