@@ -122,14 +122,17 @@ final class EvaluationListController extends AbstractController
 
         $qb = $userRepo->createQueryBuilder('s')
             ->join('s.classroom', 'c')
-            ->join('c.schoolYear', 'sy') // join the school year
+            ->join('c.schoolYear', 'sy')
             ->leftJoin('s.tutorEvaluationsReceived', 'te', 'WITH', 'te.period = :period')
             ->leftJoin('s.studentEvaluations', 'se', 'WITH', 'se.period = :period')
             ->andWhere('te.id IS NOT NULL')
             ->andWhere('se.id IS NOT NULL')
-            ->andWhere('sy.id = :schoolYear') // filter by the current school year
+            ->andWhere('sy.id = :schoolYear')
+            ->andWhere('s.Establishment = :establishment')
             ->setParameter('period', $period)
-            ->setParameter('schoolYear', $activeSchoolYear); 
+            ->setParameter('schoolYear', $activeSchoolYear)
+            ->setParameter('establishment', $currentUser->getEstablishment());
+
 
         if ($diplomaId) {
             $qb->join('c.diploma', 'd')

@@ -132,8 +132,9 @@ class EvaluationVisualizerController extends AbstractController
         ?string $classroomId = null
     ): array {
         $periodId = $request->query->get('period');
-        $user = $this->getUser(); 
-
+        $user = $this->getUser();
+        $userEstablishment = $user->getEstablishment();
+        
         $classrooms = $classroomRepo->findByActiveSchoolYear();
         $periods = $periodRepo->findByActiveSchoolYear();
 
@@ -151,21 +152,43 @@ class EvaluationVisualizerController extends AbstractController
 
         $evaluations = [];
         foreach ($classrooms as $classroom) {
+           
             if ($selectedClassroom && $classroom->getId() !== $selectedClassroom->getId()) {
                 continue;
             }
+           
             foreach ($classroom->getStudents() as $student) {
-                $tutorEval = $tutorEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
-                $ttmEval = $ttmEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
-                $studentEval = $studentEvalRepo->findOneBy(['student' => $student, 'period' => $selectedPeriod]);
 
+                // Skip students not belonging to the current user's establishment
+                if (
+                    $userEstablishment !== null &&
+                    $student->getEstablishment() !== $userEstablishment
+                ) {
+                    continue;
+                }
+            
+                $tutorEval = $tutorEvalRepo->findOneBy([
+                    'student' => $student,
+                    'period' => $selectedPeriod
+                ]);
+            
+                $ttmEval = $ttmEvalRepo->findOneBy([
+                    'student' => $student,
+                    'period' => $selectedPeriod
+                ]);
+            
+                $studentEval = $studentEvalRepo->findOneBy([
+                    'student' => $student,
+                    'period' => $selectedPeriod
+                ]);
+            
                 $evaluations[] = [
                     'student' => $student,
                     'classroom' => $classroom,
-                    'tutor_validated' => (bool)$tutorEval,
-                    'student_validated' => (bool)$studentEval,
-                    'ttm_validated' => (bool)$ttmEval,
-                    'overall_validated' => (bool)($tutorEval && $ttmEval && $studentEval),
+                    'tutor_validated' => (bool) $tutorEval,
+                    'student_validated' => (bool) $studentEval,
+                    'ttm_validated' => (bool) $ttmEval,
+                    'overall_validated' => (bool) ($tutorEval && $ttmEval && $studentEval),
                 ];
             }
         }
