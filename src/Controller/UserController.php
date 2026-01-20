@@ -131,17 +131,30 @@ final class UserController extends AbstractController
     }
 
 
-
     #[Route('/modes/list', name: 'app_user_list_modes', methods: ['GET'])]
     public function listModes(UserRepository $userRepo): Response
     {
-        // Récupérer uniquement les utilisateurs qui ont ROLE_STUDENT
+        // Get the currently authenticated user
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+    
+        // Safety check in case no user is authenticated
+        if (!$currentUser) {
+            throw $this->createAccessDeniedException('User not authenticated.');
+        }
+    
+        // Get the establishment of the connected user
+        $establishment = $currentUser->getEstablishment();
+    
+        // Retrieve only students from the same establishment
         $users = $userRepo->createQueryBuilder('u')
-    ->andWhere('u.roles LIKE :role')
-    ->setParameter('role', '%ROLE_STUDENT%')
-    ->getQuery()
-    ->getResult();
-
+            ->andWhere('u.roles LIKE :role')
+            ->andWhere('u.establishment = :establishment')
+            ->setParameter('role', '%ROLE_STUDENT%')
+            ->setParameter('establishment', $establishment)
+            ->getQuery()
+            ->getResult();
+    
         return $this->render('user/list_modes.html.twig', [
             'users' => $users,
         ]);
