@@ -9,7 +9,6 @@ use App\Form\ClassroomNewType;
 use App\Form\ClassroomPrincipalTeacherType;
 use App\Form\ClassroomTermsType;
 use App\Form\ClassroomTrainingContactType;
-use App\Repository\ClassroomRepository;
 use App\Repository\SchoolYearRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -20,7 +19,9 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_TTM')]
 class ClassroomController extends AbstractController
 {
 

@@ -21,12 +21,14 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class EvaluationController extends AbstractController
 {
 
 
     #[Route('/evaluation/tutor/{student}/{period}', name: 'app_create_evaluation')]
+    #[IsGranted('ROLE_TUTOR')]
     public function tutor(
         User $student,
         Period $period,
@@ -38,6 +40,26 @@ final class EvaluationController extends AbstractController
     ): Response {
 
         $tutor = $this->getUser();
+
+        // verify if tutor is assigned to student
+        $tutorAssignment = $em->getRepository(TutorStudent::class)->findOneBy([
+            'tutor' => $tutor,
+            'student' => $student,
+        ]);
+
+        if (!$tutorAssignment) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas assigné à cet étudiant.');
+        }
+
+        // verify if contract is active for this period
+        $now = new \DateTime();
+        $startDate = $tutorAssignment->getDateDebutContract();
+        $endDate = $tutorAssignment->getDateFinContract();
+
+        if (($startDate && $startDate > $now) || ($endDate && $endDate < $now)) {
+            throw $this->createAccessDeniedException('Le contrat n\'est pas actif pour cette période.');
+        }
+
 
         // verify if there is no already evaluation on period, tutor && student
         $existingEvaluation = $em->getRepository(TutorEvaluation::class)->findOneBy([
@@ -126,6 +148,7 @@ final class EvaluationController extends AbstractController
 
 
     #[Route('/evaluation/student/{period}', name: 'app_create_student_evaluation')]
+    #[IsGranted('ROLE_STUDENT')]
     public function student(
         Period $period,
         Request $request,
@@ -134,6 +157,13 @@ final class EvaluationController extends AbstractController
 
 
         $student = $this->getUser();
+
+        //check if student is assigned to a active classroom 
+        $classroom = $student->getClassroom();
+        if (!$classroom || !$classroom->getSchoolYear()->isActive()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas assigné à une classe active.');
+        }
+
         // required tutor evaluation
         $alreadyTutorEvaluation = $em->getRepository(TutorEvaluation::class)->findOneBy([
             'student' => $student,
@@ -187,6 +217,7 @@ final class EvaluationController extends AbstractController
 
 
     #[Route('/evaluation/ttm/{student}/{period}', name: 'app_create_ttm_evaluation')]
+    #[IsGranted('ROLE_TTM')]
     public function ttm(
         User $student,
         Period $period,
@@ -195,6 +226,12 @@ final class EvaluationController extends AbstractController
         Security $security
     ): Response {
 
+        $ttm = $this->getUser();
+
+        // verify if student and ttm are in the same establishment
+        if ($student->getEstablishment() !== $ttm->getEstablishment()) {
+            throw $this->createAccessDeniedException('Cet étudiant n\'appartient pas à votre établissement.');
+        }
 
         // check for existing evaluation
         $existingEvaluation = $em->getRepository(TTMEvaluation::class)->findOneBy([

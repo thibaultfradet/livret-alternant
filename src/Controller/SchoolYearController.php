@@ -4,19 +4,20 @@ namespace App\Controller;
 
 use App\Entity\SchoolYear;
 use App\Form\SchoolYearType;
-use App\Repository\SchoolYearRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/school-year')]
+#[IsGranted('ROLE_TTM')]
 final class SchoolYearController extends AbstractController
 {
 
     #[Route('/new', name: 'app_school_year_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SchoolYearRepository $schoolYearRepository): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $schoolYear = new SchoolYear();
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
@@ -45,7 +46,7 @@ final class SchoolYearController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_school_year_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, SchoolYear $schoolYear, EntityManagerInterface $entityManager, SchoolYearRepository $schoolYearRepository): Response
+    public function edit(Request $request, SchoolYear $schoolYear, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
         $form->handleRequest($request);

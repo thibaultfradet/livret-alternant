@@ -4,14 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Diploma;
 use App\Form\DiplomaType;
-use App\Repository\DiplomaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/diploma')]
+#[IsGranted('ROLE_TTM')]
 final class DiplomaController extends AbstractController
 {
     #[Route('/new', name: 'app_diploma_new', methods: ['GET', 'POST'])]
