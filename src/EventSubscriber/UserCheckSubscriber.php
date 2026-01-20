@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\User;
 use App\Entity\SchoolYear;
 use App\Entity\TermsAcceptance;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -36,12 +37,11 @@ class UserCheckSubscriber implements EventSubscriberInterface
         }
 
         $user = $token->getUser();
-        if (!$user || $user === 'anon.') {
+        if (!$user || $user === 'anon.' || !$user instanceof User) {
             return;
         }
 
-
-        $year = $this->em->getRepository(SchoolYear::class)->findActiveByEstablishment();
+        $year = $this->em->getRepository(SchoolYear::class)->findActiveByEstablishment($user->getEstablishment());
         if (!$year) {
             return;
         }

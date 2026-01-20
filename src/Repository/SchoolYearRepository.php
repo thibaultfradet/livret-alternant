@@ -20,7 +20,6 @@ class SchoolYearRepository extends ServiceEntityRepository
 
     public function findActive(): ?SchoolYear
     {
-        
         return $this->createQueryBuilder('sy')
             ->andWhere('sy.active = :active')
             ->setParameter('active', true)
@@ -29,15 +28,13 @@ class SchoolYearRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findActiveByEstablishment(): ?SchoolYear
+    public function findActiveByEstablishment(Establishment $establishment): ?SchoolYear
     {
-        $user = $this->getUser();
-        
         return $this->createQueryBuilder('sy')
             ->andWhere('sy.active = :active')
             ->andWhere('sy.Establishment = :establishment')
             ->setParameter('active', true)
-            ->setParameter('establishment', $user->getEstablishment())
+            ->setParameter('establishment', $establishment)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

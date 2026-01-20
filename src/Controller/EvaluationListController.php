@@ -96,7 +96,10 @@ final class EvaluationListController extends AbstractController
         Request $request
     ): Response {
 
-        $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment();
+        /** @var User $currentUser */
+        $currentUser = $security->getUser();
+
+        $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment($currentUser->getEstablishment());
 
         // période par défaut
         $periodId = $request->query->get('period');

@@ -28,8 +28,11 @@ final class ExtractionController extends AbstractController
         PdfService $pdfService
     ): Response {
 
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
         //get active year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -137,9 +140,10 @@ final class ExtractionController extends AbstractController
     ): Response {
 
         $user = $this->getUser();
+        /** @var User $user */
 
         // Get active school year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }

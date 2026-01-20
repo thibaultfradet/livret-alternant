@@ -31,9 +31,10 @@ final class ExcelUserImportController extends AbstractController
                 try {
 
                     $currentUser = $this->getUser();
+                    /** @var User $currentUser */
 
 
-                    $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment();
+                    $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment($currentUser->getEstablishment());
 
                     // Load Excel file
                     $spreadsheet = IOFactory::load($excelFile->getPathname());

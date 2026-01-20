@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\TermsAcceptance;
 use App\Repository\SchoolYearRepository;
 use App\Repository\TermsAcceptanceRepository;
@@ -18,9 +19,10 @@ final class TermsAcceptanceController extends AbstractController
     #[Route('/terms-acceptance', name: 'app_terms_acceptance')]
     public function index(Request $request, SchoolYearRepository $schoolYearRepository): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
 
-        $activeYear = $schoolYearRepository->findActiveByEstablishment();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
 
         if ($user->isAlternance()) {
             $termsConditions = $user->getEstablishment()->getTermsConditionsAlternance();
@@ -45,8 +47,9 @@ final class TermsAcceptanceController extends AbstractController
         EntityManagerInterface $em
     ): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
-        $activeYear = $SYRepo->findActiveByEstablishment();
+        $activeYear = $SYRepo->findActiveByEstablishment($user->getEstablishment());
 
         $existingAcceptance = $termsRepo->findOneBy([
             'user' => $user,
