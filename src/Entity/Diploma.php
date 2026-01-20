@@ -37,6 +37,10 @@ class Diploma
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'diplomas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Establishment $Establishment = null;
+
     public function __construct()
     {
         $this->classrooms = new ArrayCollection();
@@ -140,6 +144,18 @@ class Diploma
     public function setDisabledAt(?\DateTime $disabledAt): static
     {
         $this->disabledAt = $disabledAt;
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->Establishment;
+    }
+
+    public function setEstablishment(?Establishment $Establishment): static
+    {
+        $this->Establishment = $Establishment;
 
         return $this;
     }

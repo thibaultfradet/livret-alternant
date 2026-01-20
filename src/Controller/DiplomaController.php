@@ -17,11 +17,15 @@ final class DiplomaController extends AbstractController
     #[Route('/new', name: 'app_diploma_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
         $diploma = new Diploma();
         $form = $this->createForm(DiplomaType::class, $diploma);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $diploma->setEstablishment($user->getEstablishment());
             $entityManager->persist($diploma);
             $entityManager->flush();
 

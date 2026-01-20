@@ -43,6 +43,12 @@ class Establishment
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'Establishment')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, Diploma>
+     */
+    #[ORM\OneToMany(targetEntity: Diploma::class, mappedBy: 'Establishment')]
+    private Collection $diplomas;
+
     public function __construct()
     {
         $this->schoolYears = new ArrayCollection();
@@ -50,6 +56,7 @@ class Establishment
 
         // Automatically set the creation date
         $this->createdAt = new \DateTimeImmutable();
+        $this->diplomas = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -233,6 +240,36 @@ class Establishment
             // set the owning side to null (unless already changed)
             if ($user->getEstablishment() === $this) {
                 $user->setEstablishment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Diploma>
+     */
+    public function getDiplomas(): Collection
+    {
+        return $this->diplomas;
+    }
+
+    public function addDiploma(Diploma $diploma): static
+    {
+        if (!$this->diplomas->contains($diploma)) {
+            $this->diplomas->add($diploma);
+            $diploma->setEstablishment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDiploma(Diploma $diploma): static
+    {
+        if ($this->diplomas->removeElement($diploma)) {
+            // set the owning side to null (unless already changed)
+            if ($diploma->getEstablishment() === $this) {
+                $diploma->setEstablishment(null);
             }
         }
 
