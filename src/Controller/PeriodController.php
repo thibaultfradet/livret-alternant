@@ -19,7 +19,12 @@ final class PeriodController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $period = new Period();
-        $form = $this->createForm(PeriodType::class, $period);
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(PeriodType::class, $period, [
+            'currentUser' => $user,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -46,7 +51,12 @@ final class PeriodController extends AbstractController
     #[Route('/{id}/edit', name: 'app_period_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Period $period, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(PeriodType::class, $period);
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
+
+        $form = $this->createForm(PeriodType::class, $period, [
+            'currentUser' => $user,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

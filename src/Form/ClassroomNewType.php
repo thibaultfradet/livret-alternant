@@ -6,6 +6,7 @@ use App\Entity\Classroom;
 use App\Entity\Diploma;
 use App\Entity\SchoolYear;
 use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -16,6 +17,9 @@ class ClassroomNewType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var User|null $currentUser */
+        $currentUser = $options['currentUser'] ?? null;
+
         $builder
             ->add('diploma', EntityType::class, [
                 'class' => Diploma::class,
@@ -23,6 +27,18 @@ class ClassroomNewType extends AbstractType
                 'label' => 'Diplôme',
                 'placeholder' => 'Sélectionner un diplôme',
                 'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($currentUser) {
+                    $qb = $er->createQueryBuilder('d')
+                        ->orderBy('d.label', 'ASC');
+
+                    if ($currentUser && $currentUser->getEstablishment()) {
+                        $qb
+                            ->andWhere('d.Establishment = :establishment')
+                            ->setParameter('establishment', $currentUser->getEstablishment());
+                    }
+
+                    return $qb;
+                },
             ])
             ->add('schoolYear', EntityType::class, [
                 'class' => SchoolYear::class,
@@ -60,6 +76,7 @@ class ClassroomNewType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Classroom::class,
             'activeSchoolYear' => null,
+            'currentUser' => null,
         ]);
     }
 }

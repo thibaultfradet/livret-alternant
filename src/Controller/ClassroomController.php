@@ -51,6 +51,7 @@ class ClassroomController extends AbstractController
 
         $form = $this->createForm(ClassroomNewType::class, $classroom, [
             'activeSchoolYear' => $activeYear,
+            'currentUser' => $user,
         ]);
 
         $form->handleRequest($request);

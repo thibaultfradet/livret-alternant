@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Period;
 use App\Entity\SchoolYear;
+use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -15,6 +17,9 @@ class PeriodType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var User|null $currentUser */
+        $currentUser = $options['currentUser'] ?? null;
+
         $builder
             ->add('periodNumber', IntegerType::class, [
                 'label' => 'Numéro de période',
@@ -35,6 +40,19 @@ class PeriodType extends AbstractType
                 'choice_label' => 'label',
                 'label' => 'Année scolaire',
                 'placeholder' => 'Sélectionnez une année',
+                'query_builder' => function (EntityRepository $er) use ($currentUser) {
+                    $qb = $er->createQueryBuilder('sy')
+                        ->where('sy.disabledAt IS NULL')
+                        ->orderBy('sy.label', 'ASC');
+
+                    if ($currentUser && $currentUser->getEstablishment()) {
+                        $qb
+                            ->andWhere('sy.Establishment = :establishment')
+                            ->setParameter('establishment', $currentUser->getEstablishment());
+                    }
+
+                    return $qb;
+                },
             ])
         ;
     }
@@ -43,6 +61,7 @@ class PeriodType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Period::class,
+            'currentUser' => null,
         ]);
     }
 }
