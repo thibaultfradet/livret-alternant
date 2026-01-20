@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ClassroomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ClassroomRepository::class)]
@@ -34,6 +35,15 @@ class Classroom
 
     #[ORM\Column(nullable: true)]
     private ?array $trainingContact = null;
+
+    #[ORM\Column(type: Types::TEXT,nullable: true)]
+    private ?string $termsConditionsPro = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $termsConditionsAlternance = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?array $formationCenter = null;
 
 
 
@@ -140,6 +150,42 @@ class Classroom
     public function setTrainingContactPhone(?string $phone): self
     {
         $this->trainingContact[1] = $phone;
+        return $this;
+    }
+
+    public function getTermsConditionsPro(): ?string
+    {
+        return $this->termsConditionsPro;
+    }
+
+    public function setTermsConditionsPro(string $termsConditionsPro): static
+    {
+        $this->termsConditionsPro = $termsConditionsPro;
+
+        return $this;
+    }
+
+    public function getTermsConditionsAlternance(): ?string
+    {
+        return $this->termsConditionsAlternance;
+    }
+
+    public function setTermsConditionsAlternance(?string $termsConditionsAlternance): static
+    {
+        $this->termsConditionsAlternance = $termsConditionsAlternance;
+
+        return $this;
+    }
+
+    public function getFormationCenter(): ?array
+    {
+        return $this->formationCenter;
+    }
+
+    public function setFormationCenter(?array $formationCenter): static
+    {
+        $this->formationCenter = $formationCenter;
+
         return $this;
     }
 

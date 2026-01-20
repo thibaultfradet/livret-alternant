@@ -22,16 +22,34 @@ use Symfony\Component\Mime\Address;
 
 class ClassroomController extends AbstractController
 {
+
+
     #[Route('/classroom/new', name: 'app_classroom_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, SchoolYearRepository $schoolYearRepository, EntityManagerInterface $em): Response
-    {
+    public function new(
+        Request $request,
+        SchoolYearRepository $schoolYearRepository,
+        EntityManagerInterface $em
+    ): Response {
         $classroom = new Classroom();
 
-        // Get the active school year
+        // get current user establishment
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        if ($user && $user->getEstablishment()) {
+            $establishment = $user->getEstablishment();
+
+            // set terms of establishment && formation center
+            $classroom->setFormationCenter($establishment->getFormationCenter());
+            $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
+            $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+        }
+
+        //Get current school year
         $activeYear = $schoolYearRepository->findActive();
 
         $form = $this->createForm(ClassroomNewType::class, $classroom, [
-            'activeSchoolYear' => $activeYear, // pass default
+            'activeSchoolYear' => $activeYear,
         ]);
 
         $form->handleRequest($request);
@@ -48,7 +66,6 @@ class ClassroomController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-
 
 
 

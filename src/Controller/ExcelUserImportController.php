@@ -74,6 +74,17 @@ final class ExcelUserImportController extends AbstractController
                             $classroom = new Classroom();
                             $classroom->setDiploma($diploma);
                             $classroom->setSchoolYear($activeSchoolYear);
+
+                            // Set terms && formation center from the current user's establishment
+                            /** @var \App\Entity\User $user */
+                            $user = $this->getUser();
+                            if ($user && $user->getEstablishment()) {
+                                $establishment = $user->getEstablishment();
+                                $classroom->setFormationCenter($establishment->getFormationCenter());
+                                $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
+                                $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+                            }
+
                             $em->persist($classroom);
                             $em->flush();
                         }
