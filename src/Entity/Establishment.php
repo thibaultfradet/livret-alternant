@@ -47,6 +47,9 @@ class Establishment
     {
         $this->schoolYears = new ArrayCollection();
         $this->users = new ArrayCollection();
+
+        // Automatically set the creation date
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

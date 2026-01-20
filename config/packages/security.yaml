@@ -69,7 +69,7 @@ security:
         # ROLE_ADMIN
 
         # ROLE_SUPER_ADMIN
-        - { path: ^/super-admin, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
         # Toutes les autres routes nécessitent un utilisateur connecté
         - { path: ^/, roles: ROLE_USER }
