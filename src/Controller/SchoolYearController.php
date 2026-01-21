@@ -162,26 +162,46 @@ final class SchoolYearController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile|null $coverFile */
-            $coverFile = $form->get('cover_file')->getData();
+            /** @var UploadedFile|null $coverFile1 */
+            $coverFile1 = $form->get('cover_file_1')->getData();
+            /** @var UploadedFile|null $coverFile2 */
+            $coverFile2 = $form->get('cover_file_2')->getData();
 
             // Define allowed image MIME types
             $allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-            // Handle cover image upload
-            if ($coverFile) {
-                if (!in_array($coverFile->getMimeType(), $allowedImageTypes)) {
-                    $this->addFlash('error', 'Le fichier doit être une image (JPEG, PNG, GIF, WebP).');
+            $filesUploaded = 0;
+
+            // Handle first cover image upload
+            if ($coverFile1) {
+                if (!in_array($coverFile1->getMimeType(), $allowedImageTypes)) {
+                    $this->addFlash('error', 'Le fichier Page de garde 1 doit être une image (JPEG, PNG, GIF, WebP).');
                 } else {
-                    // Generate filename: cover-page-{year_id}.png
-                    $newFilename = sprintf('cover-page-%d.%s',
+                    $newFilename1 = sprintf('cover-image-1-%d.%s',
                         $schoolYear->getId(),
                         "png"
                     );
-
-                    $coverFile->move($storagePath, $newFilename);
-                    $this->addFlash('success', 'Page de garde mise à jour avec succès.');
+                    $coverFile1->move($storagePath, $newFilename1);
+                    $filesUploaded++;
                 }
+            }
+
+            // Handle second cover image upload
+            if ($coverFile2) {
+                if (!in_array($coverFile2->getMimeType(), $allowedImageTypes)) {
+                    $this->addFlash('error', 'Le fichier Page de garde 2 doit être une image (JPEG, PNG, GIF, WebP).');
+                } else {
+                    $newFilename2 = sprintf('cover-image-2-%d.%s',
+                        $schoolYear->getId(),
+                        "png"
+                    );
+                    $coverFile2->move($storagePath, $newFilename2);
+                    $filesUploaded++;
+                }
+            }
+
+            if ($filesUploaded > 0) {
+                $this->addFlash('success', sprintf('%d page(s) de garde mise(s) à jour avec succès.', $filesUploaded));
             } else {
                 $this->addFlash('warning', 'Aucun fichier sélectionné.');
             }
@@ -189,15 +209,19 @@ final class SchoolYearController extends AbstractController
             return $this->redirectToRoute('app_school_year_cover', ['id' => $schoolYear->getId()]);
         }
 
-        // Prepare file path for display
-        $coverPath = sprintf('/uploads/covers/cover-page-%d.png',
+        // Prepare file paths for display
+        $coverPath1 = sprintf('/uploads/covers/cover-image-1-%d.png',
+            $schoolYear->getId()
+        );
+        $coverPath2 = sprintf('/uploads/covers/cover-image-2-%d.png',
             $schoolYear->getId()
         );
 
         return $this->render('school_year/cover.html.twig', [
             'schoolYear' => $schoolYear,
             'form' => $form->createView(),
-            'coverFile' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $coverPath) ? $coverPath : null,
+            'coverFile1' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $coverPath1) ? $coverPath1 : null,
+            'coverFile2' => file_exists($this->getParameter('kernel.project_dir') . '/public' . $coverPath2) ? $coverPath2 : null,
         ]);
     }
 }

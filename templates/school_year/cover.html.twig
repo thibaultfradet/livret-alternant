@@ -16,9 +16,10 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <h5 class="card-title">Mettre en ligne une nouvelle page de garde</h5>
+            <h5 class="card-title">Mettre en ligne les pages de garde</h5>
             {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-                {{ form_row(form.cover_file) }}
+                {{ form_row(form.cover_file_1) }}
+                {{ form_row(form.cover_file_2) }}
                 <button type="submit" class="btn btn-primary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload me-2" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
@@ -32,25 +33,46 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <h5 class="card-title">Page de garde actuelle</h5>
+            <h5 class="card-title">Pages de garde actuelles</h5>
             <div class="row mt-3">
-                <div class="col-12 text-center">
-                    {% if coverFile %}
+                <div class="col-md-6 text-center">
+                    <h6>Page de garde 1</h6>
+                    {% if coverFile1 %}
                         <div class="mb-3">
-                            <img src="{{ asset(coverFile) }}" class="img-fluid border rounded shadow-sm" alt="Page de garde" style="max-height: 600px;">
+                            <img src="{{ asset(coverFile1) }}" class="img-fluid border rounded shadow-sm" alt="Page de garde 1" style="max-height: 400px;">
                         </div>
-                        <p class="text-muted">Page de garde actuelle pour l'année {{ schoolYear.label }}</p>
                     {% else %}
-                        <div class="text-center py-5">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-image text-muted mb-3" viewBox="0 0 16 16">
+                        <div class="text-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-image text-muted mb-2" viewBox="0 0 16 16">
                                 <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                                 <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L2.002 12V3a1 1 0 0 1 1-1h12z"/>
                             </svg>
-                            <p class="text-muted fst-italic">Aucune page de garde n'a encore été uploadée pour cette année scolaire.</p>
+                            <p class="text-muted small">Non uploadée</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 text-center">
+                    <h6>Page de garde 2</h6>
+                    {% if coverFile2 %}
+                        <div class="mb-3">
+                            <img src="{{ asset(coverFile2) }}" class="img-fluid border rounded shadow-sm" alt="Page de garde 2" style="max-height: 400px;">
+                        </div>
+                    {% else %}
+                        <div class="text-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-image text-muted mb-2" viewBox="0 0 16 16">
+                                <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                                <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L2.002 12V3a1 1 0 0 1 1-1h12z"/>
+                            </svg>
+                            <p class="text-muted small">Non uploadée</p>
                         </div>
                     {% endif %}
                 </div>
             </div>
+            {% if coverFile1 or coverFile2 %}
+            <div class="text-center mt-3">
+                <p class="text-muted">Pages de garde pour l'année {{ schoolYear.label }}</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 
