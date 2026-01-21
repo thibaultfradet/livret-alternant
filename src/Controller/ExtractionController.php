@@ -47,6 +47,13 @@ final class ExtractionController extends AbstractController
         $ttmImgPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
         $calendarImgPath = sprintf('/uploads/classroom/calendar-%d.png', $student->getClassroom()->getId());
 
+        // cover page path - check if file exists
+        $coverPagePath = sprintf('/uploads/covers/cover-page-%d.png', $activeYear->getId());
+        $coverFileFullPath = $this->getParameter('kernel.project_dir') . '/public' . $coverPagePath;
+        if (!file_exists($coverFileFullPath)) {
+            $coverPagePath = null;
+        }
+
         if ($student->isAlternance()) {
             $termsConditions = $student->getClassroom()->getTermsConditionsAlternance();
         } else {
@@ -114,8 +121,9 @@ final class ExtractionController extends AbstractController
             'formationCenter' => $student->getEstablishment(),
             'ttmPath' => $ttmImgPath,
             'calendarPath' => $calendarImgPath,
+            'coverPagePath' => $coverPagePath,
             'termsConditions' => $termsConditions,
-            'isPdf' => true, 
+            'isPdf' => true,
             'acceptances' => $acceptances,
             'tutor' => $tutor,
             'principalTeacher' => $principalTeacher,
