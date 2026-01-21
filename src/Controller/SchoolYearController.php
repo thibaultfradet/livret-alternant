@@ -21,11 +21,27 @@ final class SchoolYearController extends AbstractController
     #[Route('/new', name: 'app_school_year_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
         $schoolYear = new SchoolYear();
+        $schoolYear->setEstablishment($establishment);
+
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // If this year is set as active, deactivate all other years for this establishment
+            if ($schoolYear->isActive()) {
+                $otherActiveYears = $entityManager->getRepository(SchoolYear::class)
+                    ->findBy(['Establishment' => $establishment, 'active' => true]);
+
+                foreach ($otherActiveYears as $otherYear) {
+                    $otherYear->setActive(false);
+                    $entityManager->persist($otherYear);
+                }
+            }
 
             $entityManager->persist($schoolYear);
             $entityManager->flush();
@@ -50,10 +66,31 @@ final class SchoolYearController extends AbstractController
     #[Route('/{id}/edit', name: 'app_school_year_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, SchoolYear $schoolYear, EntityManagerInterface $entityManager): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Check if school year belongs to user's establishment
+        if ($schoolYear->getEstablishment() !== $user->getEstablishment()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les années scolaires de votre établissement.');
+        }
+
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // If this year is set as active, deactivate all other years for this establishment
+            if ($schoolYear->isActive()) {
+                $otherActiveYears = $entityManager->getRepository(SchoolYear::class)
+                    ->findBy(['Establishment' => $user->getEstablishment(), 'active' => true]);
+
+                foreach ($otherActiveYears as $otherYear) {
+                    // Don't deactivate the current year if it's already active
+                    if ($otherYear->getId() !== $schoolYear->getId()) {
+                        $otherYear->setActive(false);
+                        $entityManager->persist($otherYear);
+                    }
+                }
+            }
 
             $entityManager->flush();
 
