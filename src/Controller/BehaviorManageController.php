@@ -46,7 +46,6 @@ final class BehaviorManageController extends AbstractController
                 $level->setLabel(trim($data['niveau' . $i]));
                 $level->setLevelNumber($i);
                 $level->setBehaviorCriteria($criteria);
-                $level->setEstablishment($establishment);
                 $level->setDisabledAt(null);
 
                 $em->persist($level);
@@ -70,8 +69,8 @@ final class BehaviorManageController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        // Check if level belongs to user's establishment
-        if ($level->getEstablishment() !== $user->getEstablishment()) {
+        // Check if level belongs to user's establishment via behavior criteria
+        if ($level->getBehaviorCriteria()->getEstablishment() !== $user->getEstablishment()) {
             throw $this->createAccessDeniedException('Vous ne pouvez modifier que les niveaux de comportement de votre établissement.');
         }
 
@@ -95,7 +94,6 @@ final class BehaviorManageController extends AbstractController
             $replacementLevel->setLabel(trim($newLabel));
             $replacementLevel->setLevelNumber($level->getLevelNumber());
             $replacementLevel->setBehaviorCriteria($level->getBehaviorCriteria());
-            $replacementLevel->setEstablishment($level->getEstablishment());
             $replacementLevel->setDisabledAt(null);
 
             $em->persist($replacementLevel);

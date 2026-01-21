@@ -19,9 +19,6 @@ class BehaviorCriteria
     #[ORM\Column(length: 255)]
     private ?string $label = null;
 
-    #[ORM\ManyToOne(inversedBy: 'behaviorCriteria')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Establishment $Establishment = null;
 
     #[ORM\OneToMany(mappedBy: 'behaviorCriteria', targetEntity: BehaviorLevel::class)]
     private Collection $behaviorLevels;
@@ -29,6 +26,9 @@ class BehaviorCriteria
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'behaviorCriterias')]
+    private ?Establishment $Establishment = null;
 
     public function __construct()
     {
@@ -105,4 +105,6 @@ class BehaviorCriteria
 
         return $this;
     }
+
+    
 }

@@ -29,7 +29,6 @@ class SkillLevel
     private ?string $color = null;
 
     #[ORM\ManyToOne(inversedBy: 'skillLevels')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Establishment $Establishment = null;
 
     public function __construct()
