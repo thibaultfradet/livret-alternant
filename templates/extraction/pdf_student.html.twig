@@ -69,103 +69,151 @@
     <div class="section-body border border-beaupeyrat">
 
         {# --- Informations générales du centre ---#}
-        <div class="card">
-            <div class="card-header">Informations générales</div>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Informations générales</td>
-                    <td style="padding:6px; border:1px solid #ccc;">
-                        {{ formationCenter.generalInfo|default('') }}
-                    </td>
-                </tr>
-            </table>
+        <div class="formation-section">
+            <div class="formation-section-header">INFORMATIONS GÉNÉRALES</div>
+            <div class="formation-info-box" style="font-size: 11px; line-height: 1.4; padding: 12px;">
+                {{ formationCenter.generalInfo|default('') }}
+            </div>
         </div>
 
         {# --- Directeur ---#}
         {% set director = formationCenter.director %}
         {% if director %}
-        <div class="card">
-            <div class="card-header">Directeur</div>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ director.lastName ~ ' ' ~ director.firstName|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ director.email|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ director.phone|default('') }}</td>
-                </tr>
-            </table>
+        <div class="formation-section">
+            <div class="formation-section-header">DIRECTEUR</div>
+            <div class="formation-row">
+                <div class="formation-col-full">
+                    <div class="formation-info-box">
+                        <strong>Nom :</strong><br>
+                        <span>{{ director.firstName ~ ' ' ~ director.lastName|default('') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formation-row">
+                <div class="formation-col-left">
+                    <div class="formation-info-box">
+                        <strong>Email :</strong><br>
+                        <span>{{ director.email|default('') }}</span>
+                    </div>
+                </div>
+                <div class="formation-col-right">
+                    <div class="formation-info-box">
+                        <strong>Téléphone :</strong><br>
+                        <span>{{ director.phone|default('') }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
 
         {# --- Directeur de campus ---#}
         {% set campusDirector = formationCenter.campusDirector %}
         {% if campusDirector %}
-        <div class="card">
-            <div class="card-header">Directeur de campus</div>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ campusDirector.lastName ~ ' ' ~ campusDirector.firstName|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ campusDirector.email|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ campusDirector.phone|default('') }}</td>
-                </tr>
-            </table>
+        <div class="formation-section">
+            <div class="formation-section-header">DIRECTEUR DE CAMPUS</div>
+            <div class="formation-row">
+                <div class="formation-col-full">
+                    <div class="formation-info-box">
+                        <strong>Nom :</strong><br>
+                        <span>{{ campusDirector.firstName ~ ' ' ~ campusDirector.lastName|default('') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formation-row">
+                <div class="formation-col-left">
+                    <div class="formation-info-box">
+                        <strong>Email :</strong><br>
+                        <span>{{ campusDirector.email|default('') }}</span>
+                    </div>
+                </div>
+                <div class="formation-col-right">
+                    <div class="formation-info-box">
+                        <strong>Téléphone :</strong><br>
+                        <span>{{ campusDirector.phone|default('') }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
 
         {# --- Responsable de l'alternance ---#}
         {% set alternanceManager = formationCenter.alternanceManager %}
         {% if alternanceManager %}
-        <div class="card">
-            <div class="card-header">Responsable de l'alternance</div>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ alternanceManager.lastName ~ ' ' ~ alternanceManager.firstName|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ alternanceManager.email|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ alternanceManager.phone|default('') }}</td>
-                </tr>
-            </table>
+        <div class="formation-section">
+            <div class="formation-section-header">RESPONSABLE DE L'ALTERNANCE</div>
+            <div class="formation-row">
+                <div class="formation-col-full">
+                    <div class="formation-info-box">
+                        <strong>Nom :</strong><br>
+                        <span>{{ alternanceManager.firstName ~ ' ' ~ alternanceManager.lastName|default('') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formation-row">
+                <div class="formation-col-left">
+                    <div class="formation-info-box">
+                        <strong>Email :</strong><br>
+                        <span>{{ alternanceManager.email|default('') }}</span>
+                    </div>
+                </div>
+                <div class="formation-col-right">
+                    <div class="formation-info-box">
+                        <strong>Téléphone :</strong><br>
+                        <span>{{ alternanceManager.phone|default('') }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
 
         {# --- Référent handicap ---#}
         {% set handicapReferent = formationCenter.handicapReferent %}
         {% if handicapReferent %}
-        <div class="card">
-            <div class="card-header">Référent handicap</div>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Nom</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ handicapReferent.lastName ~ ' ' ~ handicapReferent.firstName|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Email</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ handicapReferent.email|default('') }}</td>
-                </tr>
-                <tr>
-                    <td style="width:30%; font-weight:bold; padding:6px; border:1px solid #ccc;">Téléphone</td>
-                    <td style="padding:6px; border:1px solid #ccc;">{{ handicapReferent.phone|default('') }}</td>
-                </tr>
-            </table>
+        <div class="formation-section">
+            <div class="formation-section-header">RÉFÉRENT HANDICAP</div>
+            <div class="formation-row">
+                <div class="formation-col-full">
+                    <div class="formation-info-box">
+                        <strong>Nom :</strong><br>
+                        <span>{{ handicapReferent.firstName ~ ' ' ~ handicapReferent.lastName|default('') }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="formation-row">
+                <div class="formation-col-left">
+                    <div class="formation-info-box">
+                        <strong>Email :</strong><br>
+                        <span>{{ handicapReferent.email|default('') }}</span>
+                    </div>
+                </div>
+                <div class="formation-col-right">
+                    <div class="formation-info-box">
+                        <strong>Téléphone :</strong><br>
+                        <span>{{ handicapReferent.phone|default('') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {# --- Référent de formation ---#}
+        {% if student.classroom.trainingContactName %}
+        <div class="formation-section">
+            <div class="formation-section-header">RÉFÉRENT DE FORMATION</div>
+            <div class="formation-row">
+                <div class="formation-col-left">
+                    <div class="formation-info-box">
+                        <strong>Nom :</strong><br>
+                        <span>{{ student.classroom.trainingContactName|default('') }}</span>
+                    </div>
+                </div>
+                <div class="formation-col-right">
+                    <div class="formation-info-box">
+                        <strong>Téléphone :</strong><br>
+                        <span>{{ student.classroom.trainingContactPhone|default('') }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
 

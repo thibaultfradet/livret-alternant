@@ -130,8 +130,21 @@ final class ExtractionController extends AbstractController
             'allSkillsLevels' => $allSkillsLevels,
         ]);
 
+        // Generate filename with comprehensive information
+        $today = (new \DateTime())->format('Y-m-d');
+        $classCode = $student->getClassroom()->getDiploma()->getCode() ?? 'NOCODE';
+        $schoolYearLabel = str_replace('/', '-', $activeYear->getLabel()); // Replace slashes to avoid path issues
+        $filename = sprintf(
+            'livret_%s-%s_%s_%s_%s.pdf',
+            $student->getLastName(),
+            $student->getFirstName(),
+            $classCode,
+            $schoolYearLabel,
+            $today
+        );
+
         // Génération du PDF
-        $pdfService->generatePdf($html, sprintf('livret_%s.pdf', $student->getLastName()));
+        $pdfService->generatePdf($html, $filename);
 
         // Dompdf envoie déjà le PDF, donc on retourne une Response vide
         return new Response();

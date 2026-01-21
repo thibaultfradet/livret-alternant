@@ -16,7 +16,14 @@ h1, h2, h3, h4, h5, h6 {
 .page-break {
     page-break-after: always;
 }
+
+/* Marges par défaut pour toutes les pages PDF */
 @page {
+    margin: 1cm;
+}
+
+/* Première page (couverture) sans marges */
+@page :first {
     margin: 0;
 }
 
@@ -253,4 +260,67 @@ textarea {
 
 .w-100 {
     width: 100%;
+}
+
+/* --- Centre de formation sections --- */
+.formation-section {
+    border: 1px solid var(--common-blue-beaupeyrat);
+    border-radius: 4px;
+    margin: 8px 0;
+    padding: 6px;
+}
+
+.formation-section-header {
+    background-color: var(--common-blue-beaupeyrat);
+    color: white;
+    padding: 4px 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 3px;
+    border-radius: 3px;
+}
+
+.formation-info-box {
+    background-color: #f8f9fa;
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 3px;
+}
+
+.formation-info-box strong {
+    color: var(--common-blue-beaupeyrat);
+    font-size: 11px;
+}
+
+.formation-info-box span {
+    font-size: 11px;
+}
+
+.formation-row {
+    overflow: hidden;
+    margin-bottom: 3px;
+}
+
+.formation-col-left {
+    float: left;
+    width: 48%;
+    margin-right: 4%;
+}
+
+.formation-col-right {
+    float: left;
+    width: 48%;
+}
+
+.formation-col-full {
+    clear: both;
+    width: 100%;
+}
+
+/* Clear floats */
+.formation-row:after {
+    content: "";
+    display: table;
+    clear: both;
 }
