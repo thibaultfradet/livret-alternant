@@ -28,6 +28,10 @@ class SkillLevel
     #[ORM\Column(length: 15)]
     private ?string $color = null;
 
+    #[ORM\ManyToOne(inversedBy: 'skillLevels')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Establishment $Establishment = null;
+
     public function __construct()
     {
         $this->tutorEvaluationSkills = new ArrayCollection();
@@ -100,6 +104,18 @@ class SkillLevel
     public function setColor(string $color): static
     {
         $this->color = $color;
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->Establishment;
+    }
+
+    public function setEstablishment(?Establishment $Establishment): static
+    {
+        $this->Establishment = $Establishment;
 
         return $this;
     }

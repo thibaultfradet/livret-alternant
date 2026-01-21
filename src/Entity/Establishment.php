@@ -49,6 +49,24 @@ class Establishment
     #[ORM\OneToMany(targetEntity: Diploma::class, mappedBy: 'Establishment')]
     private Collection $diplomas;
 
+    /**
+     * @var Collection<int, BehaviorCriteria>
+     */
+    #[ORM\OneToMany(targetEntity: BehaviorCriteria::class, mappedBy: 'Establishment')]
+    private Collection $behaviorCriteria;
+
+    /**
+     * @var Collection<int, BehaviorLevel>
+     */
+    #[ORM\OneToMany(targetEntity: BehaviorLevel::class, mappedBy: 'Establishment')]
+    private Collection $behaviorLevels;
+
+    /**
+     * @var Collection<int, SkillLevel>
+     */
+    #[ORM\OneToMany(targetEntity: SkillLevel::class, mappedBy: 'Establishment')]
+    private Collection $skillLevels;
+
     public function __construct()
     {
         $this->schoolYears = new ArrayCollection();
@@ -57,6 +75,9 @@ class Establishment
         // Automatically set the creation date
         $this->createdAt = new \DateTimeImmutable();
         $this->diplomas = new ArrayCollection();
+        $this->behaviorCriteria = new ArrayCollection();
+        $this->behaviorLevels = new ArrayCollection();
+        $this->skillLevels = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -270,6 +291,96 @@ class Establishment
             // set the owning side to null (unless already changed)
             if ($diploma->getEstablishment() === $this) {
                 $diploma->setEstablishment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BehaviorCriteria>
+     */
+    public function getBehaviorCriteria(): Collection
+    {
+        return $this->behaviorCriteria;
+    }
+
+    public function addBehaviorCriterion(BehaviorCriteria $behaviorCriterion): static
+    {
+        if (!$this->behaviorCriteria->contains($behaviorCriterion)) {
+            $this->behaviorCriteria->add($behaviorCriterion);
+            $behaviorCriterion->setEstablishment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBehaviorCriterion(BehaviorCriteria $behaviorCriterion): static
+    {
+        if ($this->behaviorCriteria->removeElement($behaviorCriterion)) {
+            // set the owning side to null (unless already changed)
+            if ($behaviorCriterion->getEstablishment() === $this) {
+                $behaviorCriterion->setEstablishment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, BehaviorLevel>
+     */
+    public function getBehaviorLevels(): Collection
+    {
+        return $this->behaviorLevels;
+    }
+
+    public function addBehaviorLevel(BehaviorLevel $behaviorLevel): static
+    {
+        if (!$this->behaviorLevels->contains($behaviorLevel)) {
+            $this->behaviorLevels->add($behaviorLevel);
+            $behaviorLevel->setEstablishment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBehaviorLevel(BehaviorLevel $behaviorLevel): static
+    {
+        if ($this->behaviorLevels->removeElement($behaviorLevel)) {
+            // set the owning side to null (unless already changed)
+            if ($behaviorLevel->getEstablishment() === $this) {
+                $behaviorLevel->setEstablishment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SkillLevel>
+     */
+    public function getSkillLevels(): Collection
+    {
+        return $this->skillLevels;
+    }
+
+    public function addSkillLevel(SkillLevel $skillLevel): static
+    {
+        if (!$this->skillLevels->contains($skillLevel)) {
+            $this->skillLevels->add($skillLevel);
+            $skillLevel->setEstablishment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSkillLevel(SkillLevel $skillLevel): static
+    {
+        if ($this->skillLevels->removeElement($skillLevel)) {
+            // set the owning side to null (unless already changed)
+            if ($skillLevel->getEstablishment() === $this) {
+                $skillLevel->setEstablishment(null);
             }
         }
 

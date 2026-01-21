@@ -24,6 +24,9 @@ class BehaviorLevel
     #[ORM\JoinColumn(nullable: false)]
     private ?BehaviorCriteria $behaviorCriteria = null;
 
+    #[ORM\ManyToOne(inversedBy: 'behaviorLevels')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Establishment $Establishment = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $disabledAt = null;
@@ -78,6 +81,18 @@ class BehaviorLevel
     public function setBehaviorCriteria(?BehaviorCriteria $behaviorCriteria): static
     {
         $this->behaviorCriteria = $behaviorCriteria;
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->Establishment;
+    }
+
+    public function setEstablishment(?Establishment $Establishment): static
+    {
+        $this->Establishment = $Establishment;
 
         return $this;
     }

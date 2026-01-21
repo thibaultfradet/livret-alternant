@@ -19,6 +19,10 @@ class BehaviorCriteria
     #[ORM\Column(length: 255)]
     private ?string $label = null;
 
+    #[ORM\ManyToOne(inversedBy: 'behaviorCriteria')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Establishment $Establishment = null;
+
     #[ORM\OneToMany(mappedBy: 'behaviorCriteria', targetEntity: BehaviorLevel::class)]
     private Collection $behaviorLevels;
 
@@ -86,6 +90,18 @@ class BehaviorCriteria
                 $behaviorLevel->setBehaviorCriteria(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->Establishment;
+    }
+
+    public function setEstablishment(?Establishment $Establishment): static
+    {
+        $this->Establishment = $Establishment;
 
         return $this;
     }
