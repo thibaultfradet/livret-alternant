@@ -118,13 +118,19 @@ class TrainingsController extends AbstractController
     #[Route('/parameters/behavior', name: 'training_parameters_behavior')]
     public function index(EntityManagerInterface $em): Response
     {
-        // get all active behavior with their levels
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
+        // get all active behavior with their levels for user's establishment
         $query = $em->createQueryBuilder()
             ->select('bc', 'bl')
             ->from(BehaviorCriteria::class, 'bc')
             ->leftJoin('bc.behaviorLevels', 'bl')
             ->where('bc.disabledAt IS NULL')
+            ->andWhere('bc.Establishment = :establishment')
             ->andWhere('bl.disabledAt IS NULL OR bl.disabledAt IS NULL')
+            ->setParameter('establishment', $establishment)
             ->orderBy('bc.label', 'ASC')
             ->addOrderBy('bl.levelNumber', 'ASC')
             ->getQuery();

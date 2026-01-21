@@ -17,9 +17,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class BehaviorManageController extends AbstractController
 {   
 
-   #[Route('/behavior-manage/create', name: 'training_parameters_behavior_create', methods: ['GET', 'POST'])]
+    #[Route('/behavior-manage/create', name: 'training_parameters_behavior_create', methods: ['GET', 'POST'])]
     public function create(Request $request, EntityManagerInterface $em): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
         $form = $this->createForm(CreateBehaviorType::class);
         $form->handleRequest($request);
 
@@ -32,6 +36,7 @@ final class BehaviorManageController extends AbstractController
             $criteria = new BehaviorCriteria();
             $criteria->setLabel(trim($data['label_behavior']));
             $criteria->setDisabledAt(null);
+            $criteria->setEstablishment($establishment);
 
             $em->persist($criteria);
 
@@ -41,6 +46,7 @@ final class BehaviorManageController extends AbstractController
                 $level->setLabel(trim($data['niveau' . $i]));
                 $level->setLevelNumber($i);
                 $level->setBehaviorCriteria($criteria);
+                $level->setEstablishment($establishment);
                 $level->setDisabledAt(null);
 
                 $em->persist($level);
@@ -61,6 +67,14 @@ final class BehaviorManageController extends AbstractController
     #[Route('/behavior/level/replace/{id}', name: 'app_behavior_level_replace', methods: ['GET','POST'])]
     public function replaceLevel(BehaviorLevel $level, Request $request, EntityManagerInterface $em): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Check if level belongs to user's establishment
+        if ($level->getEstablishment() !== $user->getEstablishment()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les niveaux de comportement de votre établissement.');
+        }
+
         if ($level->getDisabledAt() !== null) {
             $this->addFlash('warning', 'Ce niveau est déjà désactivé.');
             return $this->redirectToRoute('training_parameters_behavior');
@@ -81,6 +95,7 @@ final class BehaviorManageController extends AbstractController
             $replacementLevel->setLabel(trim($newLabel));
             $replacementLevel->setLevelNumber($level->getLevelNumber());
             $replacementLevel->setBehaviorCriteria($level->getBehaviorCriteria());
+            $replacementLevel->setEstablishment($level->getEstablishment());
             $replacementLevel->setDisabledAt(null);
 
             $em->persist($replacementLevel);
@@ -102,6 +117,14 @@ final class BehaviorManageController extends AbstractController
     #[Route('/behavior/manage/disable/{id}', name: 'app_behavior_disable')]
     public function disableBehavior(BehaviorCriteria $behavior, EntityManagerInterface $em)
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Check if behavior belongs to user's establishment
+        if ($behavior->getEstablishment() !== $user->getEstablishment()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les critères de comportement de votre établissement.');
+        }
+
         if (!$behavior) {
             $this->addFlash('error', 'Le critère de comportement est introuvable.');
             return $this->redirectToRoute('training_parameters_behavior');

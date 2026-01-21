@@ -23,6 +23,7 @@ class SkillManageController extends AbstractController
     public function index(DiplomaRepository $diplomaRepository, SkillLevelRepository $skillLevelRepo, ?int $id = null): Response
     {
 
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         $establishment = $user->getEstablishment();
 
@@ -61,7 +62,13 @@ class SkillManageController extends AbstractController
     #[Route('/skill-manage/level/create', name: 'app_skill_level_create', methods: ['GET','POST'])]
     public function createLevel(Request $request, EntityManagerInterface $em): Response
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
         $level = new SkillLevel();
+        $level->setEstablishment($establishment);
+
         $form = $this->createForm(SkillLevelType::class, $level);
         $form->handleRequest($request);
 
@@ -81,6 +88,7 @@ class SkillManageController extends AbstractController
     public function createGroup(Diploma $diploma, Request $request, EntityManagerInterface $em): Response
     {
 
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         // Check diploma belongs to user's establishment
@@ -181,6 +189,13 @@ class SkillManageController extends AbstractController
         SkillLevel $level,
         EntityManagerInterface $em
     ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        // Check if level belongs to user's establishment
+        if ($level->getEstablishment() !== $user->getEstablishment()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les niveaux de compétence de votre établissement.');
+        }
 
         if (!$level) {
             throw $this->createNotFoundException('Level not found');
@@ -205,9 +220,16 @@ class SkillManageController extends AbstractController
         SkillLevelRepository $repository,
         DiplomaRepository $diplomaRepository
     ): Response {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
         return $this->render('skill_manage/level_manage.html.twig', [
             'levels' => $repository->findBy(
-                ['disabledAt' => null],
+                [
+                    'disabledAt' => null,
+                    'Establishment' => $establishment
+                ],
                 ['label' => 'ASC']
             ),
             'diploma' => $diplomaRepository->findOneBy([]), // diplôme courant si nécessaire
