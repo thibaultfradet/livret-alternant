@@ -7,6 +7,18 @@ body {
     padding: 0;
 }
 
+/* --- Page de garde --- */
+.cover-page {
+    background-color: #5f86a8 !important;
+    color: #ffffff;
+}
+
+/* Body background for cover page (DomPDF compatibility) */
+body.cover-page-body {
+    background-color: #5f86a8;
+    margin: 0;
+}
+
 h1, h2, h3, h4, h5, h6 {
     margin: 0 0 10px 0;
     font-family: "Bell MT", serif;
@@ -17,31 +29,21 @@ h1, h2, h3, h4, h5, h6 {
     page-break-after: always;
 }
 
-/* Marges par défaut pour toutes les pages PDF */
+/* Page margins - disabled for cover page compatibility */
+/*
 @page {
     margin: 1cm;
 }
+*/
 
-/* Première page (couverture) sans marges */
+/* First page background for cover page */
 @page :first {
     margin: 0;
+    background-color: #5f86a8;
 }
 
 body {
     margin: 0;
-}
-
-.cover-page {
-    width: 100%;
-    height: 297mm; /* A4 portrait */
-    overflow: hidden;
-}
-
-.cover-page img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Fill the container without stretching */
-    display: block;
 }
 
 /* --- Sections --- */

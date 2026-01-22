@@ -2,17 +2,108 @@
 
 {% block body %}
 
-{% if coverPagePath1 %}
-<div style="page-break-after: always; width: 100%; height: 100vh; text-align: center; position: relative;">
-    <img src="{{ asset(coverPagePath1) }}" alt="Page de couverture 1" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
-</div>
-{% endif %}
+{% if coverPagePath1 and coverPagePath2 %}
+{# cover page #}
+<div class="cover-page" style="
+    page-break-after: always;
+    width: 100%;
+    min-height: 100vh;
+    position: relative;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+">
 
-{% if coverPagePath2 %}
-<div style="page-break-after: always; width: 100%; height: 100vh; text-align: center; position: relative;">
-    <img src="{{ asset(coverPagePath2) }}" alt="Page de couverture 2" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+    {# --- Background overlay --- #}
+    <div style="
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #5f86a8;
+        z-index: -1;
+    "></div>
+
+    {# --- Header left : Name --- #}
+    <div style="
+        position: absolute;
+        top: 30px;
+        left: 40px;
+        font-size: 25px;
+        font-weight: bold;
+    ">
+        NOM Prénom : {{ student.lastName }} {{ student.firstName }}
+    </div>
+
+    {# --- Header right : Year & class --- #}
+    <div style="
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        font-size: 25px;
+        text-align: right;
+        font-weight: bold;
+    ">
+        {{ student.classroom.schoolYear.label }}<br>
+        {{ student.classroom.diploma.label }}
+    </div>
+
+    {# --- Image 1 --- #}
+    <div style="
+        position: absolute;
+        top: 120px;
+        left: 60px;
+        width: 320px;
+        height: 200px;
+        overflow: hidden;
+        border-radius: 200px;
+        border: 4px solid #ffffff;
+    ">
+        <img src="{{ asset(coverPagePath1) }}" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+
+    {# --- Image 2 --- #}
+    <div style="
+        position: absolute;
+        top: 260px;
+        right: 60px;
+        width: 320px;
+        height: 200px;
+        overflow: hidden;
+        border-radius: 200px;
+        border: 4px solid #ffffff;
+    ">
+        <img src="{{ asset(coverPagePath2) }}" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+
+    {# --- Main title --- #}
+    <div style="
+        position: absolute;
+        top: 500px;
+        width: 100%;
+        text-align: center;
+        font-size: 42px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        font-family: 'Bell MT', serif;
+    ">
+        LIVRET DE SUIVI DE<br>L'ALTERNANT
+    </div>
+
+    {# --- Logo --- #}
+    <div style="
+        position: absolute;
+        bottom: 60px;
+        width: 100%;
+        text-align: center;
+    ">
+        <img src="{{ asset('images/logo_blanc.png') }}" style="width:150px;"><br>
+        <span style="font-size:12px;">CAMPUS BY BEAUPEYRAT</span>
+    </div>
+
 </div>
 {% endif %}
+{# =============== FIN PAGE DE GARDE =============== #}
 
 <div style="padding:20px; font-family:Arial, sans-serif; font-size:12px; color:#333;">
 

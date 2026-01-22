@@ -53,7 +53,7 @@ final class ExtractionController extends AbstractController
 
         $coverFileFullPath1 = $this->getParameter('kernel.project_dir') . '/public' . $coverPagePath1;
         $coverFileFullPath2 = $this->getParameter('kernel.project_dir') . '/public' . $coverPagePath2;
-
+       
         if (!file_exists($coverFileFullPath1)) {
             $coverPagePath1 = null;
         }
