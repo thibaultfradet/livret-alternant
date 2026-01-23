@@ -24,7 +24,8 @@ final class UserController extends AbstractController
         $establishment = $currentUser->getEstablishment();
 
         if (!$establishment) {
-            throw $this->createAccessDeniedException('Vous n\'êtes pas assigné à un établissement.');
+            $this->addFlash('error', 'Vous n\'êtes pas assigné à un établissement.');
+            return $this->redirectToRoute('training_parameters_user');
         }
 
         $user = new User();
@@ -37,7 +38,8 @@ final class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             if ($user->getEstablishment() !== $establishment) {
-                throw $this->createAccessDeniedException('Vous ne pouvez créer des utilisateurs que pour votre établissement.');
+                $this->addFlash('error', 'Vous ne pouvez créer des utilisateurs que pour votre établissement.');
+                return $this->redirectToRoute('training_parameters_user');
             }
 
             $roles = ['ROLE_USER']; // role par défaut
@@ -87,7 +89,8 @@ final class UserController extends AbstractController
 
         // check same establishment
         if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les utilisateurs de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les utilisateurs de votre établissement.');
+            return $this->redirectToRoute('training_parameters_user');
         }
         
         $form = $this->createForm(UserType::class, $user);
@@ -101,7 +104,8 @@ final class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             //check again establishment change
             if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
-                throw $this->createAccessDeniedException('Vous ne pouvez pas changer l\'établissement.');
+                $this->addFlash('error', 'Vous ne pouvez pas changer l\'établissement.');
+                return $this->redirectToRoute('training_parameters_user');
             }
 
             $roles = [];
@@ -170,7 +174,8 @@ final class UserController extends AbstractController
     
         // Safety check in case no user is authenticated
         if (!$currentUser) {
-            throw $this->createAccessDeniedException('User not authenticated.');
+            $this->addFlash('error', 'User not authenticated.');
+            return $this->redirectToRoute('app_home');
         }
     
         // Get the establishment of the connected user

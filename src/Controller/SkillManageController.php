@@ -93,7 +93,8 @@ class SkillManageController extends AbstractController
 
         // Check diploma belongs to user's establishment
         if ($diploma->getEstablishment() !== $user->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les diplômes de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les diplômes de votre établissement.');
+            return $this->redirectToRoute('app_skill_management');
         }
 
         $group = new SkillGroup();
@@ -194,7 +195,8 @@ class SkillManageController extends AbstractController
 
         // Check if level belongs to user's establishment
         if ($level->getEstablishment() !== $user->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les niveaux de compétence de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les niveaux de compétence de votre établissement.');
+            return $this->redirectToRoute('app_skill_level_manage');
         }
 
         if (!$level) {

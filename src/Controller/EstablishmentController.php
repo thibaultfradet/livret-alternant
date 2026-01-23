@@ -20,7 +20,8 @@ class EstablishmentController extends AbstractController
         $user = $this->getUser();
 
         if (!$user || !$user->getEstablishment()) {
-            throw $this->createAccessDeniedException('No establishment associated with the current user.');
+            $this->addFlash('error', 'No establishment associated with the current user.');
+            return $this->redirectToRoute('app_home');
         }
 
         $establishment = $user->getEstablishment();
@@ -62,7 +63,8 @@ class EstablishmentController extends AbstractController
         $user = $this->getUser();
 
         if (!$user || !in_array('ROLE_TTM', $user->getRoles())) {
-            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier le centre de formation.');
+            $this->addFlash('error', 'Vous ne pouvez pas modifier le centre de formation.');
+            return $this->redirectToRoute('app_home');
         }
 
         $establishment = $user->getEstablishment();
@@ -107,7 +109,8 @@ class EstablishmentController extends AbstractController
         $user = $this->getUser();
 
         if (!$user || !$user->getEstablishment()) {
-            throw $this->createAccessDeniedException('No establishment associated with the current user.');
+            $this->addFlash('error', 'No establishment associated with the current user.');
+            return $this->redirectToRoute('app_home');
         }
 
         $establishment = $user->getEstablishment();

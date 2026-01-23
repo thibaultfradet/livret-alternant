@@ -71,7 +71,8 @@ final class BehaviorManageController extends AbstractController
 
         // Check if level belongs to user's establishment via behavior criteria
         if ($level->getBehaviorCriteria()->getEstablishment() !== $user->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les niveaux de comportement de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les niveaux de comportement de votre établissement.');
+            return $this->redirectToRoute('training_parameters_behavior');
         }
 
         if ($level->getDisabledAt() !== null) {
@@ -120,7 +121,8 @@ final class BehaviorManageController extends AbstractController
 
         // Check if behavior belongs to user's establishment
         if ($behavior->getEstablishment() !== $user->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les critères de comportement de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les critères de comportement de votre établissement.');
+            return $this->redirectToRoute('training_parameters_behavior');
         }
 
         if (!$behavior) {

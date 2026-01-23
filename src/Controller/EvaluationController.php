@@ -49,7 +49,8 @@ final class EvaluationController extends AbstractController
         ]);
 
         if (!$tutorAssignment) {
-            throw $this->createAccessDeniedException('Vous n\'êtes pas assigné à cet étudiant.');
+            $this->addFlash('error', 'Vous n\'êtes pas assigné à cet étudiant.');
+            return $this->redirectToRoute('app_home');
         }
 
         // verify if contract is active for this period
@@ -58,7 +59,8 @@ final class EvaluationController extends AbstractController
         $endDate = $tutorAssignment->getDateFinContract();
 
         if (($startDate && $startDate > $now) || ($endDate && $endDate < $now)) {
-            throw $this->createAccessDeniedException('Le contrat n\'est pas actif pour cette période.');
+            $this->addFlash('error', 'Le contrat n\'est pas actif pour cette période.');
+            return $this->redirectToRoute('app_home');
         }
 
 
@@ -162,7 +164,8 @@ final class EvaluationController extends AbstractController
         //check if student is assigned to a active classroom 
         $classroom = $student->getClassroom();
         if (!$classroom || !$classroom->getSchoolYear()->isActive()) {
-            throw $this->createAccessDeniedException('Vous n\'êtes pas assigné à une classe active.');
+            $this->addFlash('error', 'Vous n\'êtes pas assigné à une classe active.');
+            return $this->redirectToRoute('app_home');
         }
 
         // required tutor evaluation
@@ -231,7 +234,8 @@ final class EvaluationController extends AbstractController
 
         // verify if student and ttm are in the same establishment
         if ($student->getEstablishment() !== $ttm->getEstablishment()) {
-            throw $this->createAccessDeniedException('Cet étudiant n\'appartient pas à votre établissement.');
+            $this->addFlash('error', 'Cet étudiant n\'appartient pas à votre établissement.');
+            return $this->redirectToRoute('app_home');
         }
 
         // check for existing evaluation

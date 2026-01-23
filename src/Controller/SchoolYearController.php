@@ -71,7 +71,8 @@ final class SchoolYearController extends AbstractController
 
         // Check if school year belongs to user's establishment
         if ($schoolYear->getEstablishment() !== $user->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les années scolaires de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les années scolaires de votre établissement.');
+            return $this->redirectToRoute('training_parameters_schoolYear');
         }
 
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
@@ -147,7 +148,8 @@ final class SchoolYearController extends AbstractController
         $user = $this->getUser();
 
         if ($schoolYear->getEstablishment() !== $user->getEstablishment()) {
-            throw $this->createAccessDeniedException('Vous ne pouvez modifier que les années scolaires de votre établissement.');
+            $this->addFlash('error', 'Vous ne pouvez modifier que les années scolaires de votre établissement.');
+            return $this->redirectToRoute('training_parameters_schoolYear');
         }
 
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/covers/';
