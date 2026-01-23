@@ -80,22 +80,27 @@ class EvaluationCest
      */
     public function testCompleteEvaluationFlow(AcceptanceTester $I): void
     {
+        // === PHASE 1: TUTOR EVALUATION ===
         $I->amOnPage('/login');
         $I->fillField('#inputEmail', 'tutor.test@example.com');
         $I->fillField('#inputPassword', 'Password123!Oui');
         $I->click('form button[type=submit]');
         $I->waitForText('Bienvenue sur le livret', 5);
 
+       
+        // Verify we are on the tutor evaluation page
+        $I->amOnPage('/evaluation/tutor/18/1');
         $I->wait(2);
-
-        $currentUrl = $I->grabFromCurrentUrl();
-
-        if ($currentUrl === '/') {
+        // Protect against double submission
+        if ($I->tryToSee('Une évaluation existe déjà')) {
             $I->waitForText('Une évaluation existe déjà', 10);
+            $I->seeInCurrentUrl('/');
             return;
         }
+
         $I->see('Évaluation de l\'alternant');
 
+        // Fill tutor evaluation form
         $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][0][behaviorLevel]"]', '1');
         $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][1][behaviorLevel]"]', '7');
         $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][2][behaviorLevel]"]', '4');
@@ -113,11 +118,12 @@ class EvaluationCest
         $I->fillField('tutor_evaluation_form[remarks]', 'Très bon travail global, progression constante.');
 
         $I->scrollTo('#submit-evaluation');
-        $I->wait(2);
+        $I->wait(1);
         $I->click('#submit-evaluation');
         $I->waitForText('Évaluation enregistrée avec succès', 5);
         $I->seeInCurrentUrl('/');
-        // Logout
+
+        // Logout tutor
         $I->amOnPage('/logout');
         $I->seeInCurrentUrl('/login');
 
@@ -128,20 +134,16 @@ class EvaluationCest
         $I->click('form button[type=submit]');
         $I->waitForText('Bienvenue sur le livret', 5);
 
-        // Student self-evaluates
         $I->amOnPage('/evaluation/student/1'); // Period 1
         $I->see('Mon livret de l\'alternant');
 
-        // Fill student remarks
         $I->fillField('student_evaluation_form[remarks]', 'Je pense avoir fait de bons progrès. Points à améliorer : concentration et gestion du temps.');
 
-        // Scroll to button and click
         $I->scrollTo('#submit-evaluation');
-        $I->wait(2);
+        $I->wait(1);
         $I->click('#submit-evaluation');
         $I->waitForText('Votre auto-évaluation a été enregistrée avec succès', 5);
 
-        // Logout
         $I->amOnPage('/logout');
         $I->seeInCurrentUrl('/login');
 
@@ -150,34 +152,27 @@ class EvaluationCest
         $I->fillField('#inputEmail', 'ttm.test@example.com');
         $I->fillField('#inputPassword', 'Password123!Oui');
         $I->click('form button[type=submit]');
-        $I->wait(1); // Wait for page transition
-        $I->seeInCurrentUrl('/'); // Verify we're on home page
+        $I->wait(1);
+        $I->seeInCurrentUrl('/');
         $I->waitForText('Bienvenue sur le livret', 5);
 
-        // TTM evaluates student
         $I->amOnPage('/evaluation/ttm/18/1'); // Student 18, Period 1
-        $I->see('Evaluer l\'alternant'); // Page title
+        $I->see('Evaluer l\'alternant');
 
-        // Fill TTM remarks
         $I->fillField('ttm_evaluation_form[remarks]', 'Évaluation complète : l\'étudiant démontre une forte motivation. Continuer dans cette direction.');
 
-        // Scroll to button and click
         $I->scrollTo('#submit-evaluation');
-        $I->wait(2);
+        $I->wait(1);
         $I->click('#submit-evaluation');
         $I->waitForText('Évaluation TTM enregistrée avec succès', 5);
 
-        // === PHASE 4: VERIFICATION IN EVALUATION-VISUALIZER ===
-        // Already logged in as TTM, go to evaluation-visualizer
+        // === PHASE 4: VERIFICATION IN EVALUATION VISUALIZER ===
         $I->amOnPage('/evaluation-visualizer');
         $I->see('Validations des livrets');
+        
+        $I->scrollTo('//tr[contains(., "Student FlowTest")]');
+        $I->see('Student FlowTest');
 
-        // Find the row with student "Student FlowTest" and verify all 3 checks are present
-        $I->see('Student FlowTest'); // Student name
-
-        // Verify that the row containing "Student FlowTest" has exactly 3 success checks (✓)
-        // Count the number of text-success spans in the row for Student FlowTest
-        // The row should have 3 checks: tutor_validated, student_validated, ttm_validated
         $I->seeNumberOfElements('//tr[contains(., "Student FlowTest")]//span[@class="text-success"]', 3);
     }
 
