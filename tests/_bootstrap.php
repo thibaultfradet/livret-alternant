@@ -9,17 +9,12 @@ use Symfony\Component\Filesystem\Filesystem;
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
+// Force environment to test for tests
+$_SERVER['APP_ENV'] = 'test';
+$_SERVER['APP_DEBUG'] = false;
 
-// $dotenv = new Dotenv();
-// $dotenv->bootEnv(dirname(__DIR__).'/.env.test'); 
-// $dotenv->load(dirname(__DIR__).'/.env.test.local'); 
+new Dotenv('APP_ENV', 'APP_DEBUG')->bootEnv(dirname(__DIR__).'/.env.test');
 
-
-// Force l'environnement test et debug à 0
-// $_SERVER['APP_ENV'] = 'dev';
-// $_ENV['APP_ENV'] = 'dev';
-// $_SERVER['APP_DEBUG'] = 0;
-// $_ENV['APP_DEBUG'] = 0;
 
 // Clean up from previous runs
 try {
@@ -49,7 +44,7 @@ $runCommand('doctrine:database:drop', [
 $runCommand('doctrine:database:create', [
     '--if-not-exists' => true,
 ]);
-$runCommand('doctrine:migrations:migrate');
+$runCommand('doctrine:schema:create');
 $runCommand('doctrine:fixtures:load', [
     '--group' => ['CodeceptionFixtures'],
     '--no-interaction' => true,
