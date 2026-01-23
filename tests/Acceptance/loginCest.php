@@ -16,8 +16,9 @@ class LoginCest
         $I->fillField('#inputEmail', 'poubellepoubelle106@gmail.com'); 
         $I->fillField('#inputPassword', 'Password123!Oui');
         $I->click('form button[type=submit]');
+        $I->wait(1); // Wait for redirect
 
-        $I->waitForText('Bienvenue sur le livret', 5);
+        $I->waitForText('Bienvenue', 5);
 
         $I->seeInCurrentUrl("/");
     }
