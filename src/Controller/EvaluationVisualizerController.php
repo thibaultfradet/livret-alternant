@@ -4,12 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Period;
 use App\Entity\User;
+use App\Entity\SchoolYear;
 use App\Form\NotifierEvaluationType;
+use App\Form\ExtractorEvaluationType;
 use App\Repository\ClassroomRepository;
 use App\Repository\PeriodRepository;
 use App\Repository\StudentEvaluationRepository;
 use App\Repository\TutorEvaluationRepository;
 use App\Repository\TTMEvaluationRepository;
+use App\Repository\UserRepository;
+use App\Repository\SchoolYearRepository;
+use App\Repository\SkillLevelRepository;
+use App\Repository\TermsAcceptanceRepository;
+use App\Service\PdfService;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -263,6 +270,305 @@ class EvaluationVisualizerController extends AbstractController
             'evaluations' => $pendingEvaluations,
             'selectedPeriod' => $data['selectedPeriod'],
         ]);
+    }
+
+    #[Route('/evaluation-visualizer/extract', name: 'extract_student_evaluations')]
+    public function extract(
+        Request $request,
+        ClassroomRepository $classroomRepo,
+        PeriodRepository $periodRepo,
+        StudentEvaluationRepository $studentEvalRepo,
+        TutorEvaluationRepository $tutorEvalRepo,
+        TTMEvaluationRepository $ttmEvalRepo,
+        UserRepository $userRepository,
+        SchoolYearRepository $schoolYearRepository,
+        SkillLevelRepository $skillLevelRepository,
+        TermsAcceptanceRepository $termsAcceptanceRepository,
+        PdfService $pdfService
+    ): Response {
+        // get evaluation data
+        $data = $this->getEvaluationData(
+            $request,
+            $classroomRepo,
+            $periodRepo,
+            $studentEvalRepo,
+            $tutorEvalRepo,
+            $ttmEvalRepo
+        );
+
+        // get all students from classrooms
+        $allStudents = [];
+        foreach ($data['classrooms'] as $classroom) {
+            foreach ($classroom->getStudents() as $student) {
+                // Skip students not belonging to the current user's establishment
+                $currentUser = $this->getUser();
+                if (
+                    $currentUser->getEstablishment() !== null &&
+                    $student->getEstablishment() !== $currentUser->getEstablishment()
+                ) {
+                    continue;
+                }
+                $allStudents[] = $student;
+            }
+        }
+
+        // Create the form
+        $form = $this->createForm(ExtractorEvaluationType::class, null, [
+            'students' => $allStudents,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var User[] $selectedStudents */
+            $selectedStudents = $form->get('selectedStudents')->getData();
+            $periodId = $form->get('periodId')->getData();
+
+            if (empty($selectedStudents)) {
+                $this->addFlash('warning', 'Aucun étudiant sélectionné.');
+                return $this->redirectToRoute('extract_student_evaluations', [
+                    'period' => $periodId,
+                ]);
+            }
+
+            $period = $periodRepo->find($periodId);
+            if (!$period) {
+                $this->addFlash('warning', 'Période non trouvée.');
+                return $this->redirectToRoute('extract_student_evaluations');    
+            }
+
+            // Generate archive with PDFs
+            $archiveResponse = $this->generateStudentsPdfArchive(
+                $selectedStudents,
+                $period,
+                $userRepository,
+                $schoolYearRepository,
+                $skillLevelRepository,
+                $termsAcceptanceRepository,
+                $pdfService
+            );
+
+            if ($archiveResponse === null) {
+                return $this->redirectToRoute('extract_student_evaluations', ['period' => $periodId]);
+            }
+
+            return $archiveResponse;
+        }
+
+        return $this->render('evaluation_visualizer/extract.html.twig', [
+            'form' => $form->createView(),
+            'students' => $allStudents,
+            'periods' => $data['periods'],
+            'selectedPeriod' => $data['selectedPeriod'],
+            'classrooms' => $data['classrooms'],
+        ]);
+    }
+
+    /**
+     * Generate a ZIP archive containing PDFs for selected students for a specific period
+     */
+    private function generateStudentsPdfArchive(
+        array $selectedStudents,
+        Period $period,
+        UserRepository $userRepository,
+        SchoolYearRepository $schoolYearRepository,
+        SkillLevelRepository $skillLevelRepository,
+        TermsAcceptanceRepository $termsAcceptanceRepository,
+        PdfService $pdfService
+    ): ?Response {
+        $currentUser = $this->getUser();
+        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
+        if (!$activeYear) {
+            $this->addFlash('error', 'Aucune année scolaire active trouvée.');
+            return null;
+        }
+
+        // Verify period belongs to the active school year
+        if ($period->getSchoolYear()->getId() !== $activeYear->getId()) {
+            $this->addFlash('error', 'La période sélectionnée ne correspond pas à l\'année scolaire active.');
+            return null;
+        }
+
+        // Create temp directory for PDFs
+        $tempDir = sys_get_temp_dir() . '/extraction_' . uniqid();
+        if (!mkdir($tempDir, 0755, true)) {
+            $this->addFlash('error', 'Impossible de créer le répertoire temporaire pour les fichiers.');
+            return null;
+        }
+
+        $pdfFiles = [];
+        $allSkillsLevels = $skillLevelRepository->findBy(
+            ['disabledAt' => null],
+            ['order_index' => 'ASC']
+        );
+
+        try {
+            // Generate PDFs for each selected student
+            foreach ($selectedStudents as $student) {
+                // Retrieve student with all data for the active year
+                $fullStudent = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
+                if (!$fullStudent) {
+                    continue; // Skip if student data cannot be retrieved
+                }
+
+                // Fetch all evaluations and filter to the selected period
+                $skillEvaluationsByPeriod = $this->getStudentEvaluationData($activeYear, $fullStudent);
+                $periodNumber = $period->getPeriodNumber();
+                $filteredSkillEvaluationsByPeriod = [];
+                if (isset($skillEvaluationsByPeriod[$periodNumber])) {
+                    $filteredSkillEvaluationsByPeriod[$periodNumber] = $skillEvaluationsByPeriod[$periodNumber];
+                }
+
+                // Generate HTML for PDF
+                $html = $this->renderView('extraction/pdf_student_period.html.twig', [
+                    'student' => $fullStudent,
+                    'period' => $period,
+                    'skillEvaluationsByPeriod' => $filteredSkillEvaluationsByPeriod,
+                    'allSkillsLevels' => $allSkillsLevels,
+                    'activeYear' => $activeYear,
+                ]);
+
+                // Generate filename
+                $today = (new \DateTime())->format('Y-m-d');
+                $classCode = $fullStudent->getClassroom()->getDiploma()->getCode() ?? 'NOCODE';
+                $schoolYearLabel = str_replace('/', '-', $activeYear->getLabel());
+                $filename = sprintf(
+                    'evaluation_%s-%s_%s_P%d_%s_%s.pdf',
+                    $fullStudent->getLastName(),
+                    $fullStudent->getFirstName(),
+                    $classCode,
+                    $periodNumber,
+                    $schoolYearLabel,
+                    $today
+                );
+
+                // Generate PDF directly to file
+                $pdfFilePath = $tempDir . '/' . $filename;
+                $pdfService->generatePdfToFile($html, $pdfFilePath);
+                $pdfFiles[] = [
+                    'path' => $pdfFilePath,
+                    'name' => $filename
+                ];
+            }
+
+            if (empty($pdfFiles)) {
+                $this->addFlash('error', 'Aucun PDF n\'a pu être généré pour les étudiants sélectionnés.');
+                $this->deleteDirectory($tempDir);
+                return null;
+            }
+
+            // Create ZIP archive
+            $zipPath = sys_get_temp_dir() . '/extractions_' . date('Y-m-d_H-i-s') . '.zip';
+            $zip = new \ZipArchive();
+
+            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+                $this->addFlash('error', 'Impossible de créer l\'archive ZIP.');
+                $this->deleteDirectory($tempDir);
+                return null;
+            }
+
+            // Add PDFs to archive
+            foreach ($pdfFiles as $pdf) {
+                $zip->addFile($pdf['path'], $pdf['name']);
+            }
+
+            $zip->close();
+
+            // Clean up temp directory
+            $this->deleteDirectory($tempDir);
+
+            // Return ZIP file as download
+            return $this->file(
+                $zipPath,
+                sprintf('evaluations_P%d_%s.zip', $period->getPeriodNumber(), date('Y-m-d_H-i-s')),
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT
+            );
+
+        } catch (\Exception $e) {
+            // Clean up on error
+            $this->deleteDirectory($tempDir);
+            if (file_exists($zipPath ?? '')) {
+                unlink($zipPath);
+            }
+            $this->addFlash('error', 'Une erreur s\'est produite lors de la génération de l\'archive : ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get student evaluations by period
+     */
+    private function getStudentEvaluationData(SchoolYear $activeYear, User $student): array
+    {
+        $skillEvaluationsByPeriod = [];
+        $activeYearId = $activeYear->getId();
+
+        foreach ($student->getTutorEvaluationsReceived() as $tutorEvaluation) {
+            $period = $tutorEvaluation->getPeriod();
+            if (!$period) {
+                continue; // Skip if no period
+            }
+
+            $periodYear = $period->getSchoolYear();
+            if (!$periodYear || $periodYear->getId() !== $activeYearId) {
+                continue; // Skip periods not in the active year
+            }
+
+            foreach ($tutorEvaluation->getSkillEvaluation() as $skill) {
+                $skillCriteria = $skill->getSkillCriteria();
+                $skillGroup = $skillCriteria->getSkillGroup();
+
+                if (!$skillGroup) {
+                    continue; // Skip if no group
+                }
+
+                $periodKey = $period->getPeriodNumber();
+                $groupId = $skillGroup->getId();
+
+                if (!isset($skillEvaluationsByPeriod[$periodKey])) {
+                    $skillEvaluationsByPeriod[$periodKey] = [];
+                }
+
+                if (!isset($skillEvaluationsByPeriod[$periodKey][$groupId])) {
+                    $skillEvaluationsByPeriod[$periodKey][$groupId] = [
+                        'label' => $skillGroup->getLabel(),
+                        'criteria' => []
+                    ];
+                }
+
+                $skillEvaluationsByPeriod[$periodKey][$groupId]['criteria'][] = [
+                    'label' => $skillCriteria->getLabel(),
+                    'level' => $skill->getSkillLevel()
+                ];
+            }
+        }
+
+        return $skillEvaluationsByPeriod;
+    }
+
+    /**
+     * Recursively delete a directory
+     */
+    private function deleteDirectory(string $dir): bool
+    {
+        if (!is_dir($dir)) {
+            return false;
+        }
+
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $dir . '/' . $item;
+            if (is_dir($path)) {
+                $this->deleteDirectory($path);
+            } else {
+                unlink($path);
+            }
+        }
+
+        return rmdir($dir);
     }
 
     private function sendNotification(array $pendingEvaluations, Period $period, MailerInterface $mailer): void
