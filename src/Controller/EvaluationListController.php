@@ -58,15 +58,20 @@ final class EvaluationListController extends AbstractController
             $period = $allPeriods[0];
         }
 
-        // Récupérer les étudiants du tuteur
+        // Récupérer les étudiants du tuteur avec contrats actifs
+        $now = new \DateTime();
         $qb = $userRepo->createQueryBuilder('s')
             ->join('s.studentContracts', 'sc')
             ->join('s.classroom', 'c')
             ->join('c.schoolYear', 'sy')
             ->where('sy.id = :schoolYear')
             ->andWhere('sc.tutor = :tutor')
+            // Vérifier que le contrat est actif (date de début <= maintenant ET date de fin >= maintenant)
+            ->andWhere('(sc.dateDebutContract IS NULL OR sc.dateDebutContract <= :now)')
+            ->andWhere('(sc.dateFinContract IS NULL OR sc.dateFinContract >= :now)')
             ->setParameter('schoolYear', $activeSchoolYear)
-            ->setParameter('tutor', $tutor);
+            ->setParameter('tutor', $tutor)
+            ->setParameter('now', $now);
 
         $students = $qb->orderBy('s.lastName', 'ASC')->getQuery()->getResult();
 
