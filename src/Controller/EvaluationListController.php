@@ -121,17 +121,27 @@ final class EvaluationListController extends AbstractController
 
         $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment($currentUser->getEstablishment());
 
-        // période par défaut
-        $periodId = $request->query->get('period');
-        $period = $periodId ? $periodRepo->find($periodId) : $periodRepo->getActivePeriod();
-
-
+        // Récupérer toutes les périodes de l'année
         $allPeriods = $periodRepo->createQueryBuilder('p')
             ->where('p.schoolYear = :schoolYear')
             ->orderBy('p.startDate', 'ASC')
             ->setParameter('schoolYear', $activeSchoolYear)
             ->getQuery()
             ->getResult();
+
+        // période sélectionnée ou période active par défaut
+        $periodId = $request->query->get('period');
+        $period = null;
+        if ($periodId) {
+            $period = $periodRepo->find($periodId);
+        } else {
+            $period = $periodRepo->getActivePeriod();
+        }
+        
+        // Si aucune période n'est trouvée, utiliser la première disponible
+        if (!$period && !empty($allPeriods)) {
+            $period = $allPeriods[0];
+        }
 
         
         $diplomaId = $request->query->get('diploma');
