@@ -37,9 +37,9 @@ class UserType extends AbstractType
                 'mapped' => false,
             ])
             
-            // Checkbox for alternance student
-            ->add('isAlternance', CheckboxType::class, [
-                'label' => 'Contrat d\'alternance',
+            // Checkbox for apprentissage student
+            ->add('isApprentissage', CheckboxType::class, [
+                'label' => 'Contrat d\'apprentissage',
                 'required' => false,
             ])
             

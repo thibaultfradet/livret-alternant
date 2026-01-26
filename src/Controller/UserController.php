@@ -207,7 +207,7 @@ final class UserController extends AbstractController
         // Pre-check checkboxes based on existing roles
         $form->get('isProfPrincipal')->setData(in_array('ROLE_PT', $user->getRoles()));
         $form->get('isTeamMember')->setData(in_array('ROLE_TTM', $user->getRoles()));
-        $form->get('isAlternance')->setData($user->isAlternance());
+        $form->get('isApprentissage')->setData($user->isApprentissage());
 
         // Pre-fill tutor fields if active contract exists
         if ($activeContract && $activeContract->getTutor()) {
@@ -340,17 +340,17 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/toggle-alternance', name: 'app_user_toggle_alternance', methods: ['POST'])]
-    public function toggleAlternance(User $user, Request $request, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/{id}/toggle-apprentissage', name: 'app_user_toggle_apprentissage', methods: ['POST'])]
+    public function toggleApprentissage(User $user, Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $isAlternance = filter_var($request->request->get('isAlternance'), FILTER_VALIDATE_BOOLEAN);
+        $isApprentissage = filter_var($request->request->get('isApprentissage'), FILTER_VALIDATE_BOOLEAN);
 
-        $user->setIsAlternance($isAlternance);
+        $user->setIsApprentissage($isApprentissage);
         $entityManager->flush();
 
         return new JsonResponse([
             'success' => true,
-            'isAlternance' => $user->isAlternance()
+            'isApprentissage' => $user->isApprentissage()
         ]);
     }
 }

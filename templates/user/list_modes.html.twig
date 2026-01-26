@@ -17,7 +17,7 @@
                     <tr>
                         <th>Nom</th>
                         <th>Diplôme</th>
-                        <th class="text-center">Alternance / Pro</th>
+                        <th class="text-center">Apprentissage / Pro</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -27,15 +27,15 @@
                             <td>{{ user.classroom.diploma.label ?? '' }}</td>
                             <td class="text-center">
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input toggle-alternance" type="radio" 
-                                        name="type_{{ user.id }}" value="1" 
-                                        {% if user.isAlternance %}checked{% endif %}>
-                                    <label class="form-check-label">Alternance</label>
+                                    <input class="form-check-input toggle-apprentissage" type="radio"
+                                        name="type_{{ user.id }}" value="1"
+                                        {% if user.isApprentissage %}checked{% endif %}>
+                                    <label class="form-check-label">Apprentissage</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input toggle-alternance" type="radio" 
-                                        name="type_{{ user.id }}" value="0" 
-                                        {% if not user.isAlternance %}checked{% endif %}>
+                                    <input class="form-check-input toggle-apprentissage" type="radio"
+                                        name="type_{{ user.id }}" value="0"
+                                        {% if not user.isApprentissage %}checked{% endif %}>
                                     <label class="form-check-label">Pro</label>
                                 </div>
                             </td>
@@ -53,22 +53,22 @@
 {% block javascripts_bottom %}
 <script>
     $(function() {
-        $('.toggle-alternance').on('change', function() {
+        $('.toggle-apprentissage').on('change', function() {
             const $row = $(this).closest('tr');
             const userId = $row.data('user-id');
-            const isAlternance = $(this).val();
+            const isApprentissage = $(this).val();
 
             $.ajax({
-                url: "{{ path('app_user_toggle_alternance', {'id': 'USER_ID'}) }}".replace('USER_ID', userId),
+                url: "{{ path('app_user_toggle_apprentissage', {'id': 'USER_ID'}) }}".replace('USER_ID', userId),
                 method: 'POST',
-                data: { isAlternance: isAlternance },
+                data: { isApprentissage: isApprentissage },
                 success: function(response) {
                     if (response.success) {
-                        console.log('Updated user ' + userId + ' to alternance=' + response.isAlternance);
+                        console.log('Updated user ' + userId + ' to apprentissage=' + response.isApprentissage);
                     }
                 },
                 error: function() {
-                    alert('Erreur lors de la mise à jour de l’utilisateur.');
+                    alert('Erreur lors de la mise à jour de l'utilisateur.');
                 }
             });
         });

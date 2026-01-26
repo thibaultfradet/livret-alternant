@@ -24,7 +24,7 @@ final class TermsAcceptanceController extends AbstractController
 
         $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
 
-        if ($user->isAlternance()) {
+        if ($user->isApprentissage()) {
             $termsConditions = $user->getEstablishment()->getTermsConditionsAlternance();
         } else {
             $termsConditions = $user->getEstablishment()->getTermsConditionsPro();
@@ -83,13 +83,13 @@ final class TermsAcceptanceController extends AbstractController
         }
 
         if (in_array('ROLE_STUDENT', $user->getRoles(), true)) {
-            if ($user->isAlternance()) {
+            if ($user->isApprentissage()) {
                 $termsConditions = $user->getClassroom()->getTermsConditionsAlternance();
             } else {
                 $termsConditions = $user->getClassroom()->getTermsConditionsPro();
             }
         } else {
-            if ($user->isAlternance()) {
+            if ($user->isApprentissage()) {
                 $termsConditions = $user->getEstablishment()->getTermsConditionsAlternance();
             } else {
                 $termsConditions = $user->getEstablishment()->getTermsConditionsPro();

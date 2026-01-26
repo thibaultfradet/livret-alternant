@@ -49,7 +49,7 @@
                             {{ form_row(form.classroom) }}
                         </div>
                         <div class="col-md-6">
-                            {{ form_row(form.isAlternance) }}
+                            {{ form_row(form.isApprentissage) }}
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@
                     {# Hidden fields for non-students to prevent form_end from auto-rendering them #}
                     <div class="d-none">
                         {{ form_widget(form.classroom) }}
-                        {{ form_widget(form.isAlternance) }}
+                        {{ form_widget(form.isApprentissage) }}
                         {{ form_widget(form.companyName) }}
                         {{ form_widget(form.companyAddress) }}
                         {{ form_widget(form.dateDebutContract) }}
