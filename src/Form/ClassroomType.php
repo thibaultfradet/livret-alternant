@@ -9,11 +9,10 @@ use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ClassroomNewType extends AbstractType
+class ClassroomType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -56,18 +55,6 @@ class ClassroomNewType extends AbstractType
                 'label' => 'Professeur principal',
                 'required' => false,
                 'placeholder' => 'Sélectionner un professeur principal',
-            ])
-
-            // Training contact name (stored in JSON field)
-            ->add('trainingContactName', TextType::class, [
-                'label' => 'Nom du référent de formation',
-                'required' => false,
-            ])
-
-            // Training contact phone (stored in JSON field)
-            ->add('trainingContactPhone', TextType::class, [
-                'label' => 'Téléphone du référent de formation',
-                'required' => false,
             ]);
     }
 

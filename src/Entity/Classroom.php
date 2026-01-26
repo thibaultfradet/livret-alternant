@@ -33,9 +33,6 @@ class Classroom
     #[ORM\JoinColumn(name: 'principal_teacher_id', referencedColumnName: 'id', nullable: true)]
     private ?User $principalTeacher = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?array $trainingContact = null;
-
     #[ORM\Column(type: Types::TEXT,nullable: true)]
     private ?string $termsConditionsPro = null;
 
@@ -113,43 +110,6 @@ class Classroom
     {
         $this->principalTeacher = $principalTeacher;
 
-        return $this;
-    }
-
-    public function getTrainingContact(): ?array
-    {
-        return $this->trainingContact;
-    }
-
-    public function setTrainingContact(?array $trainingContact): static
-    {
-        $this->trainingContact = $trainingContact;
-
-        return $this;
-    }
-
-
-
-    // json field 
-    public function getTrainingContactName(): ?string
-    {
-        return $this->trainingContact[0] ?? null;
-    }
-
-    public function setTrainingContactName(?string $name): self
-    {
-        $this->trainingContact[0] = $name;
-        return $this;
-    }
-
-    public function getTrainingContactPhone(): ?string
-    {
-        return $this->trainingContact[1] ?? null;
-    }
-
-    public function setTrainingContactPhone(?string $phone): self
-    {
-        $this->trainingContact[1] = $phone;
         return $this;
     }
 

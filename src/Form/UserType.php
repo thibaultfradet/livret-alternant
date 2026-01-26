@@ -22,7 +22,11 @@ class UserType extends AbstractType
             ->add('email', EmailType::class)
             ->add('firstName', TextType::class, ['label' => 'Prénom'])
             ->add('lastName', TextType::class, ['label' => 'Nom'])
-            
+            ->add('phone', TextType::class, [
+                'label' => 'Téléphone',
+                'required' => false,
+            ])
+
             // Checkbox for main teacher role
             ->add('isProfPrincipal', CheckboxType::class, [
                 'label' => 'Est un professeur référent',

@@ -167,7 +167,7 @@
         or formationCenter.campusDirector
         or formationCenter.alternanceManager
         or formationCenter.handicapReferent
-        or student.classroom.trainingContactName
+        or student.classroom.principalTeacher
     %}
 
     {% if hasFormationCenterContent %}
@@ -303,21 +303,22 @@
             </div>
             {% endif %}
 
-            {# --- Référent de formation ---#}
-            {% if student.classroom.trainingContactName %}
+            {# --- Référent de formation (Professeur principal) ---#}
+            {% if student.classroom.principalTeacher %}
+            {% set principalTeacher = student.classroom.principalTeacher %}
             <div class="formation-section">
                 <div class="formation-section-header">RÉFÉRENT DE FORMATION</div>
                 <div class="formation-row">
                     <div class="formation-col-left">
                         <div class="formation-info-box">
                             <strong>Nom :</strong><br>
-                            <span>{{ student.classroom.trainingContactName|default('') }}</span>
+                            <span>{{ principalTeacher.firstName ~ ' ' ~ principalTeacher.lastName }}</span>
                         </div>
                     </div>
                     <div class="formation-col-right">
                         <div class="formation-info-box">
                             <strong>Téléphone :</strong><br>
-                            <span>{{ student.classroom.trainingContactPhone|default('') }}</span>
+                            <span>{{ principalTeacher.phone|default('') }}</span>
                         </div>
                     </div>
                 </div>

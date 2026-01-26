@@ -4,7 +4,6 @@
             <tr>
                 <th>Diplôme</th>
                 <th>Professeur référent</th>
-                <th>Référent de formation</th>
                 <th class="text-end w-1">Actions</th>
             </tr>
         </thead>
@@ -16,8 +15,14 @@
                     {# Professor referent column #}
                     <td class="gap-2">
                         {% if classroom.principalTeacher %}
-                            {{ classroom.principalTeacher.lastName }}
-                            {{ classroom.principalTeacher.firstName }}
+                            <div>
+                                <strong>{{ classroom.principalTeacher.firstName }} {{ classroom.principalTeacher.lastName }}</strong>
+                            </div>
+                            {% if classroom.principalTeacher.phone %}
+                                <div class="text-muted small">
+                                    {{ classroom.principalTeacher.phone }}
+                                </div>
+                            {% endif %}
                         {% else %}
                             N/A
                         {% endif %}
@@ -33,31 +38,6 @@
                         </a>
                     </td>
 
-                    {# Training contact column #}
-                    <td>
-                        {% if classroom.trainingContactName %}
-                            <div>
-                                <strong>{{ classroom.trainingContactName }}</strong>
-                            </div>
-                            {% if classroom.trainingContactPhone %}
-                                <div class="text-muted small">
-                                    {{ classroom.trainingContactPhone }}
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            N/A
-                        {% endif %}
-
-                        {# Edit training contact #}
-                        <a href="{{ path('app_classroom_training_contact', {'id': classroom.id}) }}"
-                           class="btn btn-ghost-warning btn-icon btn-sm ms-2"
-                           title="Modifier le référent de formation">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                 fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                                <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1 .11-.168l10-10z"/>
-                            </svg>
-                        </a>
-                    </td>
                     <td class="text-end">
                         <div class="btn-list flex-nowrap justify-content-end">
                             {# Button for files with a folder icon #}
@@ -78,7 +58,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4" class="text-center text-muted">
+                    <td colspan="3" class="text-center text-muted">
                         Aucune classe disponible pour l'année scolaire active.
                     </td>
                 </tr>

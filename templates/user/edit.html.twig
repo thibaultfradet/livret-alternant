@@ -37,11 +37,20 @@
                     </div>
                 </div>
 
+                {% if not isStudent %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.phone) }}
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if isStudent %}
                     {# Hidden checkboxes for students - preserve their non-teacher/non-team roles #}
                     <div class="d-none">
                         {{ form_widget(form.isProfPrincipal) }}
                         {{ form_widget(form.isTeamMember) }}
+                        {{ form_widget(form.phone) }}
                     </div>
 
                     <div class="row">

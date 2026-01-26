@@ -44,6 +44,9 @@
                     <div class="col-md-6">
                         {{ form_row(form.email) }}
                     </div>
+                    <div class="col-md-6 phone-field d-none">
+                        {{ form_row(form.phone) }}
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -106,14 +109,14 @@
                         </div>
                     </div>
 
-                    {# Teacher tab - no additional fields needed #}
+                    {# Teacher tab #}
                     <div class="tab-pane fade" id="teacher" role="tabpanel">
                         <div class="alert alert-info">
                             Un professeur référent peut suivre les évaluations des élèves de sa classe.
                         </div>
                     </div>
 
-                    {# Team member tab - no additional fields needed #}
+                    {# Team member tab #}
                     <div class="tab-pane fade" id="team" role="tabpanel">
                         <div class="alert alert-info">
                             Un membre de l'équipe pédagogique peut gérer les utilisateurs et les paramètres de formation.
@@ -139,6 +142,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const isProfPrincipal = document.getElementById('{{ form.isProfPrincipal.vars.id }}');
     const isTeamMember = document.getElementById('{{ form.isTeamMember.vars.id }}');
+    const phoneField = document.querySelector('.phone-field');
 
     // Reset checkboxes when tab changes
     document.querySelectorAll('#userTypeTabs a[data-bs-toggle="tab"]').forEach(function(tab) {
@@ -147,9 +151,13 @@ document.addEventListener('DOMContentLoaded', function() {
             isProfPrincipal.checked = false;
             isTeamMember.checked = false;
 
+            // Hide phone field by default
+            phoneField.classList.add('d-none');
+
             // Check the appropriate checkbox based on tab
             if (event.target.id === 'teacher-tab-link') {
                 isProfPrincipal.checked = true;
+                phoneField.classList.remove('d-none');
             } else if (event.target.id === 'team-tab-link') {
                 isTeamMember.checked = true;
             }
