@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Period;
 use App\Entity\SchoolYear;
 use App\Entity\SkillLevel;
 use App\Entity\User;
@@ -260,6 +261,78 @@ final class ExtractionController extends AbstractController
         ]);
     }
 
+
+    #[Route('/student/{student}/period/{period}/pdf', name: 'app_student_period_pdf')]
+    public function studentPeriodPdf(
+        User $student,
+        Period $period,
+        UserRepository $userRepository,
+        SkillLevelRepository $skillLevelRepository,
+        SchoolYearRepository $schoolYearRepository,
+        PdfService $pdfService
+    ): Response {
+
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
+        // Get active school year
+        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
+        if (!$activeYear) {
+            throw $this->createNotFoundException('No active school year found.');
+        }
+
+        // Retrieve student with all data for the active year
+        $student = $userRepository->findStudentWithAllData($student->getId(), $activeYear->getId());
+        if (!$student) {
+            throw $this->createNotFoundException('Student not found.');
+        }
+
+        // Verify period belongs to the student's classroom school year
+        if ($period->getSchoolYear()->getId() !== $activeYear->getId()) {
+            throw $this->createNotFoundException('Period not found for this school year.');
+        }
+
+        // Fetch all evaluations and filter to the selected period
+        $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);
+        $periodNumber = $period->getPeriodNumber();
+        $filteredSkillEvaluationsByPeriod = [];
+        if (isset($skillEvaluationsByPeriod[$periodNumber])) {
+            $filteredSkillEvaluationsByPeriod[$periodNumber] = $skillEvaluationsByPeriod[$periodNumber];
+        }
+
+        $allSkillsLevels = $skillLevelRepository->findBy(
+            ['disabledAt' => null],
+            ['order_index' => 'ASC']
+        );
+
+        // Generate HTML
+        $html = $this->renderView('extraction/pdf_student_period.html.twig', [
+            'student' => $student,
+            'period' => $period,
+            'skillEvaluationsByPeriod' => $filteredSkillEvaluationsByPeriod,
+            'allSkillsLevels' => $allSkillsLevels,
+            'activeYear' => $activeYear,
+        ]);
+
+        // Generate filename
+        $today = (new \DateTime())->format('Y-m-d');
+        $classCode = $student->getClassroom()->getDiploma()->getCode() ?? 'NOCODE';
+        $schoolYearLabel = str_replace('/', '-', $activeYear->getLabel());
+        $filename = sprintf(
+            'evaluation_%s-%s_%s_P%d_%s_%s.pdf',
+            $student->getLastName(),
+            $student->getFirstName(),
+            $classCode,
+            $periodNumber,
+            $schoolYearLabel,
+            $today
+        );
+
+        // Generate PDF
+        $pdfService->generatePdf($html, $filename);
+
+        return new Response();
+    }
 
     private function getEvaluationData(SchoolYear $activeYear, User $student)
     {

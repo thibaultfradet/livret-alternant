@@ -13,9 +13,9 @@
     {{ student.classroom.diploma.label }} ({{ student.classroom.schoolYear.label }})
   </p>
 
-  {# --- Period filter dropdown --- #}
-  <div class="mb-4 text-center">
-    <form method="get" id="periodFilterForm">
+  {# --- Period filter dropdown and export button --- #}
+  <div class="mb-4 text-center d-flex justify-content-center align-items-center gap-3">
+    <form method="get" id="periodFilterForm" class="d-inline-flex align-items-center">
       <label for="period" class="fw-semibold me-2">Sélectionner la période :</label>
       <select id="period" name="period" class="form-select d-inline-block w-auto" onchange="document.getElementById('periodFilterForm').submit();">
         {% for period in periods %}
@@ -25,6 +25,15 @@
         {% endfor %}
       </select>
     </form>
+
+    {% if selectedPeriod %}
+      <a href="{{ path('app_student_period_pdf', { student: student.id, period: selectedPeriod.id }) }}"
+         class="btn btn-primary"
+         target="_blank"
+         title="Exporter cette période en PDF">
+        <i class="bi bi-file-earmark-pdf me-1"></i> Exporter PDF
+      </a>
+    {% endif %}
   </div>
 
   {# --- Iterate over all periods --- #}

@@ -27,6 +27,11 @@
                     <div class="col-md-6">
                         {{ form_row(form.email) }}
                     </div>
+                    {% if not isStudent %}
+                    <div class="col-md-6">
+                        {{ form_row(form.phone) }}
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -36,14 +41,6 @@
                         {{ form_row(form.lastName) }}
                     </div>
                 </div>
-
-                {% if not isStudent %}
-                <div class="row">
-                    <div class="col-md-6">
-                        {{ form_row(form.phone) }}
-                    </div>
-                </div>
-                {% endif %}
 
                 {% if isStudent %}
                     {# Hidden checkboxes for students - preserve their non-teacher/non-team roles #}
