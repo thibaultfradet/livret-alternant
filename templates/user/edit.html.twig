@@ -37,18 +37,13 @@
                     </div>
                 </div>
 
-                {% if not isStudent %}
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            {{ form_row(form.isProfPrincipal) }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form_row(form.isTeamMember) }}
-                        </div>
-                    </div>
-                {% endif %}
-
                 {% if isStudent %}
+                    {# Hidden checkboxes for students - preserve their non-teacher/non-team roles #}
+                    <div class="d-none">
+                        {{ form_widget(form.isProfPrincipal) }}
+                        {{ form_widget(form.isTeamMember) }}
+                    </div>
+
                     <div class="row">
                         <div class="col-md-6">
                             {{ form_row(form.classroom) }}
@@ -96,7 +91,45 @@
                                 {{ form_row(form.tutorPhone) }}
                             </div>
                         </div>
+                    {% else %}
+                        {# Render tutor fields as hidden to prevent form_end from auto-rendering them #}
+                        <div class="d-none">
+                            {{ form_widget(form.companyName) }}
+                            {{ form_widget(form.companyAddress) }}
+                            {{ form_widget(form.dateDebutContract) }}
+                            {{ form_widget(form.dateFinContract) }}
+                            {{ form_widget(form.tutorFirstName) }}
+                            {{ form_widget(form.tutorLastName) }}
+                            {{ form_widget(form.tutorEmail) }}
+                            {{ form_widget(form.tutorPhone) }}
+                        </div>
                     {% endif %}
+                {% else %}
+                    {# Hidden fields for non-students to prevent form_end from auto-rendering them #}
+                    <div class="d-none">
+                        {{ form_widget(form.classroom) }}
+                        {{ form_widget(form.isAlternance) }}
+                        {{ form_widget(form.companyName) }}
+                        {{ form_widget(form.companyAddress) }}
+                        {{ form_widget(form.dateDebutContract) }}
+                        {{ form_widget(form.dateFinContract) }}
+                        {{ form_widget(form.tutorFirstName) }}
+                        {{ form_widget(form.tutorLastName) }}
+                        {{ form_widget(form.tutorEmail) }}
+                        {{ form_widget(form.tutorPhone) }}
+                    </div>
+
+                    {# Visible checkboxes for non-students #}
+                    <hr class="my-4">
+                    <h4 class="mb-3">Rôles</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.isProfPrincipal) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.isTeamMember) }}
+                        </div>
+                    </div>
                 {% endif %}
             </div>
 

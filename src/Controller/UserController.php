@@ -45,19 +45,22 @@ final class UserController extends AbstractController
 
             $roles = ['ROLE_USER']; // role par défaut
 
-            // Élève
-            if ($form->get('isAlternance')->getData() || $request->request->has('student-tab')) {
-                $roles[] = 'ROLE_STUDENT';
-            }
+            $isProfPrincipal = $form->get('isProfPrincipal')->getData();
+            $isTeamMember = $form->get('isTeamMember')->getData();
 
             // Professeur référent
-            if ($form->get('isProfPrincipal')->getData()) {
+            if ($isProfPrincipal) {
                 $roles[] = 'ROLE_PT';
             }
 
             // Membre équipe pédagogique
-            if ($form->get('isTeamMember')->getData()) {
+            if ($isTeamMember) {
                 $roles[] = 'ROLE_TTM';
+            }
+
+            // Élève (si ni prof référent ni membre équipe pédagogique)
+            if (!$isProfPrincipal && !$isTeamMember) {
+                $roles[] = 'ROLE_STUDENT';
             }
 
             $user->setRoles(array_unique($roles));

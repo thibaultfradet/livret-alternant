@@ -3,59 +3,73 @@
 {% block title %}Créer un utilisateur{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h1 class="fw-bold text-primary mb-5 display-5 text-center">Créer un nouvel utilisateur</h1>
+<div class="page page-center">
+    <div class="container">
 
-    <div class="card">
-        {# Card header with tabs #}
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs" id="userTypeTabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="student-tab" data-bs-toggle="tab" href="#student" role="tab">Élève</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="teacher-tab" data-bs-toggle="tab" href="#teacher" role="tab">Professeur référent</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="team-tab" data-bs-toggle="tab" href="#team" role="tab">Membre équipe pédagogique</a>
-                </li>
-            </ul>
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-primary display-5">
+                Créer un nouvel utilisateur
+            </h1>
+            <p class="text-muted">
+                Sélectionnez le type d'utilisateur à créer
+            </p>
         </div>
 
-        <div class="card-body">
-            {{ form_start(form) }}
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="userTypeTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="student-tab-link" data-bs-toggle="tab" href="#student" role="tab">Élève</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="teacher-tab-link" data-bs-toggle="tab" href="#teacher" role="tab">Professeur référent</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="team-tab-link" data-bs-toggle="tab" href="#team" role="tab">Membre équipe pédagogique</a>
+                    </li>
+                </ul>
+            </div>
 
-            {# Common fields for all user types #}
-            {{ form_row(form.email) }}
-            {{ form_row(form.firstName) }}
-            {{ form_row(form.lastName) }}
+            <div class="card-body">
+                {{ form_start(form) }}
 
-            {# Tab content for role-specific fields #}
-            <div class="tab-content mt-3">
-                {# Student-specific checkbox with additional class for styling #}
-                <div class="tab-pane fade show active student-tab-content" id="student" role="tabpanel">
-                    {{ form_row(form.isAlternance, {'attr': {'class': 'student-checkbox'}}) }}
-                    {{ form_row(form.classroom) }}
+                {# Hidden checkboxes for role determination #}
+                <div class="d-none">
+                    {{ form_widget(form.isProfPrincipal) }}
+                    {{ form_widget(form.isTeamMember) }}
+                </div>
 
-                    {# Tutor information section #}
-                    <div class="mt-4 border-top pt-3">
-                        <h5 class="text-secondary mb-3">Informations du tuteur</h5>
+                {# Common fields for all user types #}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.email) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.firstName) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.lastName) }}
+                    </div>
+                </div>
+
+                {# Tab content for role-specific fields #}
+                <div class="tab-content mt-3">
+                    {# Student tab #}
+                    <div class="tab-pane fade show active" id="student" role="tabpanel">
                         <div class="row">
                             <div class="col-md-6">
-                                {{ form_row(form.tutorFirstName) }}
+                                {{ form_row(form.classroom) }}
                             </div>
                             <div class="col-md-6">
-                                {{ form_row(form.tutorLastName) }}
+                                {{ form_row(form.isAlternance) }}
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.tutorEmail) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.tutorPhone) }}
-                            </div>
-                        </div>
+
+                        <hr class="my-4">
+
+                        <h4 class="mb-3">Informations de l'entreprise</h4>
                         <div class="row">
                             <div class="col-md-6">
                                 {{ form_row(form.companyName) }}
@@ -72,28 +86,75 @@
                                 {{ form_row(form.dateFinContract) }}
                             </div>
                         </div>
+
+                        <h4 class="mt-4 mb-3">Informations du tuteur</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorFirstName) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorLastName) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorEmail) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorPhone) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Teacher tab - no additional fields needed #}
+                    <div class="tab-pane fade" id="teacher" role="tabpanel">
+                        <div class="alert alert-info">
+                            Un professeur référent peut suivre les évaluations des élèves de sa classe.
+                        </div>
+                    </div>
+
+                    {# Team member tab - no additional fields needed #}
+                    <div class="tab-pane fade" id="team" role="tabpanel">
+                        <div class="alert alert-info">
+                            Un membre de l'équipe pédagogique peut gérer les utilisateurs et les paramètres de formation.
+                        </div>
                     </div>
                 </div>
-
-                {# Teacher-specific checkbox #}
-                <div class="tab-pane fade" id="teacher" role="tabpanel">
-                    {{ form_row(form.isProfPrincipal) }}
-                </div>
-
-                {# Teaching team member checkbox #}
-                <div class="tab-pane fade" id="team" role="tabpanel">
-                    {{ form_row(form.isTeamMember) }}
-                </div>
             </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-secondary">
+                    ← Retour à la liste
+                </a>
+                <button class="btn btn-primary" type="submit">Créer l'utilisateur</button>
+            </div>
+
+            {{ form_end(form) }}
         </div>
 
-        {# Card footer with buttons #}
-        <div class="card-footer d-flex justify-content-between">
-            <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-secondary">Retour à la liste</a>
-            <button class="btn btn-primary" type="submit">{{ button_label|default('Valider') }}</button>
-        </div>
-
-        {{ form_end(form) }}
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isProfPrincipal = document.getElementById('{{ form.isProfPrincipal.vars.id }}');
+    const isTeamMember = document.getElementById('{{ form.isTeamMember.vars.id }}');
+
+    // Reset checkboxes when tab changes
+    document.querySelectorAll('#userTypeTabs a[data-bs-toggle="tab"]').forEach(function(tab) {
+        tab.addEventListener('shown.bs.tab', function(event) {
+            // Uncheck all role checkboxes first
+            isProfPrincipal.checked = false;
+            isTeamMember.checked = false;
+
+            // Check the appropriate checkbox based on tab
+            if (event.target.id === 'teacher-tab-link') {
+                isProfPrincipal.checked = true;
+            } else if (event.target.id === 'team-tab-link') {
+                isTeamMember.checked = true;
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
