@@ -31,6 +31,9 @@ class SkillLevel
     #[ORM\ManyToOne(inversedBy: 'skillLevels')]
     private ?Establishment $Establishment = null;
 
+    #[ORM\Column]
+    private ?int $order_index = null;
+
     public function __construct()
     {
         $this->tutorEvaluationSkills = new ArrayCollection();
@@ -115,6 +118,18 @@ class SkillLevel
     public function setEstablishment(?Establishment $Establishment): static
     {
         $this->Establishment = $Establishment;
+
+        return $this;
+    }
+
+    public function getOrderIndex(): ?int
+    {
+        return $this->order_index;
+    }
+
+    public function setOrderIndex(int $order_index): static
+    {
+        $this->order_index = $order_index;
 
         return $this;
     }

@@ -116,9 +116,10 @@ final class ExtractionController extends AbstractController
             $acceptances['principalTeacher'] = $accept ? $accept->getValidationDate() : null;
         }
 
-        $allSkillsLevels = $skillLevelRepository->findBy([
-            'disabledAt' => null,
-        ]);
+        $allSkillsLevels = $skillLevelRepository->findBy(
+            ['disabledAt' => null],
+            ['order_index' => 'ASC']
+        );
 
         // generate html
         $html = $this->renderView('extraction/pdf_student.html.twig', [
@@ -245,7 +246,7 @@ final class ExtractionController extends AbstractController
         return $this->render('extraction/student_evaluations.html.twig', [
             'student' => $student,
             'skillEvaluationsByPeriod' => $filteredSkillEvaluationsByPeriod,
-            'allSkillsLevels' => $skillLevelRepository->findBy(['disabledAt' => null]),
+            'allSkillsLevels' => $skillLevelRepository->findBy(['disabledAt' => null], ['order_index' => 'ASC']),
             'selectedPeriod' => $selectedPeriod,
             'periods' => $periods,
         ]);

@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class SkillManageController extends AbstractController
 {
@@ -232,9 +233,43 @@ class SkillManageController extends AbstractController
                     'disabledAt' => null,
                     'Establishment' => $establishment
                 ],
-                ['label' => 'ASC']
+                ['order_index' => 'ASC']
             ),
             'diploma' => $diplomaRepository->findOneBy([]), // diplôme courant si nécessaire
         ]);
+    }
+
+
+    #[Route('/skill-level/reorder', name: 'app_skill_level_reorder', methods: ['POST'])]
+    public function reorderSkillLevels(
+        Request $request,
+        EntityManagerInterface $em,
+        SkillLevelRepository $repository
+    ): JsonResponse {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $establishment = $user->getEstablishment();
+
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['order'])) {
+            return new JsonResponse(['error' => 'Invalid payload'], 400);
+        }
+
+        foreach ($data['order'] as $item) {
+            $level = $repository->find($item['id']);
+
+            // Security: ensure level belongs to user's establishment
+            if (!$level || $level->getEstablishment() !== $establishment) {
+                continue;
+            }
+
+            // Update position
+            $level->setOrderIndex($item['position']);
+        }
+
+        $em->flush();
+
+        return new JsonResponse(['status' => 'ok']);
     }
 }

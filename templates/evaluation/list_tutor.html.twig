@@ -37,7 +37,7 @@
           <p class="mb-0 fw-bold">{{ student.firstName }} {{ student.lastName }} - {{ student.classroom.diploma.label }}</p>
           <div class="d-flex gap-2">
             {% if not alreadyEvaluated %}
-              <a href="{{ path('app_create_evaluation', { 'student': student.id, 'period': period.id }) }}" class="btn btn-outline-primary">Noter</a>
+              <a href="{{ path('app_create_evaluation', { 'student': student.id, 'period': period.id }) }}" class="btn btn-outline-primary">Evaluer</a>
             {% endif %}
 
             <a href="{{ path('app_student_evaluations', { 'student': student.id, 'period': period.id }) }}" class="btn btn-primary" target="_blank">

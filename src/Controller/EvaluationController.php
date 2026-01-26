@@ -121,9 +121,10 @@ final class EvaluationController extends AbstractController
 
 
         $allSkillsLevels = $SLRepo->createQueryBuilder('sl')
-        ->where('sl.disabledAt IS NULL') 
-        ->getQuery()
-        ->getResult();
+            ->where('sl.disabledAt IS NULL')
+            ->orderBy('sl.order_index', 'ASC')
+            ->getQuery()
+            ->getResult();
 
         // create form
         $form = $this->createForm(TutorEvaluationFormType::class, $evaluation);
