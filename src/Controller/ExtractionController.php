@@ -61,10 +61,18 @@ final class ExtractionController extends AbstractController
             $coverPagePath2 = null;
         }
 
-        if ($student->isAlternance()) {
-            $termsConditions = $student->getClassroom()->getTermsConditionsAlternance();
+        if (in_array('ROLE_STUDENT', $student->getRoles(), true)) {
+            if ($student->isAlternance()) {
+                $termsConditions = $student->getClassroom()->getTermsConditionsAlternance();
+            } else {
+                $termsConditions = $student->getClassroom()->getTermsConditionsPro();
+            }
         } else {
-            $termsConditions = $student->getClassroom()->getTermsConditionsPro();
+            if ($student->isAlternance()) {
+                $termsConditions = $student->getEstablishment()->getTermsConditionsAlternance();
+            } else {
+                $termsConditions = $student->getEstablishment()->getTermsConditionsPro();
+            }
         }
         
         $skillEvaluationsByPeriod = $this->getEvaluationData($activeYear, $student);

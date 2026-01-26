@@ -35,7 +35,7 @@ class UserCrudController extends AbstractCrudController
                 ->renderExpanded(),
 
             // Etablissement association
-            AssociationField::new('Establishment', 'Etablissement')
+            AssociationField::new('establishment', 'Etablissement')
                 ->setCrudController(EstablishmentCrudController::class)
                 ->setRequired(true),
         ];

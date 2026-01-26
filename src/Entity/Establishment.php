@@ -34,31 +34,31 @@ class Establishment
     /**
      * @var Collection<int, SchoolYear>
      */
-    #[ORM\OneToMany(targetEntity: SchoolYear::class, mappedBy: 'Establishment')]
+    #[ORM\OneToMany(targetEntity: SchoolYear::class, mappedBy: 'establishment')]
     private Collection $schoolYears;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'Establishment')]
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'establishment')]
     private Collection $users;
 
     /**
      * @var Collection<int, Diploma>
      */
-    #[ORM\OneToMany(targetEntity: Diploma::class, mappedBy: 'Establishment')]
+    #[ORM\OneToMany(targetEntity: Diploma::class, mappedBy: 'establishment')]
     private Collection $diplomas;
 
     /**
      * @var Collection<int, SkillLevel>
      */
-    #[ORM\OneToMany(targetEntity: SkillLevel::class, mappedBy: 'Establishment')]
+    #[ORM\OneToMany(targetEntity: SkillLevel::class, mappedBy: 'establishment')]
     private Collection $skillLevels;
 
     /**
      * @var Collection<int, BehaviorCriteria>
      */
-    #[ORM\OneToMany(targetEntity: BehaviorCriteria::class, mappedBy: 'Establishment')]
+    #[ORM\OneToMany(targetEntity: BehaviorCriteria::class, mappedBy: 'establishment')]
     private Collection $behaviorCriterias;
 
    

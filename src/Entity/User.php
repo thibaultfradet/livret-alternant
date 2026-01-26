@@ -74,7 +74,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $is_alternance = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    private ?Establishment $Establishment = null;
+    private ?Establishment $establishment = null;
 
     public function __construct()
     {
@@ -473,12 +473,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getEstablishment(): ?Establishment
     {
-        return $this->Establishment;
+        return $this->establishment;
     }
 
-    public function setEstablishment(?Establishment $Establishment): static
+    public function setEstablishment(?Establishment $establishment): static
     {
-        $this->Establishment = $Establishment;
+        $this->establishment = $establishment;
 
         return $this;
     }

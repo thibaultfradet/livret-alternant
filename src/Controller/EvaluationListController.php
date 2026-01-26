@@ -158,7 +158,7 @@ final class EvaluationListController extends AbstractController
             ->andWhere('te.id IS NOT NULL')
             ->andWhere('se.id IS NOT NULL')
             ->andWhere('sy.id = :schoolYear')
-            ->andWhere('s.Establishment = :establishment')
+            ->andWhere('s.establishment = :establishment')
             ->setParameter('period', $period)
             ->setParameter('schoolYear', $activeSchoolYear)
             ->setParameter('establishment', $currentUser->getEstablishment());

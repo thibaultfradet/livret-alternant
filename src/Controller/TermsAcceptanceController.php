@@ -82,10 +82,18 @@ final class TermsAcceptanceController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-         if ($user->isAlternance()) {
-            $termsConditions = $user->getClassroom()->getTermsConditionsAlternance();
+        if (in_array('ROLE_STUDENT', $user->getRoles(), true)) {
+            if ($user->isAlternance()) {
+                $termsConditions = $user->getClassroom()->getTermsConditionsAlternance();
+            } else {
+                $termsConditions = $user->getClassroom()->getTermsConditionsPro();
+            }
         } else {
-            $termsConditions = $user->getClassroom()->getTermsConditionsPro();
+            if ($user->isAlternance()) {
+                $termsConditions = $user->getEstablishment()->getTermsConditionsAlternance();
+            } else {
+                $termsConditions = $user->getEstablishment()->getTermsConditionsPro();
+            }
         }
         
         return $this->render('terms_acceptance/validate.html.twig', [

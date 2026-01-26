@@ -31,7 +31,7 @@ class SkillManageController extends AbstractController
         // Filter by establishment
         $diplomasQb = $diplomaRepository->createQueryBuilder('d')
             ->where('d.disabledAt IS NULL')
-            ->andWhere('d.Establishment = :establishment')
+            ->andWhere('d.establishment = :establishment')
             ->setParameter('establishment', $establishment)
             ->getQuery();
 
@@ -231,7 +231,7 @@ class SkillManageController extends AbstractController
             'levels' => $repository->findBy(
                 [
                     'disabledAt' => null,
-                    'Establishment' => $establishment
+                    'establishment' => $establishment
                 ],
                 ['order_index' => 'ASC']
             ),

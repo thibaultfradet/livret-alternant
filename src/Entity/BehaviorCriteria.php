@@ -28,7 +28,7 @@ class BehaviorCriteria
     private ?\DateTime $disabledAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'behaviorCriterias')]
-    private ?Establishment $Establishment = null;
+    private ?Establishment $establishment = null;
 
     public function __construct()
     {
@@ -96,12 +96,12 @@ class BehaviorCriteria
 
     public function getEstablishment(): ?Establishment
     {
-        return $this->Establishment;
+        return $this->establishment;
     }
 
-    public function setEstablishment(?Establishment $Establishment): static
+    public function setEstablishment(?Establishment $establishment): static
     {
-        $this->Establishment = $Establishment;
+        $this->establishment = $establishment;
 
         return $this;
     }

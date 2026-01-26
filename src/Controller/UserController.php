@@ -95,7 +95,7 @@ final class UserController extends AbstractController
                         $tutor->setPassword('');
 
                         if ($companyName) {
-                            $tutor->setCompanyname($companyName);
+                            $tutor->setCompanyName($companyName);
                         }
                         if ($companyAddress) {
                             $tutor->setCompanyAddress($companyAddress);

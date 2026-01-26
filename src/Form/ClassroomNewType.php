@@ -33,7 +33,7 @@ class ClassroomNewType extends AbstractType
 
                     if ($currentUser && $currentUser->getEstablishment()) {
                         $qb
-                            ->andWhere('d.Establishment = :establishment')
+                            ->andWhere('d.establishment = :establishment')
                             ->setParameter('establishment', $currentUser->getEstablishment());
                     }
 

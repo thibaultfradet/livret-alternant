@@ -47,7 +47,7 @@ class PeriodType extends AbstractType
 
                     if ($currentUser && $currentUser->getEstablishment()) {
                         $qb
-                            ->andWhere('sy.Establishment = :establishment')
+                            ->andWhere('sy.establishment = :establishment')
                             ->setParameter('establishment', $currentUser->getEstablishment());
                     }
 

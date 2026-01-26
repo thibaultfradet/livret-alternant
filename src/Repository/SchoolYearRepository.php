@@ -32,7 +32,7 @@ class SchoolYearRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('sy')
             ->andWhere('sy.active = :active')
-            ->andWhere('sy.Establishment = :establishment')
+            ->andWhere('sy.establishment = :establishment')
             ->setParameter('active', true)
             ->setParameter('establishment', $establishment)
             ->setMaxResults(1)

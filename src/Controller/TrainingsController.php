@@ -64,7 +64,7 @@ class TrainingsController extends AbstractController
 
         $diplomas = $diplomaRepository->findBy([
             'disabledAt' => null,
-            'Establishment' => $user->getEstablishment(),
+            'establishment' => $user->getEstablishment(),
         ]);
 
         return $this->render('trainings/parameters.html.twig', [
@@ -103,7 +103,7 @@ class TrainingsController extends AbstractController
 
         $schoolYears = $schoolYearRepository->findBy([
             'disabledAt' => null,
-            'Establishment' => $user->getEstablishment(),
+            'establishment' => $user->getEstablishment(),
         ]);
 
         return $this->render('trainings/parameters.html.twig', [
@@ -128,7 +128,7 @@ class TrainingsController extends AbstractController
             ->from(BehaviorCriteria::class, 'bc')
             ->leftJoin('bc.behaviorLevels', 'bl')
             ->where('bc.disabledAt IS NULL')
-            ->andWhere('bc.Establishment = :establishment')
+            ->andWhere('bc.establishment = :establishment')
             ->andWhere('bl.disabledAt IS NULL OR bl.disabledAt IS NULL')
             ->setParameter('establishment', $establishment)
             ->orderBy('bc.label', 'ASC')
@@ -154,7 +154,7 @@ class TrainingsController extends AbstractController
 
         $users = $usersTrainingsRepository->findBy([
             'disabledAt' => null,
-            'Establishment' => $user->getEstablishment(),
+            'establishment' => $user->getEstablishment(),
         ]);
 
         return $this->render('trainings/parameters.html.twig', [

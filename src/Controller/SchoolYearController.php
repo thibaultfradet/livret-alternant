@@ -35,7 +35,7 @@ final class SchoolYearController extends AbstractController
             // If this year is set as active, deactivate all other years for this establishment
             if ($schoolYear->isActive()) {
                 $otherActiveYears = $entityManager->getRepository(SchoolYear::class)
-                    ->findBy(['Establishment' => $establishment, 'active' => true]);
+                    ->findBy(['establishment' => $establishment, 'active' => true]);
 
                 foreach ($otherActiveYears as $otherYear) {
                     $otherYear->setActive(false);
@@ -82,7 +82,7 @@ final class SchoolYearController extends AbstractController
             // If this year is set as active, deactivate all other years for this establishment
             if ($schoolYear->isActive()) {
                 $otherActiveYears = $entityManager->getRepository(SchoolYear::class)
-                    ->findBy(['Establishment' => $user->getEstablishment(), 'active' => true]);
+                    ->findBy(['establishment' => $user->getEstablishment(), 'active' => true]);
 
                 foreach ($otherActiveYears as $otherYear) {
                     // Don't deactivate the current year if it's already active

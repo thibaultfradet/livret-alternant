@@ -29,7 +29,7 @@ class SkillLevel
     private ?string $color = null;
 
     #[ORM\ManyToOne(inversedBy: 'skillLevels')]
-    private ?Establishment $Establishment = null;
+    private ?Establishment $establishment = null;
 
     #[ORM\Column]
     private ?int $order_index = null;
@@ -112,12 +112,12 @@ class SkillLevel
 
     public function getEstablishment(): ?Establishment
     {
-        return $this->Establishment;
+        return $this->establishment;
     }
 
-    public function setEstablishment(?Establishment $Establishment): static
+    public function setEstablishment(?Establishment $establishment): static
     {
-        $this->Establishment = $Establishment;
+        $this->establishment = $establishment;
 
         return $this;
     }
