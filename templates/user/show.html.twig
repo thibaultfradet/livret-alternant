@@ -1,141 +1,145 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détail de l'utilisateur{% endblock %}
+{% block title %}Utilisateur{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
+<div class="page page-center">
+    <div class="container">
 
-    <!-- Page header -->
-    <div class="text-center mb-4">
-        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Détail de l'utilisateur</h1>
-        <div class="d-flex justify-content-center gap-2">
-            <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-secondary">
-                <i class="ti ti-arrow-left"></i> Retour à la liste
-            </a>
-            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">
-                <i class="ti ti-edit"></i> Modifier
-            </a>
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-primary display-5">
+                Utilisateur
+            </h1>
+            <p class="text-muted">
+                Détail de l'utilisateur sélectionné
+            </p>
         </div>
-    </div>
 
-    <!-- Card with user info -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <div class="table-responsive">
-                <table class="table table-vcenter table-striped table-hover align-middle">
-                    <tbody>
-                        <tr>
-                            <th class="text-start w-25">ID</th>
-                            <td>{{ user.id }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>{{ user.email }}</td>
-                        </tr>
-                        <tr>
-                            <th>Rôles</th>
-                            <td>
-                                {% for role in user.roles %}
-                                    {% if role == 'ROLE_TTM' %}
-                                        <span class="text-white badge text-white bg-info ">Équipe pédagogique</span>
-                                    {% elseif role == 'ROLE_PT' %}
-                                        <span class="text-white badge text-white bg-warning">Professeur référent</span>
-                                    {% elseif role == 'ROLE_TUTOR' %}
-                                        <span class="text-white badge text-white bg-success">Tuteur</span>
-                                    {% elseif role == 'ROLE_STUDENT' %}
-                                        <span class="text-white badge text-white bg-primary">Alternant</span>
-                                    {% elseif role == 'ROLE_ADMIN' %}
-                                        <span class="text-white badge text-white bg-danger">Administrateur</span>
-                                    {% elseif role == 'ROLE_USER' %}
-                                        {# No badge text-white for basic users #}
-                                    {% else %}
-                                        <span class="text-white badge text-white bg-secondary">{{ role }}</span>
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Prénom</th>
-                            <td>{{ user.firstName }}</td>
-                        </tr>
-                        <tr>
-                            <th>Nom</th>
-                            <td>{{ user.lastName }}</td>
-                        </tr>
-                        <tr>
-                            <th>Téléphone</th>
-                            <td>{{ user.phone ?: '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Désactivé le</th>
-                            <td>
-                                {% if user.disabledAt %}
-                                    <span class="text-white text-danger fw-semibold">{{ user.disabledAt|date('d/m/Y') }}</span>
-                                {% else %}
-                                    <span class="text-white text-muted">Actif</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">
+                    {{ user.firstName }} {{ user.lastName }}
+                </h3>
 
-    {% if activeContract %}
-        <div class="card shadow-sm border-0 mt-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Informations de l'entreprise</h5>
+                {% if user.disabledAt %}
+                    <span class="badge bg-danger text-white">
+                        Désactivé le {{ user.disabledAt|date('d/m/Y') }}
+                    </span>
+                {% else %}
+                    <span class="badge bg-success text-white">
+                        Actif
+                    </span>
+                {% endif %}
             </div>
-            <div class="card-body p-4">
-                <div class="table-responsive">
-                    <table class="table table-vcenter table-striped table-hover align-middle">
-                        <tbody>
-                            <tr>
-                                <th class="text-start w-25">Nom de l'entreprise</th>
-                                <td>{{ activeContract.tutor.companyName ?: '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Adresse de l'entreprise</th>
-                                <td>{{ activeContract.tutor.companyAddress ?: '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Date de début du contrat</th>
-                                <td>{{ activeContract.dateDebutContract ? activeContract.dateDebutContract|date('d/m/Y') : '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Date de fin du contrat</th>
-                                <td>{{ activeContract.dateFinContract ? activeContract.dateFinContract|date('d/m/Y') : '-' }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="datagrid">
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Email</div>
+                                <div class="datagrid-content">{{ user.email }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Prénom</div>
+                                <div class="datagrid-content">{{ user.firstName }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Nom</div>
+                                <div class="datagrid-content">{{ user.lastName }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Téléphone</div>
+                                <div class="datagrid-content">{{ user.phone ?: '-' }}</div>
+                            </div>
+                            <div class="datagrid-item">
+                                <div class="datagrid-title">Rôles</div>
+                                <div class="datagrid-content">
+                                    {% for role in user.roles %}
+                                        {% if role == 'ROLE_TTM' %}
+                                            <span class="badge bg-info text-white">Équipe pédagogique</span>
+                                        {% elseif role == 'ROLE_PT' %}
+                                            <span class="badge bg-warning text-white">Professeur référent</span>
+                                        {% elseif role == 'ROLE_TUTOR' %}
+                                            <span class="badge bg-success text-white">Tuteur</span>
+                                        {% elseif role == 'ROLE_STUDENT' %}
+                                            <span class="badge bg-primary text-white">Alternant</span>
+                                        {% elseif role == 'ROLE_ADMIN' %}
+                                            <span class="badge bg-danger text-white">Administrateur</span>
+                                        {% elseif role != 'ROLE_USER' %}
+                                            <span class="badge bg-secondary text-white">{{ role }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-secondary">Informations du tuteur</h6>
-                <div class="table-responsive">
-                    <table class="table table-vcenter table-striped table-hover align-middle">
-                        <tbody>
-                            <tr>
-                                <th class="text-start w-25">Prénom</th>
-                                <td>{{ activeContract.tutor.firstName ?: '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Nom</th>
-                                <td>{{ activeContract.tutor.lastName ?: '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Email</th>
-                                <td>{{ activeContract.tutor.email ?: '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Téléphone</th>
-                                <td>{{ activeContract.tutor.phone ?: '-' }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                {% if activeContract %}
+                    <hr class="my-4">
+
+                    <h4 class="mb-3">Informations de l'entreprise</h4>
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="datagrid">
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Nom de l'entreprise</div>
+                                    <div class="datagrid-content">{{ activeContract.tutor.companyName ?: '-' }}</div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Adresse de l'entreprise</div>
+                                    <div class="datagrid-content">{{ activeContract.tutor.companyAddress ?: '-' }}</div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Période du contrat</div>
+                                    <div class="datagrid-content">
+                                        {{ activeContract.dateDebutContract ? activeContract.dateDebutContract|date('d/m/Y') : '-' }}
+                                        <span class="text-muted mx-1">→</span>
+                                        {{ activeContract.dateFinContract ? activeContract.dateFinContract|date('d/m/Y') : '-' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4 mb-3">Informations du tuteur</h4>
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <div class="datagrid">
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Prénom</div>
+                                    <div class="datagrid-content">{{ activeContract.tutor.firstName ?: '-' }}</div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Nom</div>
+                                    <div class="datagrid-content">{{ activeContract.tutor.lastName ?: '-' }}</div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Email</div>
+                                    <div class="datagrid-content">{{ activeContract.tutor.email ?: '-' }}</div>
+                                </div>
+                                <div class="datagrid-item">
+                                    <div class="datagrid-title">Téléphone</div>
+                                    <div class="datagrid-content">{{ activeContract.tutor.phone ?: '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-secondary">
+                    ← Retour à la liste
+                </a>
+
+                <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary">
+                    Modifier
+                </a>
             </div>
         </div>
-    {% endif %}
+
+    </div>
 </div>
 {% endblock %}

@@ -174,7 +174,6 @@ final class UserController extends AbstractController
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-
         $currentUser = $this->getUser();
 
         // check same establishment
@@ -182,17 +181,48 @@ final class UserController extends AbstractController
             $this->addFlash('error', 'Vous ne pouvez modifier que les utilisateurs de votre établissement.');
             return $this->redirectToRoute('training_parameters_user');
         }
-        
+
+        // Find active contract for students
+        $activeContract = null;
+        $isStudent = in_array('ROLE_STUDENT', $user->getRoles());
+
+        if ($isStudent) {
+            $now = new \DateTime();
+            foreach ($user->getStudentContracts() as $contract) {
+                $startDate = $contract->getDateDebutContract();
+                $endDate = $contract->getDateFinContract();
+
+                if ((!$startDate || $startDate <= $now) && (!$endDate || $endDate >= $now)) {
+                    $activeContract = $contract;
+                    break;
+                }
+            }
+        }
+
         $form = $this->createForm(UserType::class, $user);
 
         // Pre-check checkboxes based on existing roles
         $form->get('isProfPrincipal')->setData(in_array('ROLE_PT', $user->getRoles()));
         $form->get('isTeamMember')->setData(in_array('ROLE_TTM', $user->getRoles()));
+        $form->get('isAlternance')->setData($user->isAlternance());
+
+        // Pre-fill tutor fields if active contract exists
+        if ($activeContract && $activeContract->getTutor()) {
+            $tutor = $activeContract->getTutor();
+            $form->get('tutorFirstName')->setData($tutor->getFirstName());
+            $form->get('tutorLastName')->setData($tutor->getLastName());
+            $form->get('tutorEmail')->setData($tutor->getEmail());
+            $form->get('tutorPhone')->setData($tutor->getPhone());
+            $form->get('companyName')->setData($tutor->getCompanyName());
+            $form->get('companyAddress')->setData($tutor->getCompanyAddress());
+            $form->get('dateDebutContract')->setData($activeContract->getDateDebutContract());
+            $form->get('dateFinContract')->setData($activeContract->getDateFinContract());
+        }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //check again establishment change
+            // Check again establishment change
             if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
                 $this->addFlash('error', 'Vous ne pouvez pas changer l\'établissement.');
                 return $this->redirectToRoute('training_parameters_user');
@@ -208,10 +238,30 @@ final class UserController extends AbstractController
                 $roles[] = 'ROLE_TTM';
             }
 
-            // Preserve default ROLE_USER if applicable
+            // Preserve ROLE_STUDENT if user is a student
+            if ($isStudent) {
+                $roles[] = 'ROLE_STUDENT';
+            }
+
+            // Preserve default ROLE_USER
             $roles[] = 'ROLE_USER';
 
             $user->setRoles(array_unique($roles));
+
+            // Update tutor information if user is a student and has an active contract
+            if ($isStudent && $activeContract && $activeContract->getTutor()) {
+                $tutor = $activeContract->getTutor();
+
+                $tutor->setFirstName($form->get('tutorFirstName')->getData());
+                $tutor->setLastName($form->get('tutorLastName')->getData());
+                $tutor->setEmail($form->get('tutorEmail')->getData());
+                $tutor->setPhone($form->get('tutorPhone')->getData());
+                $tutor->setCompanyName($form->get('companyName')->getData());
+                $tutor->setCompanyAddress($form->get('companyAddress')->getData());
+
+                $activeContract->setDateDebutContract($form->get('dateDebutContract')->getData());
+                $activeContract->setDateFinContract($form->get('dateFinContract')->getData());
+            }
 
             $entityManager->flush();
 
@@ -221,6 +271,8 @@ final class UserController extends AbstractController
         return $this->render('user/edit.html.twig', [
             'user' => $user,
             'form' => $form,
+            'isStudent' => $isStudent,
+            'activeContract' => $activeContract,
         ]);
     }
 
