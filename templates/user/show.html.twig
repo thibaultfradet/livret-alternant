@@ -81,5 +81,61 @@
             </div>
         </div>
     </div>
+
+    {% if activeContract %}
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Informations de l'entreprise</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-striped table-hover align-middle">
+                        <tbody>
+                            <tr>
+                                <th class="text-start w-25">Nom de l'entreprise</th>
+                                <td>{{ activeContract.tutor.companyName ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Adresse de l'entreprise</th>
+                                <td>{{ activeContract.tutor.companyAddress ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de début du contrat</th>
+                                <td>{{ activeContract.dateDebutContract ? activeContract.dateDebutContract|date('d/m/Y') : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de fin du contrat</th>
+                                <td>{{ activeContract.dateFinContract ? activeContract.dateFinContract|date('d/m/Y') : '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-secondary">Informations du tuteur</h6>
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-striped table-hover align-middle">
+                        <tbody>
+                            <tr>
+                                <th class="text-start w-25">Prénom</th>
+                                <td>{{ activeContract.tutor.firstName ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nom</th>
+                                <td>{{ activeContract.tutor.lastName ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ activeContract.tutor.email ?: '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Téléphone</th>
+                                <td>{{ activeContract.tutor.phone ?: '-' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 
 class UserType extends AbstractType
@@ -51,6 +52,50 @@ class UserType extends AbstractType
                 'placeholder' => 'Sélectionnez une classe',
                 'required' => false,
                 'label' => 'Classe',
+            ])
+
+            // Tutor information fields (for students)
+            ->add('tutorFirstName', TextType::class, [
+                'label' => 'Prénom du tuteur',
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('tutorLastName', TextType::class, [
+                'label' => 'Nom du tuteur',
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('tutorEmail', EmailType::class, [
+                'label' => 'Email du tuteur',
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('tutorPhone', TextType::class, [
+                'label' => 'Téléphone du tuteur',
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('companyName', TextType::class, [
+                'label' => 'Nom de l\'entreprise',
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('companyAddress', TextType::class, [
+                'label' => 'Adresse de l\'entreprise',
+                'required' => false,
+                'mapped' => false,
+            ])
+            ->add('dateDebutContract', DateType::class, [
+                'label' => 'Date de début du contrat',
+                'required' => false,
+                'mapped' => false,
+                'widget' => 'single_text',
+            ])
+            ->add('dateFinContract', DateType::class, [
+                'label' => 'Date de fin du contrat',
+                'required' => false,
+                'mapped' => false,
+                'widget' => 'single_text',
             ])
         ;
     }

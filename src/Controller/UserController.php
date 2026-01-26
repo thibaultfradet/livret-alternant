@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\TutorStudent;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,6 +66,77 @@ final class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
+            // Handle tutor creation if user is a student
+            if (in_array('ROLE_STUDENT', $roles)) {
+                $tutorEmail = $form->get('tutorEmail')->getData();
+                $tutorFirstName = $form->get('tutorFirstName')->getData();
+                $tutorLastName = $form->get('tutorLastName')->getData();
+                $tutorPhone = $form->get('tutorPhone')->getData();
+                $companyName = $form->get('companyName')->getData();
+                $companyAddress = $form->get('companyAddress')->getData();
+                $dateDebutContract = $form->get('dateDebutContract')->getData();
+                $dateFinContract = $form->get('dateFinContract')->getData();
+
+                // Only create tutor if email is provided
+                if ($tutorEmail) {
+                    // Check if tutor already exists
+                    $existingTutor = $entityManager->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
+
+                    if (!$existingTutor) {
+                        // Create new tutor
+                        $tutor = new User();
+                        $tutor->setFirstName($tutorFirstName);
+                        $tutor->setLastName($tutorLastName);
+                        $tutor->setEmail($tutorEmail);
+                        $tutor->setRoles(['ROLE_TUTOR']);
+                        $tutor->setPassword('');
+
+                        if ($companyName) {
+                            $tutor->setCompanyname($companyName);
+                        }
+                        if ($companyAddress) {
+                            $tutor->setCompanyAddress($companyAddress);
+                        }
+                        if ($tutorPhone) {
+                            $tutor->setPhone($tutorPhone);
+                        }
+
+                        $entityManager->persist($tutor);
+                        $entityManager->flush();
+                    } else {
+                        // Reactivate tutor if previously disabled
+                        if ($existingTutor->getDisabledAt() !== null) {
+                            $existingTutor->setDisabledAt(null);
+                            $entityManager->persist($existingTutor);
+                            $entityManager->flush();
+                        }
+
+                        $tutor = $existingTutor;
+                    }
+
+                    // Create TutorStudent relationship
+                    $tutorStudent = new TutorStudent();
+                    $tutorStudent->setStudent($user);
+                    $tutorStudent->setTutor($tutor);
+
+                    // Set contract dates
+                    if ($dateDebutContract) {
+                        $tutorStudent->setDateDebutContract($dateDebutContract);
+                    } else {
+                        $tutorStudent->setDateDebutContract(new \DateTime());
+                    }
+
+                    if ($dateFinContract) {
+                        $tutorStudent->setDateFinContract($dateFinContract);
+                    } else {
+                        $tutorStudent->setDateFinContract((new \DateTime())->modify('+6 months'));
+                    }
+
+                    $entityManager->persist($tutorStudent);
+                    $entityManager->flush();
+                }
+            }
+
             return $this->redirectToRoute('training_parameters_user', [], Response::HTTP_SEE_OTHER);
         }
         return $this->render('user/new.html.twig', [
@@ -76,8 +148,26 @@ final class UserController extends AbstractController
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
+        $activeContract = null;
+
+        // If user is a student, find the active contract
+        if (in_array('ROLE_STUDENT', $user->getRoles())) {
+            $now = new \DateTime();
+            foreach ($user->getStudentContracts() as $contract) {
+                $startDate = $contract->getDateDebutContract();
+                $endDate = $contract->getDateFinContract();
+
+                // Check if contract is currently active
+                if ((!$startDate || $startDate <= $now) && (!$endDate || $endDate >= $now)) {
+                    $activeContract = $contract;
+                    break;
+                }
+            }
+        }
+
         return $this->render('user/show.html.twig', [
             'user' => $user,
+            'activeContract' => $activeContract,
         ]);
     }
 

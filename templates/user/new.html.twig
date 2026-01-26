@@ -36,6 +36,43 @@
                 <div class="tab-pane fade show active student-tab-content" id="student" role="tabpanel">
                     {{ form_row(form.isAlternance, {'attr': {'class': 'student-checkbox'}}) }}
                     {{ form_row(form.classroom) }}
+
+                    {# Tutor information section #}
+                    <div class="mt-4 border-top pt-3">
+                        <h5 class="text-secondary mb-3">Informations du tuteur</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorFirstName) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorLastName) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorEmail) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorPhone) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.companyName) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.companyAddress) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.dateDebutContract) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.dateFinContract) }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {# Teacher-specific checkbox #}
