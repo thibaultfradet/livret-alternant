@@ -38,7 +38,7 @@ class EstablishmentController extends AbstractController
                     foreach ($schoolYear->getClassrooms() as $classroom) {
                         // Update general fields for the classroom
                         $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
-                        $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+                        $classroom->setTermsConditionsApprentissage($establishment->getTermsConditionsApprentissage());
 
                         $em->persist($classroom);
                     }

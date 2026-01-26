@@ -63,13 +63,13 @@ final class ExtractionController extends AbstractController
 
         if (in_array('ROLE_STUDENT', $student->getRoles(), true)) {
             if ($student->isApprentissage()) {
-                $termsConditions = $student->getClassroom()->getTermsConditionsAlternance();
+                $termsConditions = $student->getClassroom()->getTermsConditionsApprentissage();
             } else {
                 $termsConditions = $student->getClassroom()->getTermsConditionsPro();
             }
         } else {
             if ($student->isApprentissage()) {
-                $termsConditions = $student->getEstablishment()->getTermsConditionsAlternance();
+                $termsConditions = $student->getEstablishment()->getTermsConditionsApprentissage();
             } else {
                 $termsConditions = $student->getEstablishment()->getTermsConditionsPro();
             }

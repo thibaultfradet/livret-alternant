@@ -23,7 +23,7 @@ class Establishment
     private ?string $termsConditionsPro = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $termsConditionsAlternance = null;
+    private ?string $termsConditionsApprentissage = null;
 
     #[ORM\Column(nullable: true)]
     private ?array $formationCenter = null;
@@ -109,14 +109,14 @@ class Establishment
         return $this;
     }
 
-    public function getTermsConditionsAlternance(): ?string
+    public function getTermsConditionsApprentissage(): ?string
     {
-        return $this->termsConditionsAlternance;
+        return $this->termsConditionsApprentissage;
     }
 
-    public function setTermsConditionsAlternance(?string $termsConditionsAlternance): static
+    public function setTermsConditionsApprentissage(?string $termsConditionsApprentissage): static
     {
-        $this->termsConditionsAlternance = $termsConditionsAlternance;
+        $this->termsConditionsApprentissage = $termsConditionsApprentissage;
 
         return $this;
     }

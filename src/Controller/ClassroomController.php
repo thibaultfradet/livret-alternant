@@ -44,7 +44,7 @@ class ClassroomController extends AbstractController
             // set terms of establishment && formation center
             $classroom->setFormationCenter($establishment->getFormationCenter());
             $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
-            $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+            $classroom->setTermsConditionsApprentissage($establishment->getTermsConditionsApprentissage());
         }
 
         //Get current school year

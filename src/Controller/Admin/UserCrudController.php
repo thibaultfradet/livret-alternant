@@ -52,7 +52,7 @@ class UserCrudController extends AbstractCrudController
             $entityInstance->setRoles($roles);
 
             $entityInstance->setPassword('');
-            $entityInstance->setIsAlternance(true);
+            $entityInstance->setIsApprentissage(true);
 
         }
 

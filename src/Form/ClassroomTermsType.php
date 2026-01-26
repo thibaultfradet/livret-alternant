@@ -21,9 +21,9 @@ class ClassroomTermsType extends AbstractType
                     'class' => 'summernote',
                 ],
             ])
-            // Field for alternance terms
-            ->add('termsConditionsAlternance', TextareaType::class, [
-                'label' => 'Conditions Alternance',
+            // Field for apprentissage terms
+            ->add('termsConditionsApprentissage', TextareaType::class, [
+                'label' => 'Conditions Apprentissage',
                 'required' => false,
                 'attr' => [
                     'class' => 'summernote',

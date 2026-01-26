@@ -86,7 +86,7 @@ final class ExcelUserImportController extends AbstractController
                                 $establishment = $user->getEstablishment();
                                 $classroom->setFormationCenter($establishment->getFormationCenter());
                                 $classroom->setTermsConditionsPro($establishment->getTermsConditionsPro());
-                                $classroom->setTermsConditionsAlternance($establishment->getTermsConditionsAlternance());
+                                $classroom->setTermsConditionsApprentissage($establishment->getTermsConditionsApprentissage());
                             }
 
                             $em->persist($classroom);

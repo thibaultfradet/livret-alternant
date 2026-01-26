@@ -17,8 +17,8 @@ class EstablishmentGeneralType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Nom de l\'établissement',
             ])
-            ->add('termsConditionsAlternance', TextareaType::class, [
-                'label' => 'Conditions générales pour les contrats d\'alternance',
+            ->add('termsConditionsApprentissage', TextareaType::class, [
+                'label' => 'Conditions générales pour les contrats d\'apprentissage',
                 'required' => false,
                 'attr' => [
                     'class' => 'summernote',
