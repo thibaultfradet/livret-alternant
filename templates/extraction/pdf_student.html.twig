@@ -160,160 +160,172 @@
 
     <div class="page-break"></div>
 
-    {# --- Centre de formation ---#}
-    <div class="section-header bg-beaupeyrat">3. LE CENTRE DE FORMATION</div>
-    <div class="section-body border border-beaupeyrat">
+    {# Check if at least one formation center field is filled #}
+    {% set hasFormationCenterContent =
+        formationCenter.generalInfo
+        or formationCenter.director
+        or formationCenter.campusDirector
+        or formationCenter.alternanceManager
+        or formationCenter.handicapReferent
+        or student.classroom.trainingContactName
+    %}
 
-        {# --- Informations générales du centre ---#}
-        <div class="formation-section">
-            <div class="formation-section-header">INFORMATIONS GÉNÉRALES</div>
-            <div class="formation-info-box" style="font-size: 11px; line-height: 1.4; padding: 12px;">
-                {{ formationCenter.generalInfo|default('') }}
+    {% if hasFormationCenterContent %}
+        <div class="section-header bg-beaupeyrat">3. LE CENTRE DE FORMATION</div>
+        <div class="section-body border border-beaupeyrat">
+
+           {% if formationCenter.generalInfo is not empty %}
+                <div class="formation-section">
+                    <div class="formation-section-header">INFORMATIONS GÉNÉRALES</div>
+                    <div class="formation-info-box" style="font-size:11px; line-height:1.4; padding:12px;">
+                        {{ formationCenter.generalInfo }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# --- Directeur ---#}
+            {% set director = formationCenter.director %}
+            {% if director %}
+            <div class="formation-section">
+                <div class="formation-section-header">DIRECTEUR</div>
+                <div class="formation-row">
+                    <div class="formation-col-full">
+                        <div class="formation-info-box">
+                            <strong>Nom :</strong><br>
+                            <span>{{ director.firstName ~ ' ' ~ director.lastName|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formation-row">
+                    <div class="formation-col-left">
+                        <div class="formation-info-box">
+                            <strong>Email :</strong><br>
+                            <span>{{ director.email|default('') }}</span>
+                        </div>
+                    </div>
+                    <div class="formation-col-right">
+                        <div class="formation-info-box">
+                            <strong>Téléphone :</strong><br>
+                            <span>{{ director.phone|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+            {% endif %}
+
+            {# --- Directeur de campus ---#}
+            {% set campusDirector = formationCenter.campusDirector %}
+            {% if campusDirector %}
+            <div class="formation-section">
+                <div class="formation-section-header">DIRECTEUR DE CAMPUS</div>
+                <div class="formation-row">
+                    <div class="formation-col-full">
+                        <div class="formation-info-box">
+                            <strong>Nom :</strong><br>
+                            <span>{{ campusDirector.firstName ~ ' ' ~ campusDirector.lastName|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formation-row">
+                    <div class="formation-col-left">
+                        <div class="formation-info-box">
+                            <strong>Email :</strong><br>
+                            <span>{{ campusDirector.email|default('') }}</span>
+                        </div>
+                    </div>
+                    <div class="formation-col-right">
+                        <div class="formation-info-box">
+                            <strong>Téléphone :</strong><br>
+                            <span>{{ campusDirector.phone|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# --- Responsable de l'alternance ---#}
+            {% set alternanceManager = formationCenter.alternanceManager %}
+            {% if alternanceManager %}
+            <div class="formation-section">
+                <div class="formation-section-header">RESPONSABLE DE L'ALTERNANCE</div>
+                <div class="formation-row">
+                    <div class="formation-col-full">
+                        <div class="formation-info-box">
+                            <strong>Nom :</strong><br>
+                            <span>{{ alternanceManager.firstName ~ ' ' ~ alternanceManager.lastName|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formation-row">
+                    <div class="formation-col-left">
+                        <div class="formation-info-box">
+                            <strong>Email :</strong><br>
+                            <span>{{ alternanceManager.email|default('') }}</span>
+                        </div>
+                    </div>
+                    <div class="formation-col-right">
+                        <div class="formation-info-box">
+                            <strong>Téléphone :</strong><br>
+                            <span>{{ alternanceManager.phone|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# --- Référent handicap ---#}
+            {% set handicapReferent = formationCenter.handicapReferent %}
+            {% if handicapReferent %}
+            <div class="formation-section">
+                <div class="formation-section-header">RÉFÉRENT HANDICAP</div>
+                <div class="formation-row">
+                    <div class="formation-col-full">
+                        <div class="formation-info-box">
+                            <strong>Nom :</strong><br>
+                            <span>{{ handicapReferent.firstName ~ ' ' ~ handicapReferent.lastName|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="formation-row">
+                    <div class="formation-col-left">
+                        <div class="formation-info-box">
+                            <strong>Email :</strong><br>
+                            <span>{{ handicapReferent.email|default('') }}</span>
+                        </div>
+                    </div>
+                    <div class="formation-col-right">
+                        <div class="formation-info-box">
+                            <strong>Téléphone :</strong><br>
+                            <span>{{ handicapReferent.phone|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# --- Référent de formation ---#}
+            {% if student.classroom.trainingContactName %}
+            <div class="formation-section">
+                <div class="formation-section-header">RÉFÉRENT DE FORMATION</div>
+                <div class="formation-row">
+                    <div class="formation-col-left">
+                        <div class="formation-info-box">
+                            <strong>Nom :</strong><br>
+                            <span>{{ student.classroom.trainingContactName|default('') }}</span>
+                        </div>
+                    </div>
+                    <div class="formation-col-right">
+                        <div class="formation-info-box">
+                            <strong>Téléphone :</strong><br>
+                            <span>{{ student.classroom.trainingContactPhone|default('') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
         </div>
-
-        {# --- Directeur ---#}
-        {% set director = formationCenter.director %}
-        {% if director %}
-        <div class="formation-section">
-            <div class="formation-section-header">DIRECTEUR</div>
-            <div class="formation-row">
-                <div class="formation-col-full">
-                    <div class="formation-info-box">
-                        <strong>Nom :</strong><br>
-                        <span>{{ director.firstName ~ ' ' ~ director.lastName|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="formation-row">
-                <div class="formation-col-left">
-                    <div class="formation-info-box">
-                        <strong>Email :</strong><br>
-                        <span>{{ director.email|default('') }}</span>
-                    </div>
-                </div>
-                <div class="formation-col-right">
-                    <div class="formation-info-box">
-                        <strong>Téléphone :</strong><br>
-                        <span>{{ director.phone|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {# --- Directeur de campus ---#}
-        {% set campusDirector = formationCenter.campusDirector %}
-        {% if campusDirector %}
-        <div class="formation-section">
-            <div class="formation-section-header">DIRECTEUR DE CAMPUS</div>
-            <div class="formation-row">
-                <div class="formation-col-full">
-                    <div class="formation-info-box">
-                        <strong>Nom :</strong><br>
-                        <span>{{ campusDirector.firstName ~ ' ' ~ campusDirector.lastName|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="formation-row">
-                <div class="formation-col-left">
-                    <div class="formation-info-box">
-                        <strong>Email :</strong><br>
-                        <span>{{ campusDirector.email|default('') }}</span>
-                    </div>
-                </div>
-                <div class="formation-col-right">
-                    <div class="formation-info-box">
-                        <strong>Téléphone :</strong><br>
-                        <span>{{ campusDirector.phone|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {# --- Responsable de l'alternance ---#}
-        {% set alternanceManager = formationCenter.alternanceManager %}
-        {% if alternanceManager %}
-        <div class="formation-section">
-            <div class="formation-section-header">RESPONSABLE DE L'ALTERNANCE</div>
-            <div class="formation-row">
-                <div class="formation-col-full">
-                    <div class="formation-info-box">
-                        <strong>Nom :</strong><br>
-                        <span>{{ alternanceManager.firstName ~ ' ' ~ alternanceManager.lastName|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="formation-row">
-                <div class="formation-col-left">
-                    <div class="formation-info-box">
-                        <strong>Email :</strong><br>
-                        <span>{{ alternanceManager.email|default('') }}</span>
-                    </div>
-                </div>
-                <div class="formation-col-right">
-                    <div class="formation-info-box">
-                        <strong>Téléphone :</strong><br>
-                        <span>{{ alternanceManager.phone|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {# --- Référent handicap ---#}
-        {% set handicapReferent = formationCenter.handicapReferent %}
-        {% if handicapReferent %}
-        <div class="formation-section">
-            <div class="formation-section-header">RÉFÉRENT HANDICAP</div>
-            <div class="formation-row">
-                <div class="formation-col-full">
-                    <div class="formation-info-box">
-                        <strong>Nom :</strong><br>
-                        <span>{{ handicapReferent.firstName ~ ' ' ~ handicapReferent.lastName|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="formation-row">
-                <div class="formation-col-left">
-                    <div class="formation-info-box">
-                        <strong>Email :</strong><br>
-                        <span>{{ handicapReferent.email|default('') }}</span>
-                    </div>
-                </div>
-                <div class="formation-col-right">
-                    <div class="formation-info-box">
-                        <strong>Téléphone :</strong><br>
-                        <span>{{ handicapReferent.phone|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        {# --- Référent de formation ---#}
-        {% if student.classroom.trainingContactName %}
-        <div class="formation-section">
-            <div class="formation-section-header">RÉFÉRENT DE FORMATION</div>
-            <div class="formation-row">
-                <div class="formation-col-left">
-                    <div class="formation-info-box">
-                        <strong>Nom :</strong><br>
-                        <span>{{ student.classroom.trainingContactName|default('') }}</span>
-                    </div>
-                </div>
-                <div class="formation-col-right">
-                    <div class="formation-info-box">
-                        <strong>Téléphone :</strong><br>
-                        <span>{{ student.classroom.trainingContactPhone|default('') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-    </div>
+    {% endif %}
 
     <div class="page-break"></div>
 
@@ -327,10 +339,17 @@
 
     {# --- Modalités du livret ---#}
     <div>
-        <div class="section-header bg-beaupeyrat">5. MODALITÉS D'UTILISATION DU LIVRET</div>
-        <div class="section-body">
-            {{ termsConditions|raw}}
-        </div>
+    <div class="section-header bg-beaupeyrat">5. MODALITÉS D'UTILISATION DU LIVRET</div>
+       {% if termsConditions is not empty %}
+            <div>
+                <div class="section-body">
+                    {{ termsConditions|raw }}
+                </div>
+            </div>
+        {% else %}
+            <div>Aucune modalité d'utilisation saisie.</div>
+        {% endif %}
+        
 
         {# --- Validation des données (tuteur / alternant / équipe pédagogique) ---#}
         <div class="validation-container">
