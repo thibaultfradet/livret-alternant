@@ -45,7 +45,7 @@
                             <!-- Disable -->
                             <form class="d-inline" method="post" action="{{ path('app_school_year_disable', {'id': school_year.id}) }}" onsubmit="return confirmDisable();">
                                 <input type="hidden" name="_token" value="{{ csrf_token('disable' ~ school_year.id) }}">
-                                <button type="submit" class="btn btn-danger btn-icon" title="Désactiver">
+                                <button type="submit" class="btn btn-danger btn-icon" title="Supprimer">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-slash-circle" viewBox="0 0 16 16">
                                         <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0-1A6 6 0 1 1 8 2a6 6 0 0 1 0 12z"/>
                                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L11 10.293a.5.5 0 0 1-.708.708L4.646 5.354a.5.5 0 0 1 0-.708z"/>
@@ -66,7 +66,7 @@
 
 <script>
 function confirmDisable() {
-    return confirm("⚠️ Êtes-vous sûr de vouloir désactiver cette année scolaire ?") &&
+    return confirm("Êtes-vous sûr de vouloir supprimer cette année scolaire ?") &&
            confirm("Cette action est irréversible. Confirmez à nouveau pour continuer.");
 }
 </script>

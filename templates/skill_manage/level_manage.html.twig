@@ -51,8 +51,8 @@
                                 {% if level.disabledAt is null %}
                                     <a href="{{ path('app_skill_level_toggle', { type: 'level', id: level.id }) }}"
                                        class="text-danger"
-                                       onclick="return confirm('Désactiver ce niveau ? Cette action est irréversible.');">
-                                        Désactiver
+                                       onclick="return confirm('Supprimer ce niveau ? Cette action est irréversible.');">
+                                        Supprimer
                                     </a>
                                 {% else %}
                                     <span class="text-muted">Désactivé</span>
