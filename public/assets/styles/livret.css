@@ -326,3 +326,32 @@ textarea {
     display: table;
     clear: both;
 }
+
+/* =========================
+   BEHAVIOR PDF GRID
+========================= */
+
+.behavior-pdf-grid {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.behavior-pdf-grid td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.behavior-pdf-label {
+    width: 20%;
+    text-align: left !important;
+    font-size: 12px;
+    color: #666;
+}
+
+.behavior-pdf-cell {
+    width: 16%;
+}
