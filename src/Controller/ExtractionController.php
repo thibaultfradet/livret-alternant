@@ -19,8 +19,8 @@ use Symfony\Component\Routing\Annotation\Route;
 final class ExtractionController extends AbstractController
 {
 
-    #[Route('/extraction/{student}/pdf', name: 'app_extraction_student_pdf')]
-    public function studentPdf(
+    #[Route('/extract/{student}/pdf', name: 'app_extract_livret')]
+    public function livretPdf(
         User $student,
         UserRepository $userRepository,
         SchoolYearRepository $schoolYearRepository,

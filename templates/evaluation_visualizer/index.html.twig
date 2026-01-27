@@ -74,7 +74,7 @@
             Notifier
           </a>
 
-          <a href="{{ path('extract_student_evaluations', {
+          <a href="{{ path('app_extract_period', {
                 period: selectedPeriod ? selectedPeriod.id : null,
                 classroom: selectedClassroom ? selectedClassroom.id : null
               }) }}"
@@ -145,7 +145,7 @@
                   </td>
                   <td>
                   {# View Evaluations #}
-                    <a href="{{ path('app_student_evaluations', {'student': eval.student.id}) }}" class="btn btn-info btn-icon" title="Voir évaluations">
+                    <a href="{{ path('app_student_evaluations', {'student': eval.student.id, 'period': selectedPeriod ? selectedPeriod.id : null}) }}" class="btn btn-info btn-icon" title="Voir évaluations">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
                         <path d="M5 10.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
                         <path d="M5 8a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 8zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5A.5.5 0 0 1 5 6z"/>
@@ -154,7 +154,7 @@
                     </a>
                   </td>
                   <td>
-                    <a href="/extraction/{{ eval.student.id }}/pdf" class="btn btn-danger btn-icon" title="Exporter en PDF">
+                    <a href="{{ path('app_extract_livret', {'student': eval.student.id}) }}" class="btn btn-danger btn-icon" title="Exporter en PDF">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                             <path d="M14 3v4a1 1 0 0 0 1 1h4" />

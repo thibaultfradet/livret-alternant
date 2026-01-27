@@ -272,8 +272,8 @@ class EvaluationVisualizerController extends AbstractController
         ]);
     }
 
-    #[Route('/evaluation-visualizer/extract', name: 'extract_student_evaluations')]
-    public function extract(
+    #[Route('/evaluation-visualizer/extract', name: 'app_extract_period')]
+    public function extractPeriod(
         Request $request,
         ClassroomRepository $classroomRepo,
         PeriodRepository $periodRepo,
