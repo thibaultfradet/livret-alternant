@@ -20,35 +20,59 @@
                 <h5 class="card-title mb-0">Comportement</h5>
             </div>
 
-            <div class="card-body">
-                <div class="row">
-                    {% for behavior_entry in form.behaviorEvaluation %}
-                        <div class="col-md-6 mb-3">
-                            <div class="input-group">
-                                <span class="input-group-text" style="width: 200px;">
-                                    {{ behavior_entry.vars.data.behaviorCriteria.label }}
-                                </span>
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-bordered text-center mb-0 align-middle behavior-grid">
+                    <tbody>
+                        {% for behavior_entry in form.behaviorEvaluation %}
+                            {% set selectedLevel = behavior_entry.behaviorLevel.vars.value %}
+                            {% set sortedLevels = behavior_entry.vars.data.availableLevels|sort((a, b) => a.levelNumber <=> b.levelNumber) %}
 
-                                <select class="form-select" name="{{ behavior_entry.behaviorLevel.vars.full_name }}">
-                                    <option value="" selected disabled>Sélectionnez un niveau</option>
-                                    {% for level in behavior_entry.vars.data.availableLevels %}
-                                        <option value="{{ level.id }}"
-                                            {% if behavior_entry.behaviorLevel.vars.value == level.id %}selected{% endif %}
+                            <tr>
+                                <td class="text-start fw-medium behavior-label-cell">
+                                    {{ behavior_entry.vars.data.behaviorCriteria.label }}
+                                </td>
+
+                                {% for level in sortedLevels %}
+                                    {% set isSelected =
+                                        selectedLevel is not null
+                                        and selectedLevel is not same as('')
+                                        and selectedLevel.id == level.id
+                                    %}
+
+                                    <td class="p-0 behavior-td">
+                                        <input
+                                            type="radio"
+                                            class="behavior-radio"
+                                            name="{{ behavior_entry.behaviorLevel.vars.full_name }}"
+                                            value="{{ level.id }}"
+                                            {% if isSelected %}checked{% endif %}
+                                        >
+
+                                        <div
+                                            class="behavior-cell {% if isSelected %}is-selected{% endif %}"
+                                            data-level="{{ level.levelNumber }}"
+                                            onclick="
+                                                this.previousElementSibling.checked = true;
+                                                this.closest('tr')
+                                                    .querySelectorAll('.behavior-cell')
+                                                    .forEach(c => c.classList.remove('is-selected'));
+                                                this.classList.add('is-selected');
+                                            "
                                         >
                                             {{ level.label }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                                        </div>
+                                    </td>
+                                {% endfor %}
+                            </tr>
 
                             {{ form_errors(behavior_entry.behaviorLevel) }}
 
                             <div class="d-none">
                                 {{ form_widget(behavior_entry.behaviorCriteria) }}
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -193,53 +217,4 @@
     </div>
 </div>
 
-<style>
-/* =========================
-   TABLE FIX
-========================= */
-
-.skill-grid {
-    table-layout: fixed;
-    width: 100%;
-}
-
-.skill-grid td {
-    height: 48px;
-    padding: 0;
-}
-
-/* =========================
-   RADIO SYSTEM
-========================= */
-
-.skill-radio {
-    display: none;
-}
-
-.skill-cell {
-    width: 100%;
-    height: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-    user-select: none;
-
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* Hover */
-.skill-cell:hover {
-    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
-}
-
-/* Selected */
-.skill-cell.is-selected {
-    background-color: var(--skill-color);
-    color: #fff;
-    font-weight: 700;
-}
-</style>
 {% endblock %}

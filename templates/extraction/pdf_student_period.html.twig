@@ -81,15 +81,39 @@
             {# --- Évaluation du comportement ---#}
             <div class="card">
                 <div class="card-header">APPRECIATION DU COMPORTEMENT AU TRAVAIL</div>
-                <table style="border-collapse:collapse; width:100%;">
+                <table class="behavior-pdf-grid">
                     {% for behaviorEval in tutorEval.behaviorEvaluation %}
+                        {% set sortedLevels = behaviorEval.behaviorCriteria.behaviorLevels|filter(l => l.disabledAt is null)|sort((a, b) => a.levelNumber <=> b.levelNumber) %}
                         <tr>
-                            <td style="width:40%; font-size:12px; color:#666; padding:6px; border:1px solid #ccc;">
+                            <td class="behavior-pdf-label">
                                 {{ behaviorEval.behaviorCriteria.label }}
                             </td>
-                            <td style="width:60%; padding:6px; border:1px solid #ccc;">
-                                <input type="text" class="field-input" value="{{ behaviorEval.behaviorLevel.label|default('') }}" disabled>
-                            </td>
+                            {% for level in sortedLevels %}
+                                {% set isSelected = behaviorEval.behaviorLevel and behaviorEval.behaviorLevel.id == level.id %}
+                                {% set levelColor = '#ffffff' %}
+                                {% set textColor = '#333' %}
+                                {% if isSelected %}
+                                    {% if level.levelNumber == 1 %}
+                                        {% set levelColor = '#EF4444' %}
+                                        {% set textColor = '#fff' %}
+                                    {% elseif level.levelNumber == 2 %}
+                                        {% set levelColor = '#ff8904' %}
+                                        {% set textColor = '#fff' %}
+                                    {% elseif level.levelNumber == 3 %}
+                                        {% set levelColor = '#FACC15' %}
+                                        {% set textColor = '#000' %}
+                                    {% elseif level.levelNumber == 4 %}
+                                        {% set levelColor = '#84CC16' %}
+                                        {% set textColor = '#fff' %}
+                                    {% elseif level.levelNumber == 5 %}
+                                        {% set levelColor = '#22C55E' %}
+                                        {% set textColor = '#fff' %}
+                                    {% endif %}
+                                {% endif %}
+                                <td class="behavior-pdf-cell" style="background-color: {{ levelColor }}; color: {{ textColor }}; {% if isSelected %}font-weight: bold;{% endif %}">
+                                    {{ level.label }}
+                                </td>
+                            {% endfor %}
                         </tr>
                     {% endfor %}
                 </table>
