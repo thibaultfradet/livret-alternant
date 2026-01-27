@@ -246,7 +246,7 @@ final class EvaluationController extends AbstractController
         ]);
 
         if ($existingEvaluation) {
-            $this->addFlash('warning', 'Une évaluation TTM a déjà été réalisée pour cet étudiant et cette période par un membre de l’équipe pédagogique.');
+            $this->addFlash('warning', "Une évaluation a déjà été réalisée pour cet étudiant et cette période par un membre de l’équipe pédagogique.");
             return $this->redirectToRoute('app_home');
         }
 
@@ -262,7 +262,7 @@ final class EvaluationController extends AbstractController
         ]);
 
         if (!$tutorEvaluation || !$studentEvaluation) {
-            $this->addFlash('warning', 'Le TTM ne peut pas encore évaluer cet étudiant car le tuteur et/ou l’étudiant n’ont pas encore rempli leurs évaluations.');
+            $this->addFlash('warning', "L'équipe pédagogique ne peut pas encore évaluer cet étudiant car le tuteur et/ou l’étudiant n’ont pas encore rempli leurs évaluations.");
             return $this->redirectToRoute('app_home');
         }
 
@@ -287,7 +287,7 @@ final class EvaluationController extends AbstractController
             $em->persist($evaluation);
             $em->flush();
 
-            $this->addFlash('success', 'Évaluation TTM enregistrée avec succès !');
+            $this->addFlash('success', "Évaluation de l'équipe pédagogique enregistrée avec succès !");
 
             return $this->redirectToRoute('app_home');
         }
