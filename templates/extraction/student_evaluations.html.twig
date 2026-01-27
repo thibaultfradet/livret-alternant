@@ -50,30 +50,50 @@
       {% set tutorEvalsForPeriod = student.tutorEvaluationsReceived|filter(e => e.period == period) %}
       <div class="card mb-4">
         <div class="card-header fw-bold bg-light">Appréciation du comportement au travail</div>
-        <table class="table table-bordered mb-0 text-center">
-          <thead class="table-light">
-            <tr>
-              <th class="text-start">Critère</th>
-              <th>Évaluation</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% if tutorEvalsForPeriod is empty %}
-              <tr>
-                <td colspan="2" class="text-muted">Aucune évaluation de comportement pour cette période</td>
-              </tr>
-            {% else %}
-              {% for tutorEval in tutorEvalsForPeriod %}
-                {% for behaviorEval in tutorEval.behaviorEvaluation %}
-                  <tr>
-                    <td class="text-start">{{ behaviorEval.behaviorCriteria.label }}</td>
-                    <td>{{ behaviorEval.behaviorLevel.label|default('') }}</td>
-                  </tr>
+        <div class="card-body p-0 table-responsive">
+          <table class="table table-bordered mb-0 text-center align-middle behavior-view-grid">
+            <tbody>
+              {% if tutorEvalsForPeriod is empty %}
+                <tr>
+                  <td colspan="6" class="text-muted p-3">Aucune évaluation de comportement pour cette période</td>
+                </tr>
+              {% else %}
+                {% for tutorEval in tutorEvalsForPeriod %}
+                  {% for behaviorEval in tutorEval.behaviorEvaluation %}
+                    {% set sortedLevels = behaviorEval.behaviorCriteria.behaviorLevels|filter(l => l.disabledAt is null)|sort((a, b) => a.levelNumber <=> b.levelNumber) %}
+                    <tr>
+                      <td class="text-start fw-medium behavior-label-cell">
+                        {{ behaviorEval.behaviorCriteria.label }}
+                      </td>
+                      {% for level in sortedLevels %}
+                        {% set isSelected = behaviorEval.behaviorLevel and behaviorEval.behaviorLevel.id == level.id %}
+                        {% set levelColor = '' %}
+                        {% if isSelected %}
+                          {% if level.levelNumber == 1 %}
+                            {% set levelColor = '#EF4444' %}
+                          {% elseif level.levelNumber == 2 %}
+                            {% set levelColor = '#ff8904' %}
+                          {% elseif level.levelNumber == 3 %}
+                            {% set levelColor = '#FACC15' %}
+                          {% elseif level.levelNumber == 4 %}
+                            {% set levelColor = '#84CC16' %}
+                          {% elseif level.levelNumber == 5 %}
+                            {% set levelColor = '#22C55E' %}
+                          {% endif %}
+                        {% endif %}
+                        <td class="p-0 behavior-view-cell" style="{% if isSelected %}background-color: {{ levelColor }}; color: {% if level.levelNumber == 3 %}#000{% else %}#fff{% endif %}; font-weight: 700;{% endif %}">
+                          <div class="d-flex align-items-center justify-content-center h-100 p-2" style="font-size: 0.85rem;">
+                            {{ level.label }}
+                          </div>
+                        </td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
                 {% endfor %}
-              {% endfor %}
-            {% endif %}
-          </tbody>
-        </table>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {# --- Skill evaluation grid with proper padding for sub-cards --- #}
