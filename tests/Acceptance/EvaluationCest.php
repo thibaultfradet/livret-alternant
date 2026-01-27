@@ -100,13 +100,14 @@ class EvaluationCest
 
         $I->see('Évaluation de l\'alternant');
 
-        // Fill tutor evaluation form
-        $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][0][behaviorLevel]"]', '1');
-        $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][1][behaviorLevel]"]', '7');
-        $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][2][behaviorLevel]"]', '4');
-        $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][3][behaviorLevel]"]', '10');
-        $I->selectOption('select[name="tutor_evaluation_form[behaviorEvaluation][4][behaviorLevel]"]', '13');
+        // Fill tutor evaluation form - Behavior grid (radio buttons)
+        $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[behaviorEvaluation][0][behaviorLevel]"][value="1"]\').checked = true;');
+        $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[behaviorEvaluation][1][behaviorLevel]"][value="7"]\').checked = true;');
+        $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[behaviorEvaluation][2][behaviorLevel]"][value="4"]\').checked = true;');
+        $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[behaviorEvaluation][3][behaviorLevel]"][value="10"]\').checked = true;');
+        $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[behaviorEvaluation][4][behaviorLevel]"][value="13"]\').checked = true;');
 
+        // Skill grid (radio buttons)
         $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[skillEvaluation][0][skillLevel]"][value="3"]\').checked = true;');
         $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[skillEvaluation][1][skillLevel]"][value="4"]\').checked = true;');
         $I->executeJS('document.querySelector(\'input[name="tutor_evaluation_form[skillEvaluation][2][skillLevel]"][value="3"]\').checked = true;');
