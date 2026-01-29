@@ -86,6 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 { targets: [0, colNum - 1], orderable: false }
             ],
             dom: '<"card-body border-bottom py-3"<"d-flex"<"text-secondary"><"ms-auto text-secondary"f>>>t<"card-footer d-flex align-items-center"<"m-0 text-secondary"><"pagination m-0 ms-auto">>'
+        }) },
+        { id: 'listModesTable', config: (colNum) => ({
+            order: [[0, 'asc']],
+            columnDefs: [
+                { targets: colNum - 1, orderable: false }
+            ]
         }) }
     ];
 

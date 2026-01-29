@@ -11,20 +11,38 @@
             <p class="text-muted">Choisissez le type de contrat pour chaque utilisateur</p>
         </div>
 
-        <div class="table-responsive">
-            <table class="table table-vcenter table-hover">
-                <thead>
+        {# --- SEARCH FILTERS --- #}
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <input type="text" id="searchName" class="form-control" placeholder="Rechercher par nom...">
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="searchClass" class="form-control" placeholder="Rechercher par classe...">
+            </div>
+            <div class="col-md-4">
+                <select id="filterContractType" class="form-select">
+                    <option value="">Tous les contrats</option>
+                    <option value="apprentissage">Apprentissage</option>
+                    <option value="pro">Pro</option>
+                </select>
+            </div>
+        </div>
+
+        {# --- TABLE WITH DATATABLE --- #}
+        <div class="card">
+            <table id="listModesTable" class="table table-vcenter card-table table-striped mb-0">
+                <thead class="table-light">
                     <tr>
                         <th>Nom</th>
-                        <th>Diplôme</th>
+                        <th>Classe</th>
                         <th class="text-center">Apprentissage / Pro</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for user in users %}
-                        <tr data-user-id="{{ user.id }}">
-                            <td>{{ user.firstName }} {{ user.lastName }}</td>
-                            <td>{{ user.classroom.diploma.label ?? '' }}</td>
+                        <tr data-user-id="{{ user.id }}" data-contract-type="{{ user.isApprentissage ? 'apprentissage' : 'pro' }}">
+                            <td class="user-name">{{ user.firstName }} {{ user.lastName }}</td>
+                            <td class="user-class">{{ user.classroom.diploma.label ?? '' }}</td>
                             <td class="text-center">
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input toggle-apprentissage" type="radio"
@@ -53,10 +71,14 @@
 {% block javascripts_bottom %}
 <script>
     $(function() {
+        // Toggle apprentissage AJAX
         $('.toggle-apprentissage').on('change', function() {
             const $row = $(this).closest('tr');
             const userId = $row.data('user-id');
             const isApprentissage = $(this).val();
+
+            // Update data attribute for filtering
+            $row.attr('data-contract-type', isApprentissage === '1' ? 'apprentissage' : 'pro');
 
             $.ajax({
                 url: "{{ path('app_user_toggle_apprentissage', {'id': 'USER_ID'}) }}".replace('USER_ID', userId),
@@ -68,10 +90,38 @@
                     }
                 },
                 error: function() {
-                    alert('Erreur lors de la mise à jour de l'utilisateur.');
+                    alert('Erreur lors de la mise à jour de l\'utilisateur.');
                 }
             });
         });
+
+        // Dynamic search filter
+        function filterTable() {
+            const nameFilter = document.getElementById('searchName').value.toLowerCase();
+            const classFilter = document.getElementById('searchClass').value.toLowerCase();
+            const contractFilter = document.getElementById('filterContractType').value;
+            const rows = document.querySelectorAll('#listModesTable tbody tr');
+
+            rows.forEach(row => {
+                const nameCell = row.querySelector('.user-name')?.innerText.toLowerCase() || '';
+                const classCell = row.querySelector('.user-class')?.innerText.toLowerCase() || '';
+                const contractType = row.getAttribute('data-contract-type') || '';
+
+                const matchesName = nameCell.includes(nameFilter);
+                const matchesClass = classCell.includes(classFilter);
+                const matchesContract = !contractFilter || contractType === contractFilter;
+
+                if (matchesName && matchesClass && matchesContract) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById('searchName').addEventListener('input', filterTable);
+        document.getElementById('searchClass').addEventListener('input', filterTable);
+        document.getElementById('filterContractType').addEventListener('change', filterTable);
     });
 </script>
 {% endblock %}

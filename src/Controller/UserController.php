@@ -316,16 +316,16 @@ final class UserController extends AbstractController
         // Get the currently authenticated user
         /** @var User $currentUser */
         $currentUser = $this->getUser();
-    
+
         // Safety check in case no user is authenticated
         if (!$currentUser) {
             $this->addFlash('error', 'User not authenticated.');
             return $this->redirectToRoute('app_home');
         }
-    
+
         // Get the establishment of the connected user
         $establishment = $currentUser->getEstablishment();
-    
+
         // Retrieve only students from the same establishment
         $users = $userRepo->createQueryBuilder('u')
             ->andWhere('u.roles LIKE :role')
@@ -334,7 +334,7 @@ final class UserController extends AbstractController
             ->setParameter('establishment', $establishment)
             ->getQuery()
             ->getResult();
-    
+
         return $this->render('user/list_modes.html.twig', [
             'users' => $users,
         ]);
