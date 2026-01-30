@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Évaluations de l'étudiant{% endblock %}
+{% block title %}Évaluations de l'alternant{% endblock %}
 
 {% block body %}
 <div class="container py-5">
@@ -167,7 +167,7 @@
         </div>
       {% endfor %}
 
-      {# --- Remarques de l'étudiant ---#}
+      {# --- Remarques de l'alternant ---#}
       {% for studentEval in student.studentEvaluations %}
         {% if studentEval.period == period %}
           <div class="card mb-4">
@@ -222,7 +222,7 @@
 
     </div>
   {% else %}
-    <p class="text-muted">Aucune évaluation pour cet étudiant.</p>
+    <p class="text-muted">Aucune évaluation pour cet alternant.</p>
   {% endfor %}
 
 </div>

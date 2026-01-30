@@ -49,7 +49,7 @@ final class EvaluationController extends AbstractController
         ]);
 
         if (!$tutorAssignment) {
-            $this->addFlash('error', 'Vous n\'êtes pas assigné à cet étudiant.');
+            $this->addFlash('error', 'Vous n\'êtes pas assigné à cet alternant.');
             return $this->redirectToRoute('app_home');
         }
 
@@ -72,7 +72,7 @@ final class EvaluationController extends AbstractController
         ]);
 
         if ($existingEvaluation) {
-            $this->addFlash('warning', 'Une évaluation existe déjà pour cet étudiant et cette période.');
+            $this->addFlash('warning', 'Une évaluation existe déjà pour cet alternant et cette période.');
             return $this->redirectToRoute('app_home');
         }
 
@@ -235,7 +235,7 @@ final class EvaluationController extends AbstractController
 
         // verify if student and ttm are in the same establishment
         if ($student->getEstablishment() !== $ttm->getEstablishment()) {
-            $this->addFlash('error', 'Cet étudiant n\'appartient pas à votre établissement.');
+            $this->addFlash('error', 'Cet alternant n\'appartient pas à votre établissement.');
             return $this->redirectToRoute('app_home');
         }
 
@@ -246,7 +246,7 @@ final class EvaluationController extends AbstractController
         ]);
 
         if ($existingEvaluation) {
-            $this->addFlash('warning', "Une évaluation a déjà été réalisée pour cet étudiant et cette période par un membre de l’équipe pédagogique.");
+            $this->addFlash('warning', "Une évaluation a déjà été réalisée pour cet alternant et cette période par un membre de l’équipe pédagogique.");
             return $this->redirectToRoute('app_home');
         }
 
@@ -262,7 +262,7 @@ final class EvaluationController extends AbstractController
         ]);
 
         if (!$tutorEvaluation || !$studentEvaluation) {
-            $this->addFlash('warning', "L'équipe pédagogique ne peut pas encore évaluer cet étudiant car le tuteur et/ou l’étudiant n’ont pas encore rempli leurs évaluations.");
+            $this->addFlash('warning', "L'équipe pédagogique ne peut pas encore évaluer cet alternant car le tuteur et/ou l’alternant n’ont pas encore rempli leurs évaluations.");
             return $this->redirectToRoute('app_home');
         }
 
@@ -292,7 +292,7 @@ final class EvaluationController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Rend la même vue Twig que l'évaluation étudiant
+        // Rend la même vue Twig que l'évaluation alternant
         return $this->render('evaluation/ttm.html.twig', [
             'form' => $form->createView(),
             'student' => $student,

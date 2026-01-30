@@ -324,7 +324,7 @@ class EvaluationVisualizerController extends AbstractController
             $periodId = $form->get('periodId')->getData();
 
             if (empty($selectedStudents)) {
-                $this->addFlash('warning', 'Aucun étudiant sélectionné.');
+                $this->addFlash('warning', 'Aucun alternant sélectionné.');
                 return $this->redirectToRoute('extract_student_evaluations', [
                     'period' => $periodId,
                 ]);
@@ -451,7 +451,7 @@ class EvaluationVisualizerController extends AbstractController
             }
 
             if (empty($pdfFiles)) {
-                $this->addFlash('error', 'Aucun PDF n\'a pu être généré pour les étudiants sélectionnés.');
+                $this->addFlash('error', 'Aucun PDF n\'a pu être généré pour les alternants sélectionnés.');
                 $this->deleteDirectory($tempDir);
                 return null;
             }

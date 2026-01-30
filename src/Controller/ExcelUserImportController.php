@@ -63,7 +63,7 @@ final class ExcelUserImportController extends AbstractController
 
                         $diploma = $diplomaRepo->findOneBy(['code' => $classCode]);
                         if (!$diploma) {
-                            $this->addFlash('warning', "Classe avec le code $classCode non trouvée pour l'étudiant $studentFullName.");
+                            $this->addFlash('warning', "Classe avec le code $classCode non trouvée pour l'alternant $studentFullName.");
                             continue;
                         }
 

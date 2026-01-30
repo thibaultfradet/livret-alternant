@@ -160,7 +160,7 @@ class EvaluationCest
         $I->amOnPage('/evaluation/ttm/18/1'); // Student 18, Period 1
         $I->see('Evaluer l\'alternant');
 
-        $I->fillField('ttm_evaluation_form[remarks]', 'Évaluation complète : l\'étudiant démontre une forte motivation. Continuer dans cette direction.');
+        $I->fillField('ttm_evaluation_form[remarks]', 'Évaluation complète : l\'alternant démontre une forte motivation. Continuer dans cette direction.');
 
         $I->scrollTo('#submit-evaluation');
         $I->wait(1);

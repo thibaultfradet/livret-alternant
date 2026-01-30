@@ -58,7 +58,7 @@ final class EvaluationListController extends AbstractController
             $period = $allPeriods[0];
         }
 
-        // Récupérer les étudiants du tuteur avec contrats actifs
+        // Récupérer les alternants du tuteur avec contrats actifs
         $now = new \DateTime();
         $qb = $userRepo->createQueryBuilder('s')
             ->join('s.studentContracts', 'sc')

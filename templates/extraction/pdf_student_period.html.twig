@@ -50,8 +50,8 @@
         </p>
     </div>
 
-    {# --- Informations étudiant --- #}
-    <div class="section-header bg-beaupeyrat">INFORMATIONS ÉTUDIANT</div>
+    {# --- Informations alternant --- #}
+    <div class="section-header bg-beaupeyrat">INFORMATIONS alternant</div>
     <div class="section-body border border-beaupeyrat" style="margin-bottom:15px;">
         <table class="info-table">
             <tr>
@@ -189,7 +189,7 @@
 
         {% endfor %}
 
-        {# --- Remarques de l'étudiant ---#}
+        {# --- Remarques de l'alternant ---#}
         {% for studentEval in student.studentEvaluations %}
             {% if studentEval.period == period %}
                 <div class="remarks-card">
