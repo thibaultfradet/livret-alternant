@@ -268,6 +268,7 @@ class EvaluationVisualizerController extends AbstractController
         return $this->render('evaluation_visualizer/notifier.html.twig', [
             'form' => $form->createView(),
             'evaluations' => $pendingEvaluations,
+            'periods' => $data['periods'],
             'selectedPeriod' => $data['selectedPeriod'],
         ]);
     }
