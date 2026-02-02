@@ -136,19 +136,19 @@
         <table class="info-table">
             <tr>
                 <td>Nom de l'entreprise :</td>
-                <td><input type="text" class="field-input" value="{{ tutor.companyName|default('') }}" disabled></td>
+                <td><input type="text" class="field-input" value="{{ tutor ? tutor.companyName|default('') : '' }}" disabled></td>
             </tr>
             <tr>
                 <td>Adresse de l'entreprise :</td>
-                <td><input type="text" class="field-input" value="{{ tutor.companyAddress|default('') }}" disabled></td>
+                <td><input type="text" class="field-input" value="{{ tutor ? tutor.companyAddress|default('') : '' }}" disabled></td>
             </tr>
             <tr>
                 <td>Nom du tuteur :</td>
-                <td><input type="text" class="field-input" value="{{ tutor.lastName ~ ' ' ~ tutor.firstName|default('') }}" disabled></td>
+                <td><input type="text" class="field-input" value="{{ tutor ? (tutor.lastName ~ ' ' ~ tutor.firstName)|default('') : '' }}" disabled></td>
             </tr>
             <tr>
                 <td>Email du tuteur :</td>
-                <td><input type="text" class="field-input" value="{{ tutor.email|default('') }}" disabled></td>
+                <td><input type="text" class="field-input" value="{{ tutor ? tutor.email|default('') : '' }}" disabled></td>
             </tr>
             <tr>
                 <td>Dates du contrat :</td>
