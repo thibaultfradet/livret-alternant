@@ -34,7 +34,38 @@ const baseTableConfig = {
         '<"card-footer d-flex align-items-center"' +
             '<"m-0 text-secondary"i>' +
             '<"pagination m-0 ms-auto"p>' +
-        '>'
+        '>',
+    initComplete: function() {
+        $(this.api().table().header()).find('th').addClass('text-center align-middle');
+    }
+};
+
+/**
+ * DataTable configuration without search bar
+ */
+const noSearchTableConfig = {
+    language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+    },
+    pageLength: 50,
+    lengthMenu: [10, 25, 50, 100],
+    responsive: true,
+    stripeClasses: ['table-striped', 'table-hover'],
+    columnDefs: [
+        { className: 'text-center align-middle', targets: '_all' }
+    ],
+    dom:
+        '<"card-body border-bottom py-3 d-flex justify-content-between align-items-center"' +
+            '<"dataTables_length"l>' +
+        '>' +
+        't' +
+        '<"card-footer d-flex align-items-center"' +
+            '<"m-0 text-secondary"i>' +
+            '<"pagination m-0 ms-auto"p>' +
+        '>',
+    initComplete: function() {
+        $(this.api().table().header()).find('th').addClass('text-center align-middle');
+    }
 };
 
 
@@ -92,7 +123,19 @@ document.addEventListener('DOMContentLoaded', () => {
             columnDefs: [
                 { targets: colNum - 1, orderable: false }
             ]
-        }) }
+        }), noSearch: true },
+        { id: 'studentTable', config: () => ({
+            order: [[1, 'asc']],
+            columnDefs: [
+                { targets: 0, orderable: false }
+            ]
+        }), noSearch: true },
+        { id: 'evaluationTable', config: () => ({
+            order: [[1, 'asc']],
+            columnDefs: [
+                { targets: [0, 2], orderable: false }
+            ]
+        }), noSearch: true }
     ];
 
     tables.forEach(tableInfo => {
@@ -100,9 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tableEl) return;
 
         const colNum = $(`#${tableInfo.id} > tbody > tr:first > td`).length;
+        const config = tableInfo.noSearch ? noSearchTableConfig : baseTableConfig;
 
         $(`#${tableInfo.id}`).DataTable({
-            ...baseTableConfig,
+            ...config,
             ...tableInfo.config(colNum)
         });
     });
