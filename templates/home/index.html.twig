@@ -2,9 +2,9 @@
 
 {% block title %}
     {% if is_granted('ROLE_TUTOR') %}
-        Bienvenue sur le livret du tuteur
+        Bienvenue sur le livret
     {% else %}
-        Bienvenue sur le livret de l'alternant
+        Bienvenue sur le livret
     {% endif %}
 {% endblock %}
 
@@ -15,9 +15,9 @@
     {# --- Page Title --- #}
     <h1 class="fw-bold text-primary mb-5 display-4 text-center">
       {% if is_granted('ROLE_TUTOR') %}
-        Bienvenue sur le livret du tuteur
+        Bienvenue sur le livret
       {% else %}
-        Bienvenue sur le livret de l'alternant
+        Bienvenue sur le livret
       {% endif %}
     </h1>
 

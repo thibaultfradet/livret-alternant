@@ -94,7 +94,7 @@ final class ExtractionController extends AbstractController
         // get training principal teacher 
         $principalTeacher = $student->getClassroom() ? $student->getClassroom()->getPrincipalTeacher() : null;
 
-        // get current year terms acceptance
+        // get current year terms acceptance (full objects for signature info)
         $acceptances = [
             'tutor' => null,
             'student' => null,
@@ -102,27 +102,24 @@ final class ExtractionController extends AbstractController
         ];
 
         if ($tutor) {
-            $accept = $termsAcceptanceRepository->findOneBy([
+            $acceptances['tutor'] = $termsAcceptanceRepository->findOneBy([
                 'schoolYear' => $activeYear,
                 'user' => $tutor,
             ]);
-            $acceptances['tutor'] = $accept ? $accept->getValidationDate() : null;
         }
 
         //student
-        $accept = $termsAcceptanceRepository->findOneBy([
+        $acceptances['student'] = $termsAcceptanceRepository->findOneBy([
             'schoolYear' => $activeYear,
             'user' => $student,
         ]);
-        $acceptances['student'] = $accept ? $accept->getValidationDate() : null;
 
         // principal teacher
         if ($principalTeacher) {
-            $accept = $termsAcceptanceRepository->findOneBy([
+            $acceptances['principalTeacher'] = $termsAcceptanceRepository->findOneBy([
                 'schoolYear' => $activeYear,
                 'user' => $principalTeacher,
             ]);
-            $acceptances['principalTeacher'] = $accept ? $accept->getValidationDate() : null;
         }
 
         $allSkillsLevels = $skillLevelRepository->findBy(

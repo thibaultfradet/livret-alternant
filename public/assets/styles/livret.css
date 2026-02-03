@@ -7,17 +7,6 @@ body {
     padding: 0;
 }
 
-/* --- Page de garde --- */
-.cover-page {
-    background-color: #5f86a8 !important;
-    color: #ffffff;
-}
-
-/* Body background for cover page (DomPDF compatibility) */
-body.cover-page-body {
-    background-color: #5f86a8;
-    margin: 0;
-}
 
 h1, h2, h3, h4, h5, h6 {
     margin: 0 0 10px 0;
@@ -29,22 +18,42 @@ h1, h2, h3, h4, h5, h6 {
     page-break-after: always;
 }
 
-/* Page margins - disabled for cover page compatibility */
-/*
-@page {
-    margin: 1cm;
-}
-*/
 
 /* First page background for cover page */
 @page :first {
-    margin: 0;
     background-color: #5f86a8;
 }
+
+@page {
+    margin-top: 15mm;
+    margin-bottom: 15mm;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 
 body {
     margin: 0;
 }
+
+
+
+
+/* --- Page de garde --- */
+.cover-page {
+    background-color: #5f86a8 !important;
+    color: #ffffff;
+    margin-top: 0 !important;
+    margin-bottom: 0; !important
+}
+
+/* Body background for cover page (DomPDF compatibility) */
+body.cover-page-body {
+    background-color: #5f86a8;
+    margin: 0;
+}
+
+
 
 /* --- Sections --- */
 .section-header {

@@ -3,6 +3,12 @@
 {% block body %}
 
 {% if coverPagePath1 and coverPagePath2 %}
+<style>
+    @page :first {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+</style>
 {# cover page #}
 <div class="cover-page" style="
     page-break-after: always;
@@ -355,28 +361,37 @@
         {# --- Validation des données (tuteur / alternant / équipe pédagogique) ---#}
         <div class="validation-container">
 
-            <div class="validation-box">
+            <div class="validation-box" style="text-align:left;">
                 <strong>Tuteur</strong><br>
                 {% if acceptances.tutor %}
-                    A validé les données le {{ acceptances.tutor|date('d/m/Y') }}
+                    Signée électroniquement par : {{ acceptances.tutor.user.lastName }} {{ acceptances.tutor.user.firstName }} - {{ acceptances.tutor.user.email }}<br>
+                    Date : {{ acceptances.tutor.validationDate|date('d/m/Y H:i:s') }}<br>
+                    Référence : {{ acceptances.tutor.id }}<br>
+                    Dans le cadre du livret de l'alternant
                 {% else %}
                     N'a pas validé les données
                 {% endif %}
             </div>
 
-            <div class="validation-box">
+            <div class="validation-box" style="text-align:left;">
                 <strong>Alternant</strong><br>
                 {% if acceptances.student %}
-                    A validé les données le {{ acceptances.student|date('d/m/Y') }}
+                    Signée électroniquement par : {{ acceptances.student.user.lastName }} {{ acceptances.student.user.firstName }} - {{ acceptances.student.user.email }}<br>
+                    Date : {{ acceptances.student.validationDate|date('d/m/Y H:i:s') }}<br>
+                    Référence : {{ acceptances.student.id }}<br>
+                    Dans le cadre du livret de l'alternant
                 {% else %}
                     N'a pas validé les données
                 {% endif %}
             </div>
 
-            <div class="validation-box">
+            <div class="validation-box" style="text-align:left;">
                 <strong>Équipe pédagogique</strong><br>
                 {% if acceptances.principalTeacher %}
-                    A validé les données le {{ acceptances.principalTeacher|date('d/m/Y') }}
+                    Signée électroniquement par : {{ acceptances.principalTeacher.user.lastName }} {{ acceptances.principalTeacher.user.firstName }} - {{ acceptances.principalTeacher.user.email }}<br>
+                    Date : {{ acceptances.principalTeacher.validationDate|date('d/m/Y H:i:s') }}<br>
+                    Référence : {{ acceptances.principalTeacher.id }}<br>
+                    Dans le cadre du livret de l'alternant
                 {% else %}
                     N'a pas validé les données
                 {% endif %}
@@ -541,32 +556,41 @@
         {% endif %}
 
         {# --- Dates d'évaluation pour cette période ---#}
+        {% set firstTutorEval = tutorEvalsForPeriod|first %}
+        {% set studentEval = student.studentEvaluations|filter(e => e.period == period)|first %}
+        {% set ttmEval = student.TtmEvaluationsReceived|filter(e => e.period == period)|first %}
         <div class="validation-container" style="margin-top:10px; display:flex; gap:15px;">
-            <div class="validation-box" style="border:1px solid #ccc; padding:8px; border-radius:4px; flex:1; text-align:center;">
+            <div class="validation-box" style="border:1px solid #ccc; padding:8px; border-radius:4px; flex:1; text-align:left;">
                 <strong>Tuteur</strong><br>
-                {% set tutorEvalDate = tutorEvalsForPeriod|first ? tutorEvalsForPeriod|first.validationDate : null %}
-                {% if tutorEvalDate %}
-                    Évaluation réalisée le {{ tutorEvalDate|date('d/m/Y') }}
+                {% if firstTutorEval %}
+                    Signée électroniquement par : {{ firstTutorEval.tutor.lastName }} {{ firstTutorEval.tutor.firstName }} - {{ firstTutorEval.tutor.email }}<br>
+                    Date : {{ firstTutorEval.validationDate|date('d/m/Y H:i:s') }}<br>
+                    Référence : {{ firstTutorEval.id }}<br>
+                    Dans le cadre du livret de l'alternant
                 {% else %}
                     Pas encore évalué
                 {% endif %}
             </div>
 
-            <div class="validation-box" style="border:1px solid #ccc; padding:8px; border-radius:4px; flex:1; text-align:center;">
+            <div class="validation-box" style="border:1px solid #ccc; padding:8px; border-radius:4px; flex:1; text-align:left;">
                 <strong>Alternant</strong><br>
-                {% set studentEval = student.studentEvaluations|filter(e => e.period == period)|first %}
                 {% if studentEval %}
-                    Évaluation réalisée le {{ studentEval.validationDate|date('d/m/Y') }}
+                    Signée électroniquement par : {{ studentEval.student.lastName }} {{ studentEval.student.firstName }} - {{ studentEval.student.email }}<br>
+                    Date : {{ studentEval.validationDate|date('d/m/Y H:i:s') }}<br>
+                    Référence : {{ studentEval.id }}<br>
+                    Dans le cadre du livret de l'alternant
                 {% else %}
                     Pas encore évalué
                 {% endif %}
             </div>
 
-            <div class="validation-box" style="border:1px solid #ccc; padding:8px; border-radius:4px; flex:1; text-align:center;">
+            <div class="validation-box" style="border:1px solid #ccc; padding:8px; border-radius:4px; flex:1; text-align:left;">
                 <strong>Équipe pédagogique</strong><br>
-                {% set ttmEval = student.TtmEvaluationsReceived|filter(e => e.period == period)|first %}
                 {% if ttmEval %}
-                    Évaluation réalisée le {{ ttmEval.validationDate|date('d/m/Y') }}
+                    Signée électroniquement par : {{ ttmEval.ttm.lastName }} {{ ttmEval.ttm.firstName }} - {{ ttmEval.ttm.email }}<br>
+                    Date : {{ ttmEval.validationDate|date('d/m/Y H:i:s') }}<br>
+                    Référence : {{ ttmEval.id }}<br>
+                    Dans le cadre du livret de l'alternant
                 {% else %}
                     Pas encore évalué
                 {% endif %}
