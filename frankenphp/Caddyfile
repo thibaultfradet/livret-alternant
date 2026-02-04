@@ -17,7 +17,7 @@
 
 {$CADDY_EXTRA_CONFIG}
 
-http://std23.beaupeyrat.com {
+http://std23.beaupeyrat.com http://10.187.22.23 {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 		# Redact the authorization query parameter that can be set by Mercure
@@ -28,7 +28,7 @@ http://std23.beaupeyrat.com {
 		}
 	}
 
-	root /app/public
+	root * /app/public
 	encode zstd br gzip
 
 	mercure {
