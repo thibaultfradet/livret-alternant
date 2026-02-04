@@ -218,7 +218,7 @@
             {% if firstTutorEval %}
                 Signée électroniquement par : {{ firstTutorEval.tutor.lastName }} {{ firstTutorEval.tutor.firstName }} - {{ firstTutorEval.tutor.email }}<br>
                 Date : {{ firstTutorEval.validationDate|date('d/m/Y H:i:s') }}<br>
-                Référence : {{ firstTutorEval.id }}<br>
+                Référence : {{ firstTutorEval.referenceHash }}<br>
                 Dans le cadre du livret de l'alternant
             {% else %}
                 Pas encore évalué
@@ -230,7 +230,7 @@
             {% if studentEval %}
                 Signée électroniquement par : {{ studentEval.student.lastName }} {{ studentEval.student.firstName }} - {{ studentEval.student.email }}<br>
                 Date : {{ studentEval.validationDate|date('d/m/Y H:i:s') }}<br>
-                Référence : {{ studentEval.id }}<br>
+                Référence : {{ studentEval.referenceHash }}<br>
                 Dans le cadre du livret de l'alternant
             {% else %}
                 Pas encore évalué
@@ -242,7 +242,7 @@
             {% if ttmEval %}
                 Signée électroniquement par : {{ ttmEval.ttm.lastName }} {{ ttmEval.ttm.firstName }} - {{ ttmEval.ttm.email }}<br>
                 Date : {{ ttmEval.validationDate|date('d/m/Y H:i:s') }}<br>
-                Référence : {{ ttmEval.id }}<br>
+                Référence : {{ ttmEval.referenceHash }}<br>
                 Dans le cadre du livret de l'alternant
             {% else %}
                 Pas encore évalué

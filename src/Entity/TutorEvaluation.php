@@ -62,6 +62,12 @@ class TutorEvaluation
         return $this;
     }
 
+    public function getReferenceHash(): string
+    {
+        $email = $this->tutor?->getEmail() ?? '';
+        return strtoupper(substr(hash('sha256', $email . ':' . $this->id), 0, 8));
+    }
+
     // === SkillEvaluation ===
     public function getSkillEvaluation(): Collection
     {

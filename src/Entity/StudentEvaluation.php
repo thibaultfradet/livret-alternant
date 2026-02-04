@@ -62,7 +62,13 @@ class StudentEvaluation
     }
 
 
-    // content field replacement 
+    public function getReferenceHash(): string
+    {
+        $email = $this->student?->getEmail() ?? '';
+        return strtoupper(substr(hash('sha256', $email . ':' . $this->id), 0, 8));
+    }
+
+    // content field replacement
     public function getRemarks(): ?string
     {
         return $this->contents[0] ?? null;

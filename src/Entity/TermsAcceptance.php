@@ -56,6 +56,12 @@ class TermsAcceptance
         return $this;
     }
 
+    public function getReferenceHash(): string
+    {
+        $email = $this->user?->getEmail() ?? '';
+        return strtoupper(substr(hash('sha256', $email . ':' . $this->id), 0, 8));
+    }
+
     public function getSchoolYear(): ?SchoolYear
     {
         return $this->schoolYear;
