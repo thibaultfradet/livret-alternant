@@ -246,6 +246,11 @@ final class UserController extends AbstractController
                 $roles[] = 'ROLE_STUDENT';
             }
 
+            // Preserve ROLE_ADMIN if user already has it
+            if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+                $roles[] = 'ROLE_ADMIN';
+            }
+
             // Preserve default ROLE_USER
             $roles[] = 'ROLE_USER';
 
