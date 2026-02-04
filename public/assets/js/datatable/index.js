@@ -77,7 +77,7 @@ function initDataTable(selector, config) {
     const table = document.querySelector(selector);
     if (!table) return;
 
-    const colNum = $(`${selector} > tbody > tr:first > td`).length;
+    const colNum = $(`${selector} > thead > tr:first > th`).length;
     $(selector).DataTable({
         ...baseTableConfig,
         ...config(colNum)
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tableEl = document.getElementById(tableInfo.id);
         if (!tableEl) return;
 
-        const colNum = $(`#${tableInfo.id} > tbody > tr:first > td`).length;
+        const colNum = $(`#${tableInfo.id} > thead > tr:first > th`).length;
         const config = tableInfo.noSearch ? noSearchTableConfig : baseTableConfig;
 
         $(`#${tableInfo.id}`).DataTable({
