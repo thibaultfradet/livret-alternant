@@ -44,21 +44,27 @@ final class ExtractionController extends AbstractController
             throw $this->createNotFoundException('Student not found.');
         }
 
-        // image path
+        // image path - check if files exist
+        $publicDir = $this->getParameter('kernel.project_dir') . '/public';
+
         $ttmImgPath = sprintf('/uploads/classroom/teacher-list-%d.png', $student->getClassroom()->getId());
+        if (!file_exists($publicDir . $ttmImgPath)) {
+            $ttmImgPath = null;
+        }
+
         $calendarImgPath = sprintf('/uploads/classroom/calendar-%d.png', $student->getClassroom()->getId());
+        if (!file_exists($publicDir . $calendarImgPath)) {
+            $calendarImgPath = null;
+        }
 
         // cover page paths - check if files exist
         $coverPagePath1 = sprintf('/uploads/covers/cover-image-1-%d.png', $activeYear->getId());
         $coverPagePath2 = sprintf('/uploads/covers/cover-image-2-%d.png', $activeYear->getId());
 
-        $coverFileFullPath1 = $this->getParameter('kernel.project_dir') . '/public' . $coverPagePath1;
-        $coverFileFullPath2 = $this->getParameter('kernel.project_dir') . '/public' . $coverPagePath2;
-       
-        if (!file_exists($coverFileFullPath1)) {
+        if (!file_exists($publicDir . $coverPagePath1)) {
             $coverPagePath1 = null;
         }
-        if (!file_exists($coverFileFullPath2)) {
+        if (!file_exists($publicDir . $coverPagePath2)) {
             $coverPagePath2 = null;
         }
 
