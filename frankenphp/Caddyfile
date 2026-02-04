@@ -1,5 +1,6 @@
 {
 	skip_install_trust
+	auto_https off
 
 	{$CADDY_GLOBAL_OPTIONS}
 
@@ -16,7 +17,7 @@
 
 {$CADDY_EXTRA_CONFIG}
 
-{$SERVER_NAME:localhost} {
+http://std23.beaupeyrat.com {
 	log {
 		{$CADDY_SERVER_LOG_OPTIONS}
 		# Redact the authorization query parameter that can be set by Mercure
@@ -63,9 +64,12 @@
 		hide *.php
 	}
 }
+
+
 http://livret-alternant-php-1 {
     root * /app/public
     encode zstd br gzip
 
     php_server
 }
+
