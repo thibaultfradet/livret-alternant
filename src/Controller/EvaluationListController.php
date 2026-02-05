@@ -104,6 +104,7 @@ final class EvaluationListController extends AbstractController
             'period'          => $period,
             'activeSchoolYear'=> $activeSchoolYear,
             'filterForm'      => $filterForm,
+            'hasPeriods'      => !empty($allPeriods),
         ]);
     }
 
