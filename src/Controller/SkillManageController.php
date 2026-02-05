@@ -61,7 +61,7 @@ class SkillManageController extends AbstractController
 
 
     #[Route('/skill-manage/level/create', name: 'app_skill_level_create', methods: ['GET','POST'])]
-    public function createLevel(Request $request, EntityManagerInterface $em): Response
+    public function createLevel(Request $request, EntityManagerInterface $em, SkillLevelRepository $skillLevelRepo): Response
     {
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
@@ -69,6 +69,13 @@ class SkillManageController extends AbstractController
 
         $level = new SkillLevel();
         $level->setEstablishment($establishment);
+
+        // Set order_index: last + 1, or 1 if none exist
+        $lastLevel = $skillLevelRepo->findOneBy(
+            ['establishment' => $establishment],
+            ['order_index' => 'DESC']
+        );
+        $level->setOrderIndex($lastLevel ? $lastLevel->getOrderIndex() + 1 : 1);
 
         $form = $this->createForm(SkillLevelType::class, $level);
         $form->handleRequest($request);
