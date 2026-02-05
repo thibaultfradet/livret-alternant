@@ -287,6 +287,10 @@ class EvaluationVisualizerController extends AbstractController
         TermsAcceptanceRepository $termsAcceptanceRepository,
         PdfService $pdfService
     ): Response {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $establishment = $currentUser->getEstablishment();
+
         // get evaluation data
         $data = $this->getEvaluationData(
             $request,
@@ -297,15 +301,23 @@ class EvaluationVisualizerController extends AbstractController
             $ttmEvalRepo
         );
 
+        // Filter periods by user's establishment
+        $periods = array_filter($data['periods'], fn($p) => $p->getSchoolYear()->getEstablishment() === $establishment);
+        $selectedPeriod = $data['selectedPeriod'];
+        if ($selectedPeriod && $selectedPeriod->getSchoolYear()->getEstablishment() !== $establishment) {
+            $selectedPeriod = $periods[0] ?? null;
+        }
+
+        $hasPeriods = !empty($periods);
+
         // get all students from classrooms
         $allStudents = [];
         foreach ($data['classrooms'] as $classroom) {
             foreach ($classroom->getStudents() as $student) {
                 // Skip students not belonging to the current user's establishment
-                $currentUser = $this->getUser();
                 if (
-                    $currentUser->getEstablishment() !== null &&
-                    $student->getEstablishment() !== $currentUser->getEstablishment()
+                    $establishment !== null &&
+                    $student->getEstablishment() !== $establishment
                 ) {
                     continue;
                 }
@@ -319,7 +331,7 @@ class EvaluationVisualizerController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($hasPeriods && $form->isSubmitted() && $form->isValid()) {
             /** @var User[] $selectedStudents */
             $selectedStudents = $form->get('selectedStudents')->getData();
             $periodId = $form->get('periodId')->getData();
@@ -334,7 +346,7 @@ class EvaluationVisualizerController extends AbstractController
             $period = $periodRepo->find($periodId);
             if (!$period) {
                 $this->addFlash('warning', 'Période non trouvée.');
-                return $this->redirectToRoute('extract_student_evaluations');    
+                return $this->redirectToRoute('extract_student_evaluations');
             }
 
             // Generate archive with PDFs
@@ -358,9 +370,10 @@ class EvaluationVisualizerController extends AbstractController
         return $this->render('evaluation_visualizer/extract.html.twig', [
             'form' => $form->createView(),
             'students' => $allStudents,
-            'periods' => $data['periods'],
-            'selectedPeriod' => $data['selectedPeriod'],
+            'periods' => $periods,
+            'selectedPeriod' => $selectedPeriod,
             'classrooms' => $data['classrooms'],
+            'hasPeriods' => $hasPeriods,
         ]);
     }
 

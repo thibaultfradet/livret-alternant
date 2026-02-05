@@ -11,6 +11,16 @@
       Extraire les évaluations par période
     </h1>
 
+    {% if not hasPeriods %}
+      <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="ti ti-alert-triangle me-2 fs-4"></i>
+        <div>
+          Aucune période n'a été trouvée pour l'année scolaire active de votre établissement.
+          Veuillez créer des périodes avant de pouvoir extraire les évaluations.
+        </div>
+      </div>
+    {% endif %}
+
     {# --- FILTER FORM --- #}
     <div class="card mb-4">
       <div class="card-body">
@@ -57,7 +67,7 @@
 
     {# --- ACTION BUTTONS --- #}
     <div class="d-flex gap-3 mb-3 justify-content-between">
-        <button type="submit" class="btn btn-primary d-flex align-items-center">
+        <button type="submit" class="btn btn-primary d-flex align-items-center" {% if not hasPeriods %}disabled{% endif %}>
           <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-download me-2" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
             <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
