@@ -338,7 +338,7 @@ class EvaluationVisualizerController extends AbstractController
 
             if (empty($selectedStudents)) {
                 $this->addFlash('warning', 'Aucun alternant sélectionné.');
-                return $this->redirectToRoute('extract_student_evaluations', [
+                return $this->redirectToRoute('app_extract_period', [
                     'period' => $periodId,
                 ]);
             }
@@ -346,7 +346,7 @@ class EvaluationVisualizerController extends AbstractController
             $period = $periodRepo->find($periodId);
             if (!$period) {
                 $this->addFlash('warning', 'Période non trouvée.');
-                return $this->redirectToRoute('extract_student_evaluations');
+                return $this->redirectToRoute('app_extract_period');
             }
 
             // Generate archive with PDFs
@@ -361,7 +361,7 @@ class EvaluationVisualizerController extends AbstractController
             );
 
             if ($archiveResponse === null) {
-                return $this->redirectToRoute('extract_student_evaluations', ['period' => $periodId]);
+                return $this->redirectToRoute('app_extract_period', ['period' => $periodId]);
             }
 
             return $archiveResponse;
