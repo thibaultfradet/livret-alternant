@@ -63,6 +63,9 @@ final class ExcelUserImportController extends AbstractController
                         return $this->redirectToRoute('app_excel_user_import');
                     }
 
+                    
+                    
+
                     $emptyRowsCount = 0;
 
                     foreach ($rows as $index => $row) {
@@ -75,25 +78,35 @@ final class ExcelUserImportController extends AbstractController
                         if (empty(array_filter($row))) {
                             $emptyRowsCount++;
                             if ($emptyRowsCount >= 3) {
-                                break; // Stop after 3 consecutive empty rows
+                                
+                                break;
                             }
                             continue;
                         }
                         $emptyRowsCount = 0; // reset empty row counter
 
+                        
+                        
+
                         [$classCode, $studentFullName, $studentPhone, $studentEmail, $companyName, $companyAddress, $tutorFullName, $tutorPhone, $tutorMobile, $tutorEmail, $tutorEmail2, $stageObservation] = $row;
+
+                        
 
                         $diploma = $diplomaRepo->findOneBy(['code' => $classCode]);
                         if (!$diploma) {
+                            
                             $this->addFlash('warning', "Classe avec le code $classCode non trouvée pour l'alternant $studentFullName.");
                             continue;
                         }
+                        
 
                         // Try to find the classroom
+                        
                         $classroom = $classroomRepo->findOneBy([
                             'diploma' => $diploma,
                             'schoolYear' => $activeSchoolYear
                         ]);
+                        
 
                         // If classroom doesn't exist, create it
                         if (!$classroom) {
@@ -116,11 +129,14 @@ final class ExcelUserImportController extends AbstractController
                         }
 
                         // Check if student already exists
+                        
                         $existingStudent = $em->getRepository(User::class)->findOneBy([
                             'email' => $studentEmail,
                         ]);
+                        
 
                         if ($existingStudent) {
+                            
                             // Reactivate student if previously disabled
                             if ($existingStudent->getDisabledAt() !== null) {
                                 $existingStudent->setDisabledAt(null);
@@ -133,15 +149,20 @@ final class ExcelUserImportController extends AbstractController
                         }
 
                         // Handle tutor
+                        
                         $existingTutor = $em->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
+                        
                         if (!$existingTutor) {
-                            [$tutorFirstName, $tutorLastName] = explode(' ', $tutorFullName, 2);
+                            $tutorParts = explode(' ', $tutorFullName, 2);
+                            
+                            [$tutorFirstName, $tutorLastName] = $tutorParts;
                             $tutor = new User();
                             $tutor->setFirstName($tutorFirstName);
                             $tutor->setLastName($tutorLastName);
                             $tutor->setEmail($tutorEmail);
                             $tutor->setRoles(['ROLE_TUTOR']);
                             $tutor->setPassword($passwordHasher->hashPassword($tutor, 'temporaryPassword123')); // Temporary password
+                            $tutor->setIsApprentissage(false);
                             $tutor->setCompanyName($companyName);
                             $tutor->setCompanyAddress($companyAddress);
                             if (!empty($tutorPhone)) {
@@ -162,6 +183,8 @@ final class ExcelUserImportController extends AbstractController
                             $tutor = $existingTutor;
                         }
 
+                        
+
                         // Create student
                         [$studentFirstName, $studentLastName] = explode(' ', $studentFullName, 2);
                         $student = new User();
@@ -169,6 +192,7 @@ final class ExcelUserImportController extends AbstractController
                         $student->setLastName($studentLastName);
                         $student->setEmail($studentEmail);
                         $student->setRoles(['ROLE_STUDENT']);
+                        $student->setIsApprentissage(false);
                         $student->setPassword($passwordHasher->hashPassword($student, 'temporaryPassword123'));
                         $student->setClassroom($classroom);
                         $student->setEstablishment($currentUser->getEstablishment());
@@ -186,10 +210,13 @@ final class ExcelUserImportController extends AbstractController
                     }
 
                     $this->addFlash('success', 'Utilisateurs créer avec succès !');
-                    return $this->redirectToRoute('app_home');
+                    return $this->redirectToRoute('training_parameters_user');
                 } catch (FileException $e) {
-                    $message = 'Erreur lors de l’import du fichier : ' . $e->getMessage();
+                    
+                    $message = "Erreur lors de l'import du fichier : " . $e->getMessage();
                 } catch (\Exception $e) {
+                    
+                    
                     $message = 'Erreur générale : ' . $e->getMessage();
                 }
             } else {

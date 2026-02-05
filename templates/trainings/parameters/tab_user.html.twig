@@ -6,6 +6,7 @@
                 <th>Rôles</th>
                 <th>Prénom</th>
                 <th>Nom</th>
+                <th>Classe</th>
                 <th>Statut</th>
                 <th class="text-center w-1 ">Actions</th>
             </tr>
@@ -13,16 +14,22 @@
         <tbody>
             {% for user in users %}
                 <tr class="{% if user.disabledAt %}table-danger{% endif %}">
-                    <td>{{ user.email }}</td>
+                    <td class="text-center">{{ user.email }}</td>
 
-                    <td>{{ user.cleanedRoles|map(r => r == 'ROLE_TTM' ? 'Équipe pédagogique' 
+                    <td class="text-center">{{ user.cleanedRoles|map(r => r == 'ROLE_TTM' ? 'Équipe pédagogique' 
                                              : r == 'ROLE_PT' ? 'Professeur référent'
                                              : r == 'ROLE_TUTOR' ? 'Tuteur'
                                              : r == 'ROLE_STUDENT' ? 'Alternant'
                                              : r == 'ROLE_ADMIN' ? 'Administrateur'
                                              : r)|join(', ') }}</td>
-                    <td>{{ user.firstName }}</td>
-                    <td>{{ user.lastName }}</td>
+                    <td class="text-center">{{ user.firstName }}</td>
+                    <td class="text-center">{{ user.lastName }}</td>
+                    <td class="text-center">
+                        {% if user.classroom %}
+                            {{ user.classroom.diploma.label }} ({{ user.classroom.schoolYear.label }})
+                        {% else %}
+                            <span class="">-</span>
+                        {% endif %}
                     <td class="text-center">
                         {% if user.disabledAt %}
                             Désactivé
