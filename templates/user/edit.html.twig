@@ -17,21 +17,36 @@
 
         <div class="card shadow-sm">
             <div class="card-header">
-                <h3 class="card-title mb-0">Informations de l'utilisateur</h3>
+                <ul class="nav nav-tabs card-header-tabs" id="userTypeTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link {% if isStudent %}active{% endif %}" id="student-tab-link" data-bs-toggle="tab" href="#student" role="tab">Élève</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if not isStudent and 'ROLE_PT' in user.roles %}active{% endif %}" id="teacher-tab-link" data-bs-toggle="tab" href="#teacher" role="tab">Professeur référent</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if not isStudent and 'ROLE_PT' not in user.roles %}active{% endif %}" id="team-tab-link" data-bs-toggle="tab" href="#team" role="tab">Membre équipe pédagogique</a>
+                    </li>
+                </ul>
             </div>
 
             <div class="card-body">
                 {{ form_start(form) }}
 
+                {# Hidden checkboxes for role determination #}
+                <div class="d-none">
+                    {{ form_widget(form.isProfPrincipal) }}
+                    {{ form_widget(form.isTeamMember) }}
+                </div>
+
+                {# Common fields for all user types #}
                 <div class="row">
                     <div class="col-md-6">
                         {{ form_row(form.email) }}
                     </div>
-                    {% if not isStudent %}
-                    <div class="col-md-6">
+                    <div class="col-md-6 phone-field {% if isStudent or ('ROLE_PT' not in user.roles) %}d-none{% endif %}">
                         {{ form_row(form.phone) }}
                     </div>
-                    {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-md-6">
@@ -42,24 +57,19 @@
                     </div>
                 </div>
 
-                {% if isStudent %}
-                    {# Hidden checkboxes for students - preserve their non-teacher/non-team roles #}
-                    <div class="d-none">
-                        {{ form_widget(form.isProfPrincipal) }}
-                        {{ form_widget(form.isTeamMember) }}
-                        {{ form_widget(form.phone) }}
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            {{ form_row(form.classroom) }}
+                {# Tab content for role-specific fields #}
+                <div class="tab-content mt-3">
+                    {# Student tab #}
+                    <div class="tab-pane fade {% if isStudent %}show active{% endif %}" id="student" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.classroom) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.isApprentissage) }}
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            {{ form_row(form.isApprentissage) }}
-                        </div>
-                    </div>
 
-                    {% if activeContract %}
                         <hr class="my-4">
 
                         <h4 class="mb-3">Informations de l'entreprise</h4>
@@ -97,53 +107,28 @@
                                 {{ form_row(form.tutorPhone) }}
                             </div>
                         </div>
-                    {% else %}
-                        {# Render tutor fields as hidden to prevent form_end from auto-rendering them #}
-                        <div class="d-none">
-                            {{ form_widget(form.companyName) }}
-                            {{ form_widget(form.companyAddress) }}
-                            {{ form_widget(form.dateDebutContract) }}
-                            {{ form_widget(form.dateFinContract) }}
-                            {{ form_widget(form.tutorFirstName) }}
-                            {{ form_widget(form.tutorLastName) }}
-                            {{ form_widget(form.tutorEmail) }}
-                            {{ form_widget(form.tutorPhone) }}
-                        </div>
-                    {% endif %}
-                {% else %}
-                    {# Hidden fields for non-students to prevent form_end from auto-rendering them #}
-                    <div class="d-none">
-                        {{ form_widget(form.classroom) }}
-                        {{ form_widget(form.isApprentissage) }}
-                        {{ form_widget(form.companyName) }}
-                        {{ form_widget(form.companyAddress) }}
-                        {{ form_widget(form.dateDebutContract) }}
-                        {{ form_widget(form.dateFinContract) }}
-                        {{ form_widget(form.tutorFirstName) }}
-                        {{ form_widget(form.tutorLastName) }}
-                        {{ form_widget(form.tutorEmail) }}
-                        {{ form_widget(form.tutorPhone) }}
                     </div>
 
-                    {# Visible checkboxes for non-students #}
-                    <hr class="my-4">
-                    <h4 class="mb-3">Rôles</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            {{ form_row(form.isProfPrincipal) }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form_row(form.isTeamMember) }}
+                    {# Teacher tab #}
+                    <div class="tab-pane fade {% if not isStudent and 'ROLE_PT' in user.roles %}show active{% endif %}" id="teacher" role="tabpanel">
+                        <div class="alert alert-info">
+                            Un professeur référent peut suivre les évaluations des élèves de sa classe.
                         </div>
                     </div>
-                {% endif %}
+
+                    {# Team member tab #}
+                    <div class="tab-pane fade {% if not isStudent and 'ROLE_PT' not in user.roles %}show active{% endif %}" id="team" role="tabpanel">
+                        <div class="alert alert-info">
+                            Un membre de l'équipe pédagogique peut gérer les utilisateurs et les paramètres de formation.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="card-footer d-flex justify-content-between">
                 <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-secondary">
                     ← Retour à la liste
                 </a>
-
                 <button class="btn btn-primary" type="submit">Mettre à jour</button>
             </div>
 
@@ -152,4 +137,32 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isProfPrincipal = document.getElementById('{{ form.isProfPrincipal.vars.id }}');
+    const isTeamMember = document.getElementById('{{ form.isTeamMember.vars.id }}');
+    const phoneField = document.querySelector('.phone-field');
+
+    // Reset checkboxes when tab changes
+    document.querySelectorAll('#userTypeTabs a[data-bs-toggle="tab"]').forEach(function(tab) {
+        tab.addEventListener('shown.bs.tab', function(event) {
+            // Uncheck all role checkboxes first
+            isProfPrincipal.checked = false;
+            isTeamMember.checked = false;
+
+            // Hide phone field by default
+            phoneField.classList.add('d-none');
+
+            // Check the appropriate checkbox based on tab
+            if (event.target.id === 'teacher-tab-link') {
+                isProfPrincipal.checked = true;
+                phoneField.classList.remove('d-none');
+            } else if (event.target.id === 'team-tab-link') {
+                isTeamMember.checked = true;
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

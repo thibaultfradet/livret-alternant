@@ -110,9 +110,15 @@ final class UserController extends AbstractController
                         // Reactivate tutor if previously disabled
                         if ($existingTutor->getDisabledAt() !== null) {
                             $existingTutor->setDisabledAt(null);
-                            $entityManager->persist($existingTutor);
-                            $entityManager->flush();
                         }
+
+                        // Assign ROLE_TUTOR if not already present
+                        if (!in_array('ROLE_TUTOR', $existingTutor->getRoles(), true)) {
+                            $existingTutor->setRoles(array_unique(array_merge($existingTutor->getRoles(), ['ROLE_TUTOR'])));
+                        }
+
+                        $entityManager->persist($existingTutor);
+                        $entityManager->flush();
 
                         $tutor = $existingTutor;
                     }
@@ -266,6 +272,11 @@ final class UserController extends AbstractController
                 $tutor->setPhone($form->get('tutorPhone')->getData());
                 $tutor->setCompanyName($form->get('companyName')->getData());
                 $tutor->setCompanyAddress($form->get('companyAddress')->getData());
+
+                // Assign ROLE_TUTOR if not already present
+                if (!in_array('ROLE_TUTOR', $tutor->getRoles(), true)) {
+                    $tutor->setRoles(array_unique(array_merge($tutor->getRoles(), ['ROLE_TUTOR'])));
+                }
 
                 $activeContract->setDateDebutContract($form->get('dateDebutContract')->getData());
                 $activeContract->setDateFinContract($form->get('dateFinContract')->getData());
