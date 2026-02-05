@@ -6,7 +6,6 @@ use App\Entity\StudentEvaluation;
 use App\Entity\TutorEvaluation;
 use App\Entity\TTMEvaluation;
 use App\Entity\User;
-use App\Form\TutorEvaluationFilterType;
 use App\Repository\DiplomaRepository;
 use App\Repository\PeriodRepository;
 use App\Repository\SchoolYearRepository;
@@ -46,13 +45,13 @@ final class EvaluationListController extends AbstractController
 
         // Période sélectionnée ou période active par défaut
         $period = null;
-        $periodId = $request->query->get('tutor_evaluation_filter')['period'] ?? $request->query->get('period');
+        $periodId = $request->query->get('period');
         if ($periodId) {
             $period = $periodRepo->find($periodId);
         } else {
             $period = $periodRepo->getActivePeriod();
         }
-        
+
         // Si aucune période n'est trouvée, utiliser la première disponible
         if (!$period && !empty($allPeriods)) {
             $period = $allPeriods[0];
@@ -75,24 +74,15 @@ final class EvaluationListController extends AbstractController
 
         $students = $qb->orderBy('s.lastName', 'ASC')->getQuery()->getResult();
 
-        // Construire la liste des diplômes pour le filtre
+        // Construire la liste des diplômes pour le filtre (id => label)
         $diplomas = [];
         foreach ($students as $student) {
-            $diplomas[] = $student->getClassroom()->getDiploma();
+            $diploma = $student->getClassroom()->getDiploma();
+            $diplomas[$diploma->getId()] = $diploma->getLabel();
         }
-        $diplomas = array_unique($diplomas, SORT_REGULAR);
-
-        // Créer le formulaire de filtre
-        $filterForm = $this->createForm(TutorEvaluationFilterType::class, [
-            'diploma' => $request->query->get('tutor_evaluation_filter')['diploma'] ?? null,
-            'period' => $period,
-        ], [
-            'diplomas' => $diplomas,
-            'periods' => $allPeriods,
-        ]);
 
         // Filtrer par diplôme si sélectionné
-        $diplomaId = $request->query->get('tutor_evaluation_filter')['diploma'] ?? null;
+        $diplomaId = $request->query->get('diploma');
         if ($diplomaId) {
             $students = array_filter($students, function($student) use ($diplomaId) {
                 return (int)$student->getClassroom()->getDiploma()->getId() === (int)$diplomaId;
@@ -103,7 +93,9 @@ final class EvaluationListController extends AbstractController
             'students'        => $students,
             'period'          => $period,
             'activeSchoolYear'=> $activeSchoolYear,
-            'filterForm'      => $filterForm,
+            'allPeriods'      => $allPeriods,
+            'diplomas'        => $diplomas,
+            'selectedDiploma' => $diplomaId,
             'hasPeriods'      => !empty($allPeriods),
         ]);
     }
