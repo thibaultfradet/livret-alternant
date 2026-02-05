@@ -24,18 +24,25 @@ final class ExcelUserImportController extends AbstractController
     {
         $message = null;
 
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment($currentUser->getEstablishment());
+
+        if (!$activeSchoolYear) {
+            $this->addFlash('danger', "Aucune année scolaire active n'a été trouvée. Veuillez créer et activer une année scolaire avant d'importer des utilisateurs, car les classes dépendent de l'année scolaire.");
+            return $this->redirectToRoute('app_home');
+        }
+
+        $diplomas = $diplomaRepo->findBy([
+            'establishment' => $currentUser->getEstablishment(),
+            'disabledAt' => null,
+        ]);
+
         if ($request->isMethod('POST')) {
             $excelFile = $request->files->get('excelFile');
 
             if ($excelFile) {
                 try {
-
-                    $currentUser = $this->getUser();
-                    /** @var User $currentUser */
-
-
-                    $activeSchoolYear = $schoolYearRepo->findActiveByEstablishment($currentUser->getEstablishment());
-
                     // Load Excel file
                     $spreadsheet = IOFactory::load($excelFile->getPathname());
                     $sheet = $spreadsheet->getActiveSheet();
@@ -177,6 +184,8 @@ final class ExcelUserImportController extends AbstractController
 
         return $this->render('excel_user_import/index.html.twig', [
             'message' => $message,
+            'activeSchoolYear' => $activeSchoolYear,
+            'diplomas' => $diplomas,
         ]);
     }
 }
