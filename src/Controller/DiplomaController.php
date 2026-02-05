@@ -98,6 +98,6 @@ final class DiplomaController extends AbstractController
 
         $this->addFlash('success', 'Le diplôme a été supprimé avec succès.');
 
-        return $this->redirectToRoute('training_parameters_period');
+        return $this->redirectToRoute('training_parameters_diploma');
     }
 }
