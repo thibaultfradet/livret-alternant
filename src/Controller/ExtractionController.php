@@ -252,6 +252,15 @@ final class ExtractionController extends AbstractController
             $periodNumber = $selectedPeriod->getPeriodNumber();
             if (isset($skillEvaluationsByPeriod[$periodNumber])) {
                 $filteredSkillEvaluationsByPeriod[$periodNumber] = $skillEvaluationsByPeriod[$periodNumber];
+            } else {
+                // Ensure the period appears even without skill evaluations
+                // (tutor evaluation may exist with only behavior evaluations/remarks)
+                foreach ($student->getTutorEvaluationsReceived() as $te) {
+                    if ($te->getPeriod() && $te->getPeriod()->getId() === $selectedPeriod->getId()) {
+                        $filteredSkillEvaluationsByPeriod[$periodNumber] = [];
+                        break;
+                    }
+                }
             }
         }
 
