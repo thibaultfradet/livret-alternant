@@ -19,14 +19,19 @@
       </div>
     {% endif %}
 
-    {{ form_start(filterForm, {'attr': {'method': 'GET', 'class': 'mb-4', 'onchange': 'this.form.submit()'}}) }}
+    {{ form_start(filterForm, {'attr': {'method': 'GET', 'class': 'mb-4'}}) }}
       <div class="card shadow-sm p-3">
         <div class="row g-3 align-items-center">
-          <div class="col-md-6">
+          <div class="col-md-5">
             {{ form_row(filterForm.diploma, {'label': 'Diplôme', 'row_attr': {'class': 'mb-0'}}) }}
           </div>
-          <div class="col-md-6">
+          <div class="col-md-5">
             {{ form_row(filterForm.period, {'label': 'Période', 'row_attr': {'class': 'mb-0'}}) }}
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-secondary w-100">
+              <i class="ti ti-filter me-1"></i> Filtrer
+            </button>
           </div>
         </div>
       </div>
