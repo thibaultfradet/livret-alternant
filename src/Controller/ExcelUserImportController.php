@@ -48,11 +48,26 @@ final class ExcelUserImportController extends AbstractController
                     $sheet = $spreadsheet->getActiveSheet();
                     $rows = $sheet->toArray();
 
+                    // Find header row containing "Stagiaire : Code classe" in column A
+                    $headerRowIndex = null;
+                    $maxSearchRows = min(10, count($rows));
+                    for ($i = 0; $i < $maxSearchRows; $i++) {
+                        if (isset($rows[$i][0]) && trim($rows[$i][0]) === 'Stagiaire : Code classe') {
+                            $headerRowIndex = $i;
+                            break;
+                        }
+                    }
+
+                    if ($headerRowIndex === null) {
+                        $this->addFlash('danger', "En-tête \"Stagiaire : Code classe\" introuvable dans les 10 premières lignes de la colonne A. Vérifiez le format du fichier.");
+                        return $this->redirectToRoute('app_excel_user_import');
+                    }
+
                     $emptyRowsCount = 0;
 
                     foreach ($rows as $index => $row) {
-                        // Skip header row
-                        if ($index === 0) {
+                        // Skip rows up to and including the header
+                        if ($index <= $headerRowIndex) {
                             continue;
                         }
 
