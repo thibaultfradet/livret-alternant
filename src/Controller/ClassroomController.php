@@ -8,6 +8,8 @@ use App\Form\ClassroomFilesType;
 use App\Form\ClassroomType;
 use App\Form\ClassroomPrincipalTeacherType;
 use App\Form\ClassroomTermsType;
+use App\Repository\ClassroomRepository;
+use App\Repository\DiplomaRepository;
 use App\Repository\SchoolYearRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -29,6 +31,8 @@ class ClassroomController extends AbstractController
     public function new(
         Request $request,
         SchoolYearRepository $schoolYearRepository,
+        DiplomaRepository $diplomaRepository,
+        ClassroomRepository $classroomRepository,
         EntityManagerInterface $em
     ): Response {
         $classroom = new Classroom();
@@ -49,9 +53,25 @@ class ClassroomController extends AbstractController
         //Get current school year
         $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
 
+        // Get diplomas already used by a classroom for the active school year
+        $usedDiplomaIds = [];
+        if ($activeYear) {
+            $existingClassrooms = $classroomRepository->findBy(['schoolYear' => $activeYear]);
+            foreach ($existingClassrooms as $existingClassroom) {
+                $usedDiplomaIds[] = $existingClassroom->getDiploma()->getId();
+            }
+        }
+
+        // Get available diplomas (not already used for this school year)
+        $allDiplomas = $diplomaRepository->findBy([
+            'establishment' => $user->getEstablishment(),
+            'disabledAt' => null,
+        ]);
+        $availableDiplomas = array_filter($allDiplomas, fn($d) => !in_array($d->getId(), $usedDiplomaIds));
+
         $form = $this->createForm(ClassroomType::class, $classroom, [
             'activeSchoolYear' => $activeYear,
-            'currentUser' => $user,
+            'availableDiplomas' => $availableDiplomas,
         ]);
 
         $form->handleRequest($request);
