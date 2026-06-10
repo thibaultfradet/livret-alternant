@@ -30,6 +30,10 @@ class UserCrudController extends AbstractCrudController
             ChoiceField::new('roles')
                 ->setChoices([
                     'Membre de l\'équipe pédagogique' => 'ROLE_TTM',
+                    'Prof Principal' => 'ROLE_PT',
+                    'Alternant' => 'ROLE_STUDENT',
+                    'Tuteur entreprise' => 'ROLE_TUTOR',
+                    'Administrateur' => 'ROLE_ADMIN',
                 ])
                 ->allowMultipleChoices()
                 ->renderExpanded(),
