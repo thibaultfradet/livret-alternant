@@ -39,7 +39,7 @@ final class TermsAcceptanceController extends AbstractController
     * Validate route
     */
  
-    #[Route(‘/terms-acceptance/validation’, name: ‘app_terms_acceptance_validation’)]
+    #[Route('/terms-acceptance/validation', name: 'app_terms_acceptance_validation')]
     public function validate(
         Request $request,
         SchoolYearRepository $SYRepo,
@@ -66,7 +66,7 @@ final class TermsAcceptanceController extends AbstractController
                 }
                 $seenYearIds[] = $schoolYear->getId();
 
-                $existing = $termsRepo->findOneBy([‘user’ => $user, ‘schoolYear’ => $schoolYear]);
+                $existing = $termsRepo->findOneBy(['user' => $user, 'schoolYear' => $schoolYear]);
                 if (!$existing) {
                     $activeYear = $schoolYear;
                     $establishment = $schoolYear->getEstablishment();
@@ -75,20 +75,20 @@ final class TermsAcceptanceController extends AbstractController
             }
 
             if (!$activeYear) {
-                return $this->redirectToRoute(‘app_home’);
+                return $this->redirectToRoute('app_home');
             }
         } else {
             $establishment = $user->getEstablishment();
             $activeYear = $SYRepo->findActiveByEstablishment($establishment);
 
             $existingAcceptance = $termsRepo->findOneBy([
-                ‘user’ => $user,
-                ‘schoolYear’ => $activeYear
+                'user' => $user,
+                'schoolYear' => $activeYear
             ]);
 
             if ($existingAcceptance) {
-                $this->addFlash(‘warning’, "Vous avez déjà validé les termes pour l’année active.");
-                return $this->redirectToRoute(‘app_home’);
+                $this->addFlash('warning', "Vous avez déjà validé les termes pour l'année active.");
+                return $this->redirectToRoute('app_home');
             }
         }
 
@@ -104,9 +104,9 @@ final class TermsAcceptanceController extends AbstractController
                 $em->persist($terms);
                 $em->flush();
 
-                $this->addFlash(‘success’, ‘Votre validation a été enregistrée avec succès.’);
+                $this->addFlash('success', 'Votre validation a été enregistrée avec succès.');
             } catch (\Exception $e) {
-                $this->addFlash(‘danger’, ‘Une erreur est survenue lors de l\’enregistrement.’);
+                $this->addFlash('danger', 'Une erreur est survenue lors de l\'enregistrement.');
             }
 
             // Tutor: redirect back if more school years still need acceptance
@@ -122,17 +122,17 @@ final class TermsAcceptanceController extends AbstractController
                     }
                     $seenYearIds[] = $schoolYear->getId();
 
-                    $existing = $termsRepo->findOneBy([‘user’ => $user, ‘schoolYear’ => $schoolYear]);
+                    $existing = $termsRepo->findOneBy(['user' => $user, 'schoolYear' => $schoolYear]);
                     if (!$existing) {
-                        return $this->redirectToRoute(‘app_terms_acceptance_validation’);
+                        return $this->redirectToRoute('app_terms_acceptance_validation');
                     }
                 }
             }
 
-            return $this->redirectToRoute(‘app_home’);
+            return $this->redirectToRoute('app_home');
         }
 
-        if (\in_array(‘ROLE_STUDENT’, $user->getRoles(), true)) {
+        if (\in_array('ROLE_STUDENT', $user->getRoles(), true)) {
             $termsConditions = $user->isApprentissage()
                 ? $user->getClassroom()->getTermsConditionsApprentissage()
                 : $user->getClassroom()->getTermsConditionsPro();
@@ -142,11 +142,11 @@ final class TermsAcceptanceController extends AbstractController
                 : $establishment->getTermsConditionsPro();
         }
 
-        return $this->render(‘terms_acceptance/validate.html.twig’, [
-            ‘schoolYear’ => $activeYear,
-            ‘user’ => $user,
-            ‘termsConditions’ => $termsConditions,
-            ‘form’ => $form->createView()
+        return $this->render('terms_acceptance/validate.html.twig', [
+            'schoolYear' => $activeYear,
+            'user' => $user,
+            'termsConditions' => $termsConditions,
+            'form' => $form->createView()
         ]);
     }
 }
