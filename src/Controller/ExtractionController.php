@@ -185,7 +185,16 @@ final class ExtractionController extends AbstractController
         /** @var User $user */
 
         // Get active school year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
+        $establishment = $user->getEstablishment();
+        if ($establishment) {
+            $activeYear = $schoolYearRepository->findActiveByEstablishment($establishment);
+        } else {
+            // Tutor has no establishment — derive school year from the student's classroom
+            $activeYear = $student->getClassroom()?->getSchoolYear();
+            if ($activeYear && !$activeYear->isActive()) {
+                $activeYear = null;
+            }
+        }
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
