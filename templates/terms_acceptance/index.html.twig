@@ -5,12 +5,28 @@
 {% block body %}
 <div class="container d-flex justify-content-center align-items-center">
     <div class="col-md-8 m-3">
-        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Conditions générales d’utilisations du livret web</h1>
-        <div class="mb-4 text-start">
-            <p>
-                {{ termsConditions|raw }}
-            </p>
+        <h1 class="fw-bold text-primary mb-5 display-5 text-center">Conditions générales d'utilisations du livret web</h1>
+
+        {% if establishments|length > 1 %}
+        <div class="mb-4 text-center">
+            {% for estab in establishments %}
+                <a href="{{ path('app_terms_acceptance', {establishment: estab.id}) }}"
+                   class="btn {{ selectedEstablishment and selectedEstablishment.id == estab.id ? 'btn-primary' : 'btn-outline-primary' }} me-2 mb-2">
+                    {{ estab.name }}
+                </a>
+            {% endfor %}
         </div>
+        {% elseif selectedEstablishment %}
+        <p class="text-center text-muted mb-4">{{ selectedEstablishment.name }}</p>
+        {% endif %}
+
+        {% if termsConditions %}
+        <div class="mb-4 text-start">
+            <p>{{ termsConditions|raw }}</p>
+        </div>
+        {% elseif establishments|length > 0 %}
+        <p class="text-center text-muted">Sélectionnez un établissement pour consulter ses conditions générales d'utilisation.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

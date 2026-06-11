@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Classroom;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -11,9 +14,9 @@ final class ClassroomInfoController extends AbstractController
     #[Route('/teaching-team-list', name: 'app_ttm_list')]
     public function ttmList(): Response
     {
-        $user = $this->getUser();
+        $classroom = $this->activeClassroom();
 
-        if (!$this->canDisplayClassroomData($user)) {
+        if (!$classroom) {
             return $this->render('classroom_info/ttm_list.html.twig', [
                 'hasData' => false,
             ]);
@@ -21,7 +24,7 @@ final class ClassroomInfoController extends AbstractController
 
         $teacherListPath = sprintf(
             '/uploads/classroom/teacher-list-%d.png',
-            $user->getClassroom()->getId()
+            $classroom->getId()
         );
 
         $teacherListExists = file_exists(
@@ -35,17 +38,45 @@ final class ClassroomInfoController extends AbstractController
     }
 
     #[Route('/calendar-schedule', name: 'app_calendar_schedule')]
-    public function calendarSchedule(): Response
+    public function calendarSchedule(Request $request): Response
     {
+        /** @var User|null $user */
         $user = $this->getUser();
 
-        if (!$this->canDisplayClassroomData($user)) {
+        $tutorStudents = array_filter(
+            array_map(fn($c) => $c->getStudent(), $user?->getTutorContracts()->toArray() ?? [])
+        );
+        $tutorStudents = array_values($tutorStudents);
+
+        if ($tutorStudents) {
+            $selectedId = (int) $request->query->get('student', $tutorStudents[0]->getId());
+            $selected = current(array_filter($tutorStudents, fn($s) => $s->getId() === $selectedId));
+
+            // Redirect to first own student when the requested one isn't theirs
+            if (!$selected) {
+                $this->addFlash('danger', "Vous n'avez pas accès aux données de cet alternant.");
+                return $this->redirectToRoute('app_calendar_schedule', ['student' => $tutorStudents[0]->getId()]);
+            }
+
+            $selectedId = $selected->getId();
+            $classroom = $selected->getClassroom();
+            if (!$classroom?->getSchoolYear()?->isActive()) {
+                $classroom = null;
+            }
+        } else {
+            $selectedId = null;
+            $classroom = $this->activeClassroom();
+        }
+
+        if (!$classroom) {
             return $this->render('classroom_info/calendar_schedule.html.twig', [
                 'hasData' => false,
+                'tutorStudents' => $tutorStudents,
+                'selectedStudentId' => $selectedId,
             ]);
         }
 
-        $classroomId = $user->getClassroom()->getId();
+        $classroomId = $classroom->getId();
 
         $calendarPath = sprintf('/uploads/classroom/calendar-%d.png', $classroomId);
         $schedulePath = sprintf('/uploads/classroom/schedule-%d.png', $classroomId);
@@ -62,27 +93,17 @@ final class ClassroomInfoController extends AbstractController
             'hasData' => $calendarExists || $scheduleExists,
             'calendarFile' => $calendarExists ? $calendarPath : null,
             'scheduleFile' => $scheduleExists ? $schedulePath : null,
+            'tutorStudents' => $tutorStudents,
+            'selectedStudentId' => $selectedId,
         ]);
     }
 
-
-    private function canDisplayClassroomData($user): bool
+    private function activeClassroom(): ?Classroom
     {
-        if (!$user) {
-            return false;
-        }
+        /** @var User|null $user */
+        $user = $this->getUser();
+        $classroom = $user?->getEffectiveClassroom();
 
-        $classroom = $user->getClassroom();
-        if (!$classroom) {
-            return false;
-        }
-
-        $schoolYear = $classroom->getSchoolYear();
-        if (!$schoolYear) {
-            return false;
-        }
-
-        // Business rule: only active school year
-        return $schoolYear->isActive() === true;
+        return $classroom?->getSchoolYear()?->isActive() ? $classroom : null;
     }
 }

@@ -7,7 +7,10 @@
     <div class="row justify-content-center">
         <div class="col-12 col-md-10">
             <div class="card h-100 shadow-sm border border-3">
-                <h1 class="fw-bold text-primary mb-5 display-5 text-center">Conditions générales d’utilisations du livret web</h1>
+                <h1 class="fw-bold text-primary mb-3 display-5 text-center">Conditions générales d’utilisations du livret web</h1>
+                {% if establishment %}
+                    <p class="text-center text-muted mb-4 fs-5">Proposées par <strong>{{ establishment.name }}</strong></p>
+                {% endif %}
                 <div class="card-body px-4">
                     <div class="mb-4 text-start overflow-auto" style="max-height: 60vh;">
                         <p>

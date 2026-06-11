@@ -32,8 +32,13 @@ final class ExtractionController extends AbstractController
         /** @var User $currentUser */
         $currentUser = $this->getUser();
 
+        if (!$this->canAccessStudent($currentUser, $student)) {
+            $this->addFlash('danger', "Vous n'avez pas accès aux données de cet alternant.");
+            return $this->redirectToRoute('app_home');
+        }
+
         //get active year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
+        $activeYear = $this->resolveActiveYear($currentUser, $student, $schoolYearRepository);
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -185,7 +190,7 @@ final class ExtractionController extends AbstractController
         /** @var User $user */
 
         // Get active school year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
+        $activeYear = $this->resolveActiveYear($user, $student, $schoolYearRepository);
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -196,28 +201,8 @@ final class ExtractionController extends AbstractController
             throw $this->createNotFoundException('Student not found.');
         }
 
-        // Access control
-        $tutor = null;
-        foreach ($student->getStudentContracts() as $contract) {
-            $start = $contract->getDateDebutContract();
-            $end = $contract->getDateFinContract();
-
-            if (($start === null || $start <= new \DateTime()) &&
-                ($end === null || $end >= new \DateTime())) {
-                $tutor = $contract->getTutor();
-                break;
-            }
-        }
-
-        $principalTeacher = $student->getClassroom()?->getPrincipalTeacher();
-
-        $hasAccess =
-            $user === $student ||
-            ($principalTeacher && $user === $principalTeacher) ||
-            ($tutor && $user === $tutor) ||
-            in_array('ROLE_TTM', $user->getRoles(), true);
-
-        if (!$hasAccess) {
+        if (!$this->canAccessStudent($user, $student)) {
+            $this->addFlash('danger', "Vous n'avez pas accès aux données de cet alternant.");
             return $this->redirectToRoute('app_home');
         }
 
@@ -287,8 +272,13 @@ final class ExtractionController extends AbstractController
         /** @var User $currentUser */
         $currentUser = $this->getUser();
 
+        if (!$this->canAccessStudent($currentUser, $student)) {
+            $this->addFlash('danger', "Vous n'avez pas accès aux données de cet alternant.");
+            return $this->redirectToRoute('app_home');
+        }
+
         // Get active school year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
+        $activeYear = $this->resolveActiveYear($currentUser, $student, $schoolYearRepository);
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -344,6 +334,45 @@ final class ExtractionController extends AbstractController
         $pdfService->generatePdf($html, $filename);
 
         return new Response();
+    }
+
+    private function resolveActiveYear(User $viewer, User $student, SchoolYearRepository $repo): ?SchoolYear
+    {
+        $establishment = $viewer->getEstablishment();
+        if ($establishment) {
+            return $repo->findActiveByEstablishment($establishment);
+        }
+        $year = $student->getClassroom()?->getSchoolYear();
+        return ($year && $year->isActive()) ? $year : null;
+    }
+
+    private function canAccessStudent(User $viewer, User $student): bool
+    {
+        if ($viewer->getId() === $student->getId()) {
+            return true;
+        }
+
+        if (in_array('ROLE_TTM', $viewer->getRoles(), true)) {
+            return true;
+        }
+
+        $principalTeacher = $student->getClassroom()?->getPrincipalTeacher();
+        if ($principalTeacher && $viewer->getId() === $principalTeacher->getId()) {
+            return true;
+        }
+
+        $now = new \DateTime();
+        foreach ($student->getStudentContracts() as $contract) {
+            $start = $contract->getDateDebutContract();
+            $end = $contract->getDateFinContract();
+            if (($start === null || $start <= $now) && ($end === null || $end >= $now)) {
+                if ($contract->getTutor()?->getId() === $viewer->getId()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private function getEvaluationData(SchoolYear $activeYear, User $student)
