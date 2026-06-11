@@ -66,7 +66,9 @@ jobs:
         run: composer validate --no-check-lock
 
       - name: Setup database
-        run: php bin/console doctrine:migrations:migrate --no-interaction
+        run: |
+          mysql -h 127.0.0.1 -P 3318 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS app_test; GRANT ALL PRIVILEGES ON app_test.* TO 'app'@'%'; FLUSH PRIVILEGES;"
+          php bin/console doctrine:migrations:migrate --no-interaction
 
       - name: Run tests
         run: vendor/bin/phpunit tests/Controller/ tests/ResetPasswordControllerTest.php
