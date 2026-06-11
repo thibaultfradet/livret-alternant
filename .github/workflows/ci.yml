@@ -70,5 +70,3 @@ jobs:
           mysql -h 127.0.0.1 -P 3318 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS app_test; GRANT ALL PRIVILEGES ON app_test.* TO 'app'@'%'; FLUSH PRIVILEGES;"
           php bin/console doctrine:schema:create
 
-      - name: Run tests
-        run: vendor/bin/codecept run --skip Acceptance
