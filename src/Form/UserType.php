@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Classroom;
 use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -18,6 +19,7 @@ class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $establishment = $options['establishment'];
         $builder
             ->add('email', EmailType::class)
             ->add('firstName', TextType::class, ['label' => 'Prénom'])
@@ -56,6 +58,41 @@ class UserType extends AbstractType
                 'placeholder' => 'Sélectionnez une classe',
                 'required' => false,
                 'label' => 'Classe',
+            ])
+
+            // Existing tutor selection (for students)
+            ->add('existingTutor', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => function (User $user) {
+                    return $user->getLastName() . ' ' . $user->getFirstName() . ' (' . $user->getEmail() . ')';
+                },
+                'placeholder' => '-- Sélectionner un tuteur --',
+                'required' => false,
+                'mapped' => false,
+                'label' => 'Tuteur existant',
+                'query_builder' => function (EntityRepository $er) use ($establishment) {
+                    $qb = $er->createQueryBuilder('u')
+                        ->where('u.roles LIKE :role')
+                        ->andWhere('u.disabledAt IS NULL')
+                        ->setParameter('role', '%ROLE_TUTOR%')
+                        ->orderBy('u.lastName', 'ASC');
+
+                    if ($establishment) {
+                        $qb->join('u.tutorContracts', 'tc')
+                            ->join('tc.student', 's')
+                            ->join('s.classroom', 'cl')
+                            ->join('cl.schoolYear', 'sy')
+                            ->andWhere('sy.establishment = :establishment')
+                            ->setParameter('establishment', $establishment)
+                            ->distinct();
+                    }
+
+                    return $qb;
+                },
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-tutor-select' => 'true',
+                ],
             ])
 
             // Tutor information fields (for students)
@@ -109,6 +146,7 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'establishment' => null,
         ]);
     }
 }
