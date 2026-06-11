@@ -22,6 +22,45 @@ final class TermsAcceptanceController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
+        if ($user->getEstablishment() === null) {
+            // Tutor: collect unique active establishments from contracts
+            $establishments = [];
+            foreach ($user->getTutorContracts() as $contract) {
+                $schoolYear = $contract->getStudent()?->getClassroom()?->getSchoolYear();
+                if (!$schoolYear || !$schoolYear->isActive()) {
+                    continue;
+                }
+                $estab = $schoolYear->getEstablishment();
+                if ($estab && !isset($establishments[$estab->getId()])) {
+                    $establishments[$estab->getId()] = $estab;
+                }
+            }
+
+            if (empty($establishments)) {
+                return $this->redirectToRoute('app_home');
+            }
+
+            $selectedId = $request->query->getInt('establishment');
+            $selected = $selectedId && isset($establishments[$selectedId]) ? $establishments[$selectedId] : null;
+
+            if (!$selected && \count($establishments) === 1) {
+                $selected = reset($establishments);
+            }
+
+            $termsConditions = null;
+            if ($selected) {
+                $termsConditions = $user->isApprentissage()
+                    ? $selected->getTermsConditionsApprentissage()
+                    : $selected->getTermsConditionsPro();
+            }
+
+            return $this->render('terms_acceptance/index.html.twig', [
+                'termsConditions' => $termsConditions,
+                'establishments' => array_values($establishments),
+                'selectedEstablishment' => $selected,
+            ]);
+        }
+
         $activeYear = $schoolYearRepository->findActiveByEstablishment($user->getEstablishment());
 
         if ($user->isApprentissage()) {
@@ -29,9 +68,10 @@ final class TermsAcceptanceController extends AbstractController
         } else {
             $termsConditions = $user->getEstablishment()->getTermsConditionsPro();
         }
-        
+
         return $this->render('terms_acceptance/index.html.twig', [
             'termsConditions' => $termsConditions,
+            'establishments' => [],
         ]);
     }
 
