@@ -71,7 +71,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\Column]
-    private ?bool $is_apprentissage = null;
+    private bool $is_apprentissage = false;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Establishment $establishment = null;
@@ -459,7 +459,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isApprentissage(): ?bool
+    public function isApprentissage(): bool
     {
         return $this->is_apprentissage;
     }
