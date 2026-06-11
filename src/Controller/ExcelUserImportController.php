@@ -19,6 +19,42 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class ExcelUserImportController extends AbstractController
 {
+    /**
+     * Splits "DUPONT Jean-Pierre" or "DE LA TOUR Marie" into [lastName, firstName].
+     * Tokens that are entirely uppercase (mb-safe) belong to the last name;
+     * the first mixed-case token starts the first name.
+     */
+    private function parseFullName(string $fullName): array
+    {
+        $parts = array_values(array_filter(preg_split('/\s+/', trim($fullName)), fn($p) => $p !== ''));
+
+        $lastNameParts = [];
+        $firstNameParts = [];
+        $firstNameStarted = false;
+
+        foreach ($parts as $part) {
+            if (!$firstNameStarted && mb_strtoupper($part) === $part) {
+                $lastNameParts[] = $part;
+            } else {
+                $firstNameStarted = true;
+                $firstNameParts[] = $part;
+            }
+        }
+
+        // Fallback when format is unexpected: first token = lastName, rest = firstName
+        if (empty($lastNameParts) || empty($firstNameParts)) {
+            return [
+                $parts[0] ?? '',
+                implode(' ', array_slice($parts, 1)),
+            ];
+        }
+
+        return [
+            implode(' ', $lastNameParts),
+            implode(' ', $firstNameParts),
+        ];
+    }
+
     #[Route('/import-user', name: 'app_excel_user_import')]
     public function index(Request $request , SchoolYearRepository $schoolYearRepo,  DiplomaRepository $diplomaRepo , ClassroomRepository $classroomRepo , EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
     {
@@ -153,9 +189,7 @@ final class ExcelUserImportController extends AbstractController
                         $existingTutor = $em->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
                         
                         if (!$existingTutor) {
-                            $tutorParts = explode(' ', $tutorFullName, 2);
-                            
-                            [$tutorFirstName, $tutorLastName] = $tutorParts;
+                            [$tutorLastName, $tutorFirstName] = $this->parseFullName($tutorFullName);
                             $tutor = new User();
                             $tutor->setFirstName($tutorFirstName);
                             $tutor->setLastName($tutorLastName);
@@ -186,7 +220,7 @@ final class ExcelUserImportController extends AbstractController
                         
 
                         // Create student
-                        [$studentFirstName, $studentLastName] = explode(' ', $studentFullName, 2);
+                        [$studentLastName, $studentFirstName] = $this->parseFullName($studentFullName);
                         $student = new User();
                         $student->setFirstName($studentFirstName);
                         $student->setLastName($studentLastName);
