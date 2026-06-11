@@ -41,7 +41,38 @@ class UserCheckSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $year = $this->em->getRepository(SchoolYear::class)->findActiveByEstablishment($user->getEstablishment());
+        if (\in_array('ROLE_PT', $user->getRoles(), true)) {
+            return;
+        }
+
+        $establishment = $user->getEstablishment();
+
+        if (!$establishment) {
+            // Tutor: check CGU acceptance for each active school year linked via contracts
+            $seenYearIds = [];
+            foreach ($user->getTutorContracts() as $contract) {
+                $schoolYear = $contract->getStudent()?->getClassroom()?->getSchoolYear();
+                if (!$schoolYear || !$schoolYear->isActive()) {
+                    continue;
+                }
+                if (\in_array($schoolYear->getId(), $seenYearIds, true)) {
+                    continue;
+                }
+                $seenYearIds[] = $schoolYear->getId();
+
+                $terms = $this->em->getRepository(TermsAcceptance::class)
+                    ->findOneBy(['user' => $user, 'schoolYear' => $schoolYear]);
+                if (!$terms || !$terms->getValidationDate()) {
+                    $event->setResponse(new RedirectResponse(
+                        $this->router->generate('app_terms_acceptance_validation')
+                    ));
+                    return;
+                }
+            }
+            return;
+        }
+
+        $year = $this->em->getRepository(SchoolYear::class)->findActiveByEstablishment($establishment);
         if (!$year) {
             return;
         }
@@ -50,7 +81,7 @@ class UserCheckSubscriber implements EventSubscriberInterface
                 'user' => $user,
                 'schoolYear' => $year
             ]);
-        if (!$terms || !$terms->getValidationDate() || $terms == null) {
+        if (!$terms || !$terms->getValidationDate()) {
             $redirectUrl = $this->router->generate('app_terms_acceptance_validation');
             $event->setResponse(new RedirectResponse($redirectUrl));
         }
