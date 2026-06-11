@@ -50,3 +50,4 @@ cc: sf
 deploy: ## Rebuild images and restart containers (migrations run via entrypoint)
 	$(DOCKER_COMP) build --pull
 	$(DOCKER_COMP) up --detach --wait
+	$(SYMFONY) cache:clear
