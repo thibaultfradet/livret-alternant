@@ -17,6 +17,16 @@ class DiplomaRepository extends ServiceEntityRepository
     }
 
 
+    public function findActiveByEstablishment(\App\Entity\Establishment $establishment): array
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.disabledAt IS NULL')
+            ->andWhere('d.establishment = :establishment')
+            ->setParameter('establishment', $establishment)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findWithSkills(int $id): ?Diploma
     {
         return $this->createQueryBuilder('d')

@@ -1,0 +1,239 @@
+{% if diplomas is empty %}
+    <div class="empty">
+        <div class="empty-img">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-certificate-off" width="80" height="80"
+                 viewBox="0 0 24 24" stroke-width="1" stroke="#9ca3af" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M3 3l18 18" />
+                <path d="M8 4h11a1 1 0 0 1 1 1v11" />
+                <path d="M16 16v2a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-12" />
+                <path d="M13 12a3 3 0 1 0 -2 -2" />
+                <path d="M8 16h2" />
+            </svg>
+        </div>
+        <p class="empty-title">Aucun diplôme configuré</p>
+        <p class="empty-subtitle text-secondary">
+            La gestion des compétences nécessite au moins un diplôme actif.<br>
+            Créez-en un dans l'onglet <strong>Les diplômes</strong> pour commencer.
+        </p>
+        <div class="empty-action">
+            <a href="{{ path('training_parameters_diploma') }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                     stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 5l0 14" /><path d="M5 12l14 0" />
+                </svg>
+                Créer un diplôme
+            </a>
+        </div>
+    </div>
+{% else %}
+
+    {# Diploma select + action buttons #}
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <select class="form-select" onchange="window.location.href=this.value">
+                {% for diploma in diplomas %}
+                    <option value="{{ path('training_parameters_skill', { diploma_id: diploma.id }) }}"
+                        {% if diploma.id == selectedDiploma.id %}selected{% endif %}>
+                        {{ diploma.label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_skill_group_create', { diploma: selectedDiploma.id }) }}"
+               class="btn btn-warning">
+                + Créer un groupe
+            </a>
+            <a href="{{ path('app_skill_level_manage') }}"
+               class="btn btn-primary">
+                Gérer les niveaux
+            </a>
+        </div>
+    </div>
+
+    <hr class="border border-dark border-2 my-4">
+    <h4 class="fw-bold mb-3">Groupes de compétence associés</h4>
+
+    {# Groups summary table #}
+    <div class="card mb-4">
+        <div class="card-body">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Groupe</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set hasGroups = false %}
+                    {% for group in selectedDiploma.skillGroups %}
+                        {% if group.disabledAt is null %}
+                            {% set hasGroups = true %}
+                            <tr>
+                                <td class="text-start">{{ group.label }}</td>
+                                <td class="text-end">
+                                    <div class="btn-list d-flex flex-nowrap justify-content-end gap-1">
+                                        <button type="button"
+                                                class="btn btn-warning btn-icon"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#renameGroupModal{{ group.id }}"
+                                                title="Modifier">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 12.5 5.293 10.707 3.5 11.207 3zM3 10.707V13h2.293l9.147-9.146-2.293-2.293L3 10.707z"/>
+                                            </svg>
+                                        </button>
+                                        <a href="{{ path('app_toggle_status', { type: 'group', id: group.id }) }}"
+                                           class="btn btn-danger btn-icon"
+                                           onclick="return confirm('Supprimer ce groupe ? Action irréversible.');"
+                                           title="Supprimer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            {# Modify group modal #}
+                            <div class="modal fade" id="renameGroupModal{{ group.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{{ path('app_skill_group_rename', { id: group.id }) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('rename_group_' ~ group.id) }}">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Modifier le groupe</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Libellé</label>
+                                                    <input type="text" name="label" class="form-control"
+                                                           value="{{ group.label }}" required maxlength="255">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">Valider</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if not hasGroups %}
+                        <tr>
+                            <td colspan="2" class="text-center text-muted">Aucun groupe actif pour ce diplôme.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr class="border border-dark border-2 my-4">
+    <h4 class="fw-bold mb-3">Liste des compétences associées</h4>
+
+    {# Skills per group #}
+    {% set hasActiveGroups = false %}
+    {% for group in selectedDiploma.skillGroups %}
+        {% if group.disabledAt is null %}
+            {% set hasActiveGroups = true %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Groupe : {{ group.label }}</h5>
+                        <a href="{{ path('app_skill_criteria_create', { group: group.id }) }}"
+                           class="btn btn-primary">
+                            + Ajouter compétence
+                        </a>
+                    </div>
+
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-start">Compétence</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set hasSkills = false %}
+                            {% for skill in group.skillCriteria %}
+                                {% if skill.disabledAt is null %}
+                                    {% set hasSkills = true %}
+                                    <tr>
+                                        <td class="text-start">{{ skill.label }}</td>
+                                        <td class="text-end">
+                                            <div class="btn-list d-flex flex-nowrap justify-content-end gap-1">
+                                                <button type="button"
+                                                        class="btn btn-warning btn-icon"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#renameSkillModal{{ skill.id }}"
+                                                        title="Modifier">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                        <path d="M12.146.854a.5.5 0 0 1 .708 0l2.292 2.292a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 3L13 4.793 12.5 5.293 10.707 3.5 11.207 3zM3 10.707V13h2.293l9.147-9.146-2.293-2.293L3 10.707z"/>
+                                                    </svg>
+                                                </button>
+                                                <a href="{{ path('app_toggle_status', { type: 'skill', id: skill.id }) }}"
+                                                   class="btn btn-danger btn-icon"
+                                                   onclick="return confirm('Supprimer cette compétence ? Action irréversible.');"
+                                                   title="Supprimer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    {# Modify skill modal #}
+                                    <div class="modal fade" id="renameSkillModal{{ skill.id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <form method="POST" action="{{ path('app_skill_criteria_rename', { id: skill.id }) }}">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('rename_skill_' ~ skill.id) }}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Modifier la compétence</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Libellé</label>
+                                                            <input type="text" name="label" class="form-control"
+                                                                   value="{{ skill.label }}" required maxlength="255">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                        <button type="submit" class="btn btn-primary">Valider</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if not hasSkills %}
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">Aucune compétence active.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    {% if not hasActiveGroups %}
+        <p class="text-muted text-center">Aucun groupe actif pour ce diplôme.</p>
+    {% endif %}
+
+{% endif %}
