@@ -1,0 +1,72 @@
+name: Livret Alternant CI
+
+on:
+  push:
+    branches: [ dev, prod ]
+  pull_request:
+    branches: [ dev, prod ]
+
+jobs:
+  ci:
+    name: Build & Tests
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: 'test'
+      APP_ENV_NAME: 'test'
+      APP_DEBUG: 1
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+      SENDER_EMAIL_ADDRESS: ${{ vars.SENDER_EMAIL_ADDRESS }}
+      DATABASE_URL: 'mysql://app:password@127.0.0.1:3318/app'
+      BASE_URL: ''
+      MAILER_DSN: 'null://null'
+      MAILER_DSN_AWS_SES: 'null://null'
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app
+          MYSQL_USER: app
+          MYSQL_PASSWORD: password
+          TZ: Europe/Paris
+        ports:
+          - 3318:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: composer:v2, flex, pcov, ssh2
+          coverage: pcov
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install vendors
+        run: composer install --no-progress --ansi --no-scripts
+
+      - name: Validate composer
+        run: composer validate --no-check-lock
+
+      - name: Setup database
+        run: |
+          mysql -h 127.0.0.1 -P 3318 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS app_test; GRANT ALL PRIVILEGES ON app_test.* TO 'app'@'%'; FLUSH PRIVILEGES;"
+          php bin/console doctrine:schema:create
+
