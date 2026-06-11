@@ -39,9 +39,9 @@ security:
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
 
         # ROLE_STUDENT (Alternant)
-        - { path: ^/calendar-schedule, roles: ROLE_STUDENT }
+        - { path: ^/calendar-schedule, roles: [ROLE_STUDENT, ROLE_TUTOR] }
         - { path: ^/evaluations/student, roles: ROLE_STUDENT }
-        - { path: ^/teaching-team-list, roles: ROLE_STUDENT }
+        - { path: ^/teaching-team-list, roles: [ROLE_STUDENT, ROLE_TUTOR] }
 
         # ROLE_TUTOR (Tuteur)
         - { path: ^/evaluations/tutor, roles: ROLE_TUTOR }

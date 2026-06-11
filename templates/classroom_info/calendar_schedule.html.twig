@@ -3,29 +3,46 @@
 {% block title %}Calendrier et emploi du temps{% endblock %}
 
 {% block body %}
-{% if hasData %}
-    <div class="container min-vh-100 d-flex flex-column justify-content-center align-items-center py-5">
+<div class="container py-5">
+
+    {% if tutorStudents is defined and tutorStudents|length > 0 %}
+        <div class="mb-4">
+            <form method="get" action="{{ path('app_calendar_schedule') }}" class="d-flex align-items-center gap-3">
+                <label for="student-select" class="form-label mb-0 fw-semibold text-nowrap">Alternant :</label>
+                <select id="student-select" name="student" class="form-select" style="max-width: 300px;" onchange="this.form.submit()">
+                    {% for student in tutorStudents %}
+                        <option value="{{ student.id }}" {% if student.id == selectedStudentId %}selected{% endif %}>
+                            {{ student.firstName }} {{ student.lastName }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    {% endif %}
+
+    {% if hasData %}
         <div class="card shadow-lg w-100">
             <div class="card-body">
 
-                {% if calendarFile %}
+                {% if calendarFile is defined and calendarFile %}
                     <h1 class="fw-bold text-primary mb-4 text-center">Calendrier</h1>
                     <img src="{{ asset(calendarFile) }}" class="img-fluid rounded mb-5">
                 {% endif %}
 
-                {% if scheduleFile %}
+                {% if scheduleFile is defined and scheduleFile %}
                     <h1 class="fw-bold text-primary mb-4 text-center">Emploi du temps</h1>
                     <img src="{{ asset(scheduleFile) }}" class="img-fluid rounded">
                 {% endif %}
 
             </div>
         </div>
-    </div>
-{% else %}
-    <div class="container text-center py-5">
-        <p class="text-muted fst-italic">
-            Aucun calendrier ou emploi du temps disponible pour le moment.
-        </p>
-    </div>
-{% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <p class="text-muted fst-italic">
+                Aucun calendrier ou emploi du temps disponible pour le moment.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
 {% endblock %}

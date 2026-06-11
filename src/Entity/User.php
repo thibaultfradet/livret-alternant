@@ -186,6 +186,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getEffectiveClassroom(): ?Classroom
+    {
+        if ($this->classroom) {
+            return $this->classroom;
+        }
+
+        foreach ($this->tutorContracts as $contract) {
+            $classroom = $contract->getStudent()?->getClassroom();
+            if ($classroom) {
+                return $classroom;
+            }
+        }
+
+        return null;
+    }
+
     /** @return Collection<int, TutorStudent> */
     public function getTutorContracts(): Collection
     {
