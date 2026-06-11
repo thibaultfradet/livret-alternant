@@ -105,34 +105,11 @@
 
       {% elseif is_granted('ROLE_TUTOR') %}
 
-        {# Évaluations #}
-        <div class="col-sm-6 col-md-4 col-lg-3">
-          <a href="{{ path('app_evaluation_list_tutor') }}" class="card card-link h-100">
-            <div class="card-body d-flex flex-column align-items-center justify-content-center">
-              <span class="avatar avatar-xl bg-primary-lt mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checklist" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                  <path d="M5 5l2 2l4 -4" />
-                  <path d="M3 10h11" />
-                  <path d="M3 14h11" />
-                  <path d="M3 18h11" />
-                  <path d="M20 6v.01" />
-                  <path d="M20 10v.01" />
-                  <path d="M20 14v.01" />
-                  <path d="M20 18v.01" />
-                </svg>
-              </span>
-              <h3 class="card-title fw-bold">Évaluations des alternants</h3>
-              <p class="text-secondary">Évaluer vos alternants pour une période</p>
-            </div>
-          </a>
-        </div>
-
         {# Mes alternants #}
         <div class="col-sm-6 col-md-4 col-lg-3">
           <a href="{{ path('app_evaluation_list_tutor') }}" class="card card-link h-100">
             <div class="card-body d-flex flex-column align-items-center justify-content-center">
-              <span class="avatar avatar-xl bg-info-lt mb-3">
+              <span class="avatar avatar-xl bg-primary-lt mb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                   <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
@@ -142,7 +119,7 @@
                 </svg>
               </span>
               <h3 class="card-title fw-bold">Mes alternants</h3>
-              <p class="text-secondary">Voir la liste des alternants</p>
+              <p class="text-secondary">Évaluer vos alternants et consulter leurs livrets par période</p>
             </div>
           </a>
         </div>
