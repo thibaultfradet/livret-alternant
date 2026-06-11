@@ -185,8 +185,9 @@ final class UserController extends AbstractController
     {
         $currentUser = $this->getUser();
 
-        // check same establishment
-        if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
+        // check same establishment (tutors have no establishment, skip check for them)
+        $isTutor = in_array('ROLE_TUTOR', $user->getRoles(), true);
+        if (!$isTutor && $user->getEstablishment() !== $currentUser->getEstablishment()) {
             $this->addFlash('error', 'Vous ne pouvez modifier que les utilisateurs de votre établissement.');
             return $this->redirectToRoute('training_parameters_user');
         }
@@ -231,8 +232,8 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Check again establishment change
-            if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
+            // Check again establishment change (tutors have no establishment, skip check for them)
+            if (!$isTutor && $user->getEstablishment() !== $currentUser->getEstablishment()) {
                 $this->addFlash('error', 'Vous ne pouvez pas changer l\'établissement.');
                 return $this->redirectToRoute('training_parameters_user');
             }
