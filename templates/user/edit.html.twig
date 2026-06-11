@@ -2,6 +2,34 @@
 
 {% block title %}Modifier un utilisateur{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('assets/styles/tom-select.bootstrap5.min.css') }}" rel="stylesheet">
+    <style>
+        .ts-dropdown {
+            background-color: #fff !important;
+            z-index: 1055 !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,.12);
+        }
+        .ts-dropdown .option {
+            background-color: #fff;
+        }
+        .ts-dropdown .option:hover,
+        .ts-dropdown .option.active {
+            background-color: #e9ecef;
+            color: inherit;
+        }
+        .contract-type-switch .form-check {
+            padding-left: 0;
+            min-height: unset;
+            margin-bottom: 0;
+        }
+        .contract-type-switch .form-check-label:empty {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="page page-center">
     <div class="container">
@@ -61,12 +89,14 @@
                 <div class="tab-content mt-3">
                     {# Student tab #}
                     <div class="tab-pane fade {% if isStudent %}show active{% endif %}" id="student" role="tabpanel">
-                        <div class="row">
+                        <div class="row align-items-end">
                             <div class="col-md-6">
                                 {{ form_row(form.classroom) }}
                             </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.isApprentissage) }}
+                            <div class="col-md-6 pb-4 d-flex align-items-center justify-content-center gap-2">
+                                <span id="labelPro" class="small fw-medium">Professionnalisation</span>
+                                {{ form_row(form.isApprentissage, {label: false, row_attr: {class: 'form-switch mb-0 contract-type-switch'}}) }}
+                                <span id="labelApp" class="small fw-medium text-muted">Apprentissage</span>
                             </div>
                         </div>
 
@@ -91,20 +121,40 @@
                         </div>
 
                         <h4 class="mt-4 mb-3">Informations du tuteur</h4>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.tutorFirstName) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.tutorLastName) }}
+
+                        <div class="mb-3">
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="tutorMode" id="tutorModeNew" value="new" {% if not activeContract or not activeContract.tutor %}checked{% endif %} autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="tutorModeNew">Nouveau tuteur</label>
+                                <input type="radio" class="btn-check" name="tutorMode" id="tutorModeExisting" value="existing" {% if activeContract and activeContract.tutor %}checked{% endif %} autocomplete="off">
+                                <label class="btn btn-outline-primary btn-sm" for="tutorModeExisting">Tuteur existant</label>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.tutorEmail) }}
+
+                        <div id="existingTutorSection" class="{% if not activeContract or not activeContract.tutor %}d-none{% endif %}">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {{ form_row(form.existingTutor) }}
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.tutorPhone) }}
+                        </div>
+
+                        <div id="newTutorSection" class="{% if activeContract and activeContract.tutor %}d-none{% endif %}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.tutorFirstName) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.tutorLastName) }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form_row(form.tutorEmail) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.tutorPhone) }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -138,23 +188,22 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block javascripts_bottom %}
+<script src="{{ asset('assets/js/tom-select.complete.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const isProfPrincipal = document.getElementById('{{ form.isProfPrincipal.vars.id }}');
     const isTeamMember = document.getElementById('{{ form.isTeamMember.vars.id }}');
     const phoneField = document.querySelector('.phone-field');
 
-    // Reset checkboxes when tab changes
     document.querySelectorAll('#userTypeTabs a[data-bs-toggle="tab"]').forEach(function(tab) {
         tab.addEventListener('shown.bs.tab', function(event) {
-            // Uncheck all role checkboxes first
             isProfPrincipal.checked = false;
             isTeamMember.checked = false;
-
-            // Hide phone field by default
             phoneField.classList.add('d-none');
 
-            // Check the appropriate checkbox based on tab
             if (event.target.id === 'teacher-tab-link') {
                 isProfPrincipal.checked = true;
                 phoneField.classList.remove('d-none');
@@ -163,6 +212,62 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Tutor mode toggle
+    const tutorModeNew = document.getElementById('tutorModeNew');
+    const tutorModeExisting = document.getElementById('tutorModeExisting');
+    const existingTutorSection = document.getElementById('existingTutorSection');
+    const newTutorSection = document.getElementById('newTutorSection');
+
+    if (tutorModeNew && tutorModeExisting) {
+        function updateTutorMode() {
+            if (tutorModeExisting.checked) {
+                existingTutorSection.classList.remove('d-none');
+                newTutorSection.classList.add('d-none');
+            } else {
+                existingTutorSection.classList.add('d-none');
+                newTutorSection.classList.remove('d-none');
+            }
+        }
+
+        tutorModeNew.addEventListener('change', updateTutorMode);
+        tutorModeExisting.addEventListener('change', updateTutorMode);
+    }
+
+    // Contract type switch labels
+    const apprentissageSwitch = document.getElementById('{{ form.isApprentissage.vars.id }}');
+    const labelPro = document.getElementById('labelPro');
+    const labelApp = document.getElementById('labelApp');
+
+    if (apprentissageSwitch) {
+        function updateContractLabels() {
+            if (apprentissageSwitch.checked) {
+                labelPro.classList.add('text-muted');
+                labelApp.classList.remove('text-muted');
+            } else {
+                labelPro.classList.remove('text-muted');
+                labelApp.classList.add('text-muted');
+            }
+        }
+
+        apprentissageSwitch.addEventListener('change', updateContractLabels);
+        updateContractLabels();
+    }
+
+    // TomSelect on existing tutor dropdown
+    const existingTutorSelect = document.getElementById('{{ form.existingTutor.vars.id }}');
+    if (existingTutorSelect) {
+        new TomSelect(existingTutorSelect, {
+            allowEmptyOption: true,
+            searchField: ['text'],
+            placeholder: '-- Sélectionner un tuteur --',
+            render: {
+                no_results: function() {
+                    return '<div class="no-results">Aucun tuteur trouvé</div>';
+                }
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
