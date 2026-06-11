@@ -17,7 +17,8 @@ VOLUME /app/var/
 
 # persistent / runtime deps
 # hadolint ignore=DL3008
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN echo 'APT::Key::gpgvcommand "/usr/bin/gpgv";' > /etc/apt/apt.conf.d/10gpgv \
+	&& apt-get update && apt-get install -y --no-install-recommends \
 	acl \
 	file \
 	gettext \
