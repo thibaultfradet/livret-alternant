@@ -39,9 +39,12 @@ class EvaluationVisualizerController extends AbstractController
         PeriodRepository $periodRepo,
         StudentEvaluationRepository $studentEvalRepo,
         TutorEvaluationRepository $tutorEvalRepo,
-        TTMEvaluationRepository $ttmEvalRepo
+        TTMEvaluationRepository $ttmEvalRepo,
+        SchoolYearRepository $schoolYearRepo
     ): Response {
-        // Récupère données communes
+        /** @var User $user */
+        $user = $this->getUser();
+
         $data = $this->getEvaluationData(
             $request,
             $classroomRepo,
@@ -50,8 +53,9 @@ class EvaluationVisualizerController extends AbstractController
             $tutorEvalRepo,
             $ttmEvalRepo,
             $request->query->get('classroom')
-
         );
+
+        $data['activeSchoolYear'] = $schoolYearRepo->findActiveByEstablishment($user->getEstablishment());
 
         return $this->render('evaluation_visualizer/index.html.twig', $data);
     }
