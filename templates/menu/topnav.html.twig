@@ -2,7 +2,8 @@
     'ROLE_ADMIN': {
         'title': 'Administrateur',
         'links': [
-            { 'label': 'Gérer les établissements', 'path': 'admin' }
+            { 'label': 'Établissements', 'path': 'admin', 'params': {'crudController': 'App\\Controller\\Admin\\EstablishmentCrudController', 'crudAction': 'index'} },
+            { 'label': 'Utilisateurs', 'path': 'admin', 'params': {'crudController': 'App\\Controller\\Admin\\UserCrudController', 'crudAction': 'index'} }
         ]
     },
     'ROLE_PT': {
@@ -77,7 +78,7 @@
                                             </ul>
                                         </li>
                                     {% else %}
-                                        <li><a class="dropdown-item" href="{{ path(item.path) }}">{{ item.label }}</a></li>
+                                        <li><a class="dropdown-item" href="{{ path(item.path, item.params is defined ? item.params : {}) }}">{{ item.label }}</a></li>
                                     {% endif %}
                                 {% endfor %}
                             </ul>
@@ -94,13 +95,13 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="nav-dropdown-single-{{ role }}">
                                     {% for sub_item in item.links %}
-                                        <li><a class="dropdown-item" href="{{ path(sub_item.path) }}">{{ sub_item.label }}</a></li>
+                                        <li><a class="dropdown-item" href="{{ path(sub_item.path, sub_item.params is defined ? sub_item.params : {}) }}">{{ sub_item.label }}</a></li>
                                     {% endfor %}
                                 </ul>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ path(item.path) }}">{{ item.label }}</a>
+                                <a class="nav-link" href="{{ path(item.path, item.params is defined ? item.params : {}) }}">{{ item.label }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}

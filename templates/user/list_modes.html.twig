@@ -2,6 +2,18 @@
 
 {% block title %}Liste des utilisateurs{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        td.user-class {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="page page-center">
     <div class="container py-6">
@@ -42,7 +54,7 @@
                     {% for user in users %}
                         <tr data-user-id="{{ user.id }}" data-contract-type="{{ user.isApprentissage ? 'apprentissage' : 'pro' }}">
                             <td class="user-name">{{ user.firstName }} {{ user.lastName }}</td>
-                            <td class="user-class">{{ user.classroom.diploma.label ?? '' }}</td>
+                            <td class="user-class" title="{{ user.classroom.diploma.label ?? '' }}">{{ user.classroom.diploma.label ?? '' }}</td>
                             <td class="text-center">
                                 <div class="form-check form-check-inline">
                                     <input class="form-check-input toggle-apprentissage" type="radio"

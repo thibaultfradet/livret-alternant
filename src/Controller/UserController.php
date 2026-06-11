@@ -80,14 +80,8 @@ final class UserController extends AbstractController
                 $selectedTutor = $form->get('existingTutor')->getData();
                 if ($selectedTutor) {
                     $tutor = $selectedTutor;
-                    if ($tutor->getDisabledAt() !== null) {
-                        $tutor->setDisabledAt(null);
-                    }
-                    if (!in_array('ROLE_TUTOR', $tutor->getRoles(), true)) {
-                        $tutor->setRoles(array_unique(array_merge($tutor->getRoles(), ['ROLE_TUTOR'])));
-                    }
+                    $this->enableTutor($tutor);
                     $entityManager->persist($tutor);
-                    $entityManager->flush();
                 } else {
                     // Fallback: create or find tutor by email
                     $tutorEmail = $form->get('tutorEmail')->getData();
@@ -98,14 +92,14 @@ final class UserController extends AbstractController
                         $companyName = $form->get('companyName')->getData();
                         $companyAddress = $form->get('companyAddress')->getData();
 
-                        $existingTutor = $entityManager->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
+                        $tutor = $entityManager->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
 
-                        if (!$existingTutor) {
+                        if (!$tutor) {
                             $tutor = new User();
                             $tutor->setFirstName($tutorFirstName);
                             $tutor->setLastName($tutorLastName);
                             $tutor->setEmail($tutorEmail);
-                            $tutor->setRoles(['ROLE_TUTOR']);
+                            $tutor->setRoles(['ROLE_TUTOR', 'ROLE_USER']);
                             $tutor->setPassword('');
 
                             if ($companyName) {
@@ -117,20 +111,11 @@ final class UserController extends AbstractController
                             if ($tutorPhone) {
                                 $tutor->setPhone($tutorPhone);
                             }
-
-                            $entityManager->persist($tutor);
-                            $entityManager->flush();
                         } else {
-                            if ($existingTutor->getDisabledAt() !== null) {
-                                $existingTutor->setDisabledAt(null);
-                            }
-                            if (!in_array('ROLE_TUTOR', $existingTutor->getRoles(), true)) {
-                                $existingTutor->setRoles(array_unique(array_merge($existingTutor->getRoles(), ['ROLE_TUTOR'])));
-                            }
-                            $entityManager->persist($existingTutor);
-                            $entityManager->flush();
-                            $tutor = $existingTutor;
+                            $this->enableTutor($tutor);
                         }
+
+                        $entityManager->persist($tutor);
                     }
                 }
 
@@ -185,8 +170,9 @@ final class UserController extends AbstractController
     {
         $currentUser = $this->getUser();
 
-        // check same establishment
-        if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
+        // check same establishment (tutors have no establishment, skip check for them)
+        $isTutor = in_array('ROLE_TUTOR', $user->getRoles(), true);
+        if (!$isTutor && $user->getEstablishment() !== $currentUser->getEstablishment()) {
             $this->addFlash('error', 'Vous ne pouvez modifier que les utilisateurs de votre établissement.');
             return $this->redirectToRoute('training_parameters_user');
         }
@@ -208,7 +194,8 @@ final class UserController extends AbstractController
             }
         }
 
-        $form = $this->createForm(UserType::class, $user);
+        $establishment = $currentUser->getEstablishment();
+        $form = $this->createForm(UserType::class, $user, ['establishment' => $establishment]);
 
         // Pre-check checkboxes based on existing roles
         $form->get('isProfPrincipal')->setData(in_array('ROLE_PT', $user->getRoles()));
@@ -218,6 +205,7 @@ final class UserController extends AbstractController
         // Pre-fill tutor fields if active contract exists
         if ($activeContract && $activeContract->getTutor()) {
             $tutor = $activeContract->getTutor();
+            $form->get('existingTutor')->setData($tutor);
             $form->get('tutorFirstName')->setData($tutor->getFirstName());
             $form->get('tutorLastName')->setData($tutor->getLastName());
             $form->get('tutorEmail')->setData($tutor->getEmail());
@@ -231,8 +219,8 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Check again establishment change
-            if ($user->getEstablishment() !== $currentUser->getEstablishment()) {
+            // Check again establishment change (tutors have no establishment, skip check for them)
+            if (!$isTutor && $user->getEstablishment() !== $currentUser->getEstablishment()) {
                 $this->addFlash('error', 'Vous ne pouvez pas changer l\'établissement.');
                 return $this->redirectToRoute('training_parameters_user');
             }
@@ -262,24 +250,55 @@ final class UserController extends AbstractController
 
             $user->setRoles(array_unique($roles));
 
-            // Update tutor information if user is a student and has an active contract
-            if ($isStudent && $activeContract && $activeContract->getTutor()) {
-                $tutor = $activeContract->getTutor();
+            // Update tutor and contract if user is a student
+            if ($isStudent) {
+                $selectedTutor = $form->get('existingTutor')->getData();
+                $tutorEmail = $form->get('tutorEmail')->getData();
+                $tutor = null;
 
-                $tutor->setFirstName($form->get('tutorFirstName')->getData());
-                $tutor->setLastName($form->get('tutorLastName')->getData());
-                $tutor->setEmail($form->get('tutorEmail')->getData());
-                $tutor->setPhone($form->get('tutorPhone')->getData());
-                $tutor->setCompanyName($form->get('companyName')->getData());
-                $tutor->setCompanyAddress($form->get('companyAddress')->getData());
-
-                // Assign ROLE_TUTOR if not already present
-                if (!in_array('ROLE_TUTOR', $tutor->getRoles(), true)) {
-                    $tutor->setRoles(array_unique(array_merge($tutor->getRoles(), ['ROLE_TUTOR'])));
+                if ($selectedTutor) {
+                    $tutor = $selectedTutor;
+                    $this->enableTutor($tutor);
+                    $entityManager->persist($tutor);
+                } elseif ($tutorEmail) {
+                    $currentTutor = $activeContract?->getTutor();
+                    if ($currentTutor && $currentTutor->getEmail() === $tutorEmail) {
+                        $tutor = $currentTutor;
+                    } else {
+                        $tutor = $entityManager->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
+                        if (!$tutor) {
+                            $tutor = new User();
+                            $tutor->setEmail($tutorEmail);
+                            $tutor->setRoles(['ROLE_TUTOR', 'ROLE_USER']);
+                            $tutor->setPassword('');
+                        }
+                        $this->enableTutor($tutor);
+                    }
+                    $tutor->setFirstName($form->get('tutorFirstName')->getData());
+                    $tutor->setLastName($form->get('tutorLastName')->getData());
+                    $tutor->setPhone($form->get('tutorPhone')->getData());
+                    $tutor->setCompanyName($form->get('companyName')->getData());
+                    $tutor->setCompanyAddress($form->get('companyAddress')->getData());
+                    $entityManager->persist($tutor);
                 }
 
-                $activeContract->setDateDebutContract($form->get('dateDebutContract')->getData());
-                $activeContract->setDateFinContract($form->get('dateFinContract')->getData());
+                if ($tutor) {
+                    if ($activeContract) {
+                        $activeContract->setTutor($tutor);
+                    } else {
+                        $tutorStudent = new TutorStudent();
+                        $tutorStudent->setStudent($user);
+                        $tutorStudent->setTutor($tutor);
+                        $tutorStudent->setDateDebutContract($form->get('dateDebutContract')->getData() ?? new \DateTime());
+                        $tutorStudent->setDateFinContract($form->get('dateFinContract')->getData() ?? (new \DateTime())->modify('+6 months'));
+                        $entityManager->persist($tutorStudent);
+                    }
+                }
+
+                if ($activeContract) {
+                    $activeContract->setDateDebutContract($form->get('dateDebutContract')->getData());
+                    $activeContract->setDateFinContract($form->get('dateFinContract')->getData());
+                }
             }
 
             $entityManager->flush();
@@ -368,5 +387,15 @@ final class UserController extends AbstractController
             'success' => true,
             'isApprentissage' => $user->isApprentissage()
         ]);
+    }
+
+    private function enableTutor(User $tutor): void
+    {
+        if ($tutor->getDisabledAt() !== null) {
+            $tutor->setDisabledAt(null);
+        }
+        if (!in_array('ROLE_TUTOR', $tutor->getRoles(), true)) {
+            $tutor->setRoles(array_unique(array_merge($tutor->getRoles(), ['ROLE_TUTOR'])));
+        }
     }
 }
