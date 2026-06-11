@@ -41,7 +41,7 @@ class UserCheckSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (\in_array('ROLE_PT', $user->getRoles(), true)) {
+        if (array_intersect(['ROLE_PT', 'ROLE_TTM'], $user->getRoles())) {
             return;
         }
 
