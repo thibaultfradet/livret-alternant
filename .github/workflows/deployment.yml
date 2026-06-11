@@ -1,0 +1,62 @@
+name: Livret Alternant Deployment
+
+on:
+  workflow_run:
+    workflows: ["Livret Alternant CI"]
+    types:
+      - completed
+
+jobs:
+  deployment:
+    name: Deploy with VPN
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'prod' }}
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install OpenVPN and sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openvpn sshpass
+
+      - name: Configure VPN
+        run: |
+          echo "${{ secrets.VPN_CONFIG }}" > vpn.conf
+          echo -e "${{ secrets.VPN_USER }}\n${{ secrets.VPN_PASSWORD }}" > vpn.auth
+          sed -i 's|auth-user-pass|auth-user-pass vpn.auth|' vpn.conf
+
+      - name: Start VPN
+        run: |
+          sudo openvpn --config vpn.conf --daemon
+          sleep 10
+
+      - name: Deploy via SSH
+        run: |
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd ${{ secrets.SSH_APP_PATH }}
+            git pull origin ${{ github.event.workflow_run.head_branch }}
+            make deploy
+          EOF
+
+      - name: Cleanup VPN credentials
+        if: always()
+        run: rm -f vpn.conf vpn.auth
+
+      - name: Log deployment failure
+        if: failure()
+        run: |
+          echo "DEPLOYMENT FAILED"
+          echo "Branch  : ${{ github.event.workflow_run.head_branch }}"
+          echo "Author  : ${{ github.event.workflow_run.head_commit.author.name }}"
+          echo "Logs    : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+      - name: Log deployment success
+        if: success()
+        run: |
+          echo "DEPLOYMENT SUCCEEDED"
+          echo "Branch  : ${{ github.event.workflow_run.head_branch }}"
+          echo "Author  : ${{ github.event.workflow_run.head_commit.author.name }}"
+          echo "Logs    : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
