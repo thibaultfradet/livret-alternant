@@ -145,6 +145,7 @@ final class TermsAcceptanceController extends AbstractController
         return $this->render('terms_acceptance/validate.html.twig', [
             'schoolYear' => $activeYear,
             'user' => $user,
+            'establishment' => $establishment,
             'termsConditions' => $termsConditions,
             'form' => $form->createView()
         ]);
