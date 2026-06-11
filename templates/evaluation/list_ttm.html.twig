@@ -5,9 +5,12 @@
 {% block body %}
 <div class="page-body d-flex">
   <div class="container py-6 d-flex flex-column gap-4">
-    <h1 class="fw-bold text-primary mb-5 display-5 text-center">
-      Évaluez un alternant 
+    <h1 class="fw-bold text-primary mb-2 display-5 text-center">
+      Évaluez un alternant
     </h1>
+    {% if activeSchoolYear is defined and activeSchoolYear %}
+      <p class="text-muted text-center mb-4">{{ activeSchoolYear.label }}</p>
+    {% endif %}
 
     <form method="get" class="mb-4">
       <div class="card shadow-sm p-3">

@@ -33,18 +33,21 @@
         {% set addLink = path('training_parameters_behavior_create') %}
         {% set tabContent = 'trainings/parameters/tab_behavior.html.twig' %}
     {% elseif currentTab == 'user' %}
-        {% set addTxt = 'Nouvel utilisateur' %}
-        {% set addLink = path('app_user_new') %}
         {% set tabContent = 'trainings/parameters/tab_user.html.twig' %}
+    {% elseif currentTab == 'skill' %}
+        {% set tabContent = 'trainings/parameters/tab_skill.html.twig' %}
     {% endif %}
 
     <div class="page-header d-print-none">
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
-                    <h1 class="fw-bold text-primary mb-5 display-5 text-center">
+                    <h1 class="fw-bold text-primary mb-2 display-5 text-center">
                         Paramétrage
                     </h1>
+                    {% if activeSchoolYear is defined and activeSchoolYear %}
+                        <p class="text-muted text-center mb-4">{{ activeSchoolYear.label }}</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

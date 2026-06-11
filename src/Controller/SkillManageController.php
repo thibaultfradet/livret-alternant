@@ -17,45 +17,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Csrf\CsrfToken;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class SkillManageController extends AbstractController
 {
+    public function __construct(private CsrfTokenManagerInterface $csrfTokenManager) {}
+
     #[Route('/skill-manage/{id?}', name: 'app_skill_management')]
-    public function index(DiplomaRepository $diplomaRepository, SkillLevelRepository $skillLevelRepo, ?int $id = null): Response
+    public function index(?int $id = null): Response
     {
-
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-        $establishment = $user->getEstablishment();
-
-        // Filter by establishment
-        $diplomasQb = $diplomaRepository->createQueryBuilder('d')
-            ->where('d.disabledAt IS NULL')
-            ->andWhere('d.establishment = :establishment')
-            ->setParameter('establishment', $establishment)
-            ->getQuery();
-
-        $diplomas = $diplomasQb->getResult();
-
-        if (empty($diplomas)) {
-            throw $this->createNotFoundException('Aucun diplôme n\'est disponible pour votre établissement.');
-        }
-
-        // if no parameter diploma take the first one of all
-        if (!$id) {
-            $selectedDiploma = $diplomas[0];
-        } else {
-            $selectedDiploma = $diplomaRepository->findWithSkills($id);
-            if (!$selectedDiploma) {
-                throw $this->createNotFoundException('Le diplôme n\'existe pas.');
-            }
-        }
-    
-
-        return $this->render('skill_manage/index.html.twig', [
-            'diplomas' => $diplomas,
-            'selectedDiploma' => $selectedDiploma,
-        ]);
+        return $this->redirectToRoute('training_parameters_skill', $id ? ['diploma_id' => $id] : []);
     }
 
 
@@ -115,7 +87,7 @@ class SkillManageController extends AbstractController
             $em->persist($group);
             $em->flush();
             $this->addFlash('success', 'Groupe créé avec succès.');
-            return $this->redirectToRoute('app_skill_management', ['id' => $diploma->getId()]);
+            return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $diploma->getId()]);
         }
 
         return $this->render('skill_manage/form_group.html.twig', [
@@ -137,7 +109,7 @@ class SkillManageController extends AbstractController
             $em->persist($skill);
             $em->flush();
             $this->addFlash('success', 'Compétence créée avec succès.');
-            return $this->redirectToRoute('app_skill_management', ['id' => $group->getDiploma()->getId()]);
+            return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $group->getDiploma()->getId()]);
         }
 
         return $this->render('skill_manage/form_skill.html.twig', [
@@ -146,6 +118,60 @@ class SkillManageController extends AbstractController
         ]);
     }
 
+
+    #[Route('/skill-manage/group/{id}/rename', name: 'app_skill_group_rename', methods: ['POST'])]
+    public function renameGroup(SkillGroup $group, Request $request, EntityManagerInterface $em): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $token = new CsrfToken('rename_group_' . $group->getId(), $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $group->getDiploma()->getId()]);
+        }
+
+        if ($group->getDiploma()->getEstablishment() !== $user->getEstablishment()) {
+            $this->addFlash('error', 'Action non autorisée.');
+            return $this->redirectToRoute('training_parameters_skill');
+        }
+
+        $label = trim($request->request->get('label', ''));
+        if ($label !== '') {
+            $group->setLabel($label);
+            $em->flush();
+            $this->addFlash('success', 'Groupe renommé avec succès.');
+        }
+
+        return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $group->getDiploma()->getId()]);
+    }
+
+    #[Route('/skill-manage/skill/{id}/rename', name: 'app_skill_criteria_rename', methods: ['POST'])]
+    public function renameCriteria(SkillCriteria $skill, Request $request, EntityManagerInterface $em): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
+        $token = new CsrfToken('rename_skill_' . $skill->getId(), $request->request->get('_token'));
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $skill->getSkillGroup()->getDiploma()->getId()]);
+        }
+
+        if ($skill->getSkillGroup()->getDiploma()->getEstablishment() !== $user->getEstablishment()) {
+            $this->addFlash('error', 'Action non autorisée.');
+            return $this->redirectToRoute('training_parameters_skill');
+        }
+
+        $label = trim($request->request->get('label', ''));
+        if ($label !== '') {
+            $skill->setLabel($label);
+            $em->flush();
+            $this->addFlash('success', 'Compétence renommée avec succès.');
+        }
+
+        return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $skill->getSkillGroup()->getDiploma()->getId()]);
+    }
 
     // Toggle skill or group status (no levels here)
     #[Route('/skill-manage/{type}/{id}/toggle', name: 'app_toggle_status')]
@@ -186,8 +212,8 @@ class SkillManageController extends AbstractController
             ? $entity->getDiploma()->getId()
             : $entity->getSkillGroup()->getDiploma()->getId();
 
-        return $this->redirectToRoute('app_skill_management', [
-            'id' => $diplomaId
+        return $this->redirectToRoute('training_parameters_skill', [
+            'diploma_id' => $diplomaId
         ]);
     }
 

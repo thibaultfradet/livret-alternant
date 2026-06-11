@@ -1,3 +1,16 @@
+{% if allSchoolYears is defined and allSchoolYears|length > 1 %}
+<div class="mb-3">
+    <select class="form-select w-auto" onchange="window.location.href=this.value">
+        {% for year in allSchoolYears %}
+            <option value="{{ path('training_parameters_period', { school_year_id: year.id }) }}"
+                {% if selectedSchoolYear and year.id == selectedSchoolYear.id %}selected{% endif %}>
+                {{ year.label }}{% if year.active %} (active){% endif %}
+            </option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+
 <div class="table-responsive">
     <table class="table card-table table-vcenter text-nowrap datatable" id="periodsTable" style="width:100%">
         <thead>

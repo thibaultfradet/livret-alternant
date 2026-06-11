@@ -1,133 +1,239 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    {% if is_granted('ROLE_TUTOR') %}
-        Bienvenue sur le livret
-    {% else %}
-        Bienvenue sur le livret
-    {% endif %}
-{% endblock %}
+{% block title %}Bienvenue sur le livret{% endblock %}
 
 {% block body %}
-<div class="page-body d-flex ">
+<div class="page-body d-flex">
   <div class="container text-center py-6 d-flex flex-column gap-4">
 
-    {# --- Page Title --- #}
     <h1 class="fw-bold text-primary mb-5 display-4 text-center">
-      {% if is_granted('ROLE_TUTOR') %}
-        Bienvenue sur le livret
-      {% else %}
-        Bienvenue sur le livret
-      {% endif %}
+      Bienvenue sur le livret
     </h1>
 
-    {# --- Logo --- #}
     <div class="mb-4">
       <img src="{{ asset('images/logo_bleu.png') }}"
            alt="Logo campus"
            class="img-fluid mx-auto d-block w-40 w-md-25">
     </div>
 
-    {# --- Cards Section --- #}
     <div class="row g-4 justify-content-center">
 
-      {# Auto-évaluation / Évaluations à remplir #}
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <a href="#" class="card card-link h-100">
-          <div class="card-body d-flex flex-column align-items-center justify-content-center">
-            <span class="avatar avatar-xl bg-primary-lt mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checklist" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M5 5l2 2l4 -4" />
-                <path d="M3 10h11" />
-                <path d="M3 14h11" />
-                <path d="M3 18h11" />
-                <path d="M20 6v.01" />
-                <path d="M20 10v.01" />
-                <path d="M20 14v.01" />
-                <path d="M20 18v.01" />
-              </svg>
-            </span>
-            <h3 class="card-title fw-bold">
-              {% if is_granted('ROLE_TUTOR') %}
-                Évaluations des alternants
-              {% else %}
-                Auto-évaluation
-              {% endif %}
-            </h3>
-            <p class="text-secondary">
-              {% if is_granted('ROLE_TUTOR') %}
-                Évaluer vos alternants pour une période
-              {% else %}
-                M'évaluer sur une période
-              {% endif %}
-            </p>
-          </div>
-        </a>
-      </div>
+      {% if is_granted('ROLE_TTM') %}
 
-      {# Équipe pédagogique / Liste alternants #}
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <a href="#" class="card card-link h-100">
-          <div class="card-body d-flex flex-column align-items-center justify-content-center">
-            <span class="avatar avatar-xl bg-info-lt mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
-                <path d="M17 11v.01" />
-                <path d="M13 15a4 4 0 0 1 8 0" />
-                <path d="M3 21v-2a4 4 0 0 1 4 -4h6a4 4 0 0 1 4 4v2" />
-              </svg>
-            </span>
-            <h3 class="card-title fw-bold">
-              {% if is_granted('ROLE_TUTOR') %}
-                Mes alternants
-              {% else %}
-                Équipe pédagogique
-              {% endif %}
-            </h3>
-            <p class="text-secondary">
-              {% if is_granted('ROLE_TUTOR') %}
-                Voir la liste des alternants
-              {% else %}
-                Voir la liste des membres
-              {% endif %}
-            </p>
-          </div>
-        </a>
-      </div>
+        {# Paramétrage #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('training_parameters') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-primary-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-settings" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
+                  <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Paramétrage</h3>
+              <p class="text-secondary">Gérer les classes, diplômes et utilisateurs</p>
+            </div>
+          </a>
+        </div>
 
-      {# Calendrier / EDT (optionnel pour tuteur aussi) #}
-      <div class="col-sm-6 col-md-4 col-lg-3">
-        <a href="#" class="card card-link h-100">
-          <div class="card-body d-flex flex-column align-items-center justify-content-center">
-            <span class="avatar avatar-xl bg-warning-lt mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-event" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
-                <path d="M16 3v4" />
-                <path d="M8 3v4" />
-                <path d="M4 11h16" />
-                <path d="M8 15h2v2h-2z" />
-              </svg>
-            </span>
-            <h3 class="card-title fw-bold">
-              {% if is_granted('ROLE_TUTOR') %}
-                Calendrier & EDT
-              {% else %}
-                Calendrier & EDT
-              {% endif %}
-            </h3>
-            <p class="text-secondary">
-              {% if is_granted('ROLE_TUTOR') %}
-                Consulter les périodes et emplois du temps des alternants
-              {% else %}
-                Consulter mes événements
-              {% endif %}
-            </p>
-          </div>
-        </a>
-      </div>
+        {# Compétences #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('training_parameters_skill') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-success-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-award" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M12 9m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0" />
+                  <path d="M12 15l3.4 5.89l1.598 -3.233l3.598 .232l-3.4 -5.889" />
+                  <path d="M6.802 12l-3.4 5.89l3.598 -.233l1.598 3.232l3.4 -5.889" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Compétences</h3>
+              <p class="text-secondary">Gérer les groupes et critères de compétence</p>
+            </div>
+          </a>
+        </div>
+
+        {# Validations #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_evaluation_visualizer') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-warning-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checklist" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M5 5l2 2l4 -4" />
+                  <path d="M3 10h11" />
+                  <path d="M3 14h11" />
+                  <path d="M3 18h11" />
+                  <path d="M20 6v.01" />
+                  <path d="M20 10v.01" />
+                  <path d="M20 14v.01" />
+                  <path d="M20 18v.01" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Validations des livrets</h3>
+              <p class="text-secondary">Consulter et valider les livrets des alternants</p>
+            </div>
+          </a>
+        </div>
+
+      {% elseif is_granted('ROLE_PT') %}
+
+        {# Validations #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_evaluation_visualizer') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-primary-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checklist" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M5 5l2 2l4 -4" />
+                  <path d="M3 10h11" />
+                  <path d="M3 14h11" />
+                  <path d="M3 18h11" />
+                  <path d="M20 6v.01" />
+                  <path d="M20 10v.01" />
+                  <path d="M20 14v.01" />
+                  <path d="M20 18v.01" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Validations des livrets</h3>
+              <p class="text-secondary">Consulter et valider les livrets des alternants</p>
+            </div>
+          </a>
+        </div>
+
+      {% elseif is_granted('ROLE_TUTOR') %}
+
+        {# Évaluations #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_evaluation_list_tutor') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-primary-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checklist" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M5 5l2 2l4 -4" />
+                  <path d="M3 10h11" />
+                  <path d="M3 14h11" />
+                  <path d="M3 18h11" />
+                  <path d="M20 6v.01" />
+                  <path d="M20 10v.01" />
+                  <path d="M20 14v.01" />
+                  <path d="M20 18v.01" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Évaluations des alternants</h3>
+              <p class="text-secondary">Évaluer vos alternants pour une période</p>
+            </div>
+          </a>
+        </div>
+
+        {# Mes alternants #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_evaluation_list_tutor') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-info-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+                  <path d="M17 11v.01" />
+                  <path d="M13 15a4 4 0 0 1 8 0" />
+                  <path d="M3 21v-2a4 4 0 0 1 4 -4h6a4 4 0 0 1 4 4v2" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Mes alternants</h3>
+              <p class="text-secondary">Voir la liste des alternants</p>
+            </div>
+          </a>
+        </div>
+
+        {# Calendrier #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_calendar_schedule') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-warning-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-event" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+                  <path d="M16 3v4" />
+                  <path d="M8 3v4" />
+                  <path d="M4 11h16" />
+                  <path d="M8 15h2v2h-2z" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Calendrier & EDT</h3>
+              <p class="text-secondary">Consulter les périodes et emplois du temps</p>
+            </div>
+          </a>
+        </div>
+
+      {% else %}
+
+        {# ROLE_STUDENT — default #}
+
+        {# Auto-évaluation #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_evaluation_list_student') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-primary-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-checklist" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M5 5l2 2l4 -4" />
+                  <path d="M3 10h11" />
+                  <path d="M3 14h11" />
+                  <path d="M3 18h11" />
+                  <path d="M20 6v.01" />
+                  <path d="M20 10v.01" />
+                  <path d="M20 14v.01" />
+                  <path d="M20 18v.01" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Auto-évaluation</h3>
+              <p class="text-secondary">M'évaluer sur une période</p>
+            </div>
+          </a>
+        </div>
+
+        {# Équipe pédagogique #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_ttm_list') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-info-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-users" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
+                  <path d="M17 11v.01" />
+                  <path d="M13 15a4 4 0 0 1 8 0" />
+                  <path d="M3 21v-2a4 4 0 0 1 4 -4h6a4 4 0 0 1 4 4v2" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Équipe pédagogique</h3>
+              <p class="text-secondary">Voir la liste des membres</p>
+            </div>
+          </a>
+        </div>
+
+        {# Calendrier #}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ path('app_calendar_schedule') }}" class="card card-link h-100">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+              <span class="avatar avatar-xl bg-warning-lt mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-event" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z" />
+                  <path d="M16 3v4" />
+                  <path d="M8 3v4" />
+                  <path d="M4 11h16" />
+                  <path d="M8 15h2v2h-2z" />
+                </svg>
+              </span>
+              <h3 class="card-title fw-bold">Calendrier & EDT</h3>
+              <p class="text-secondary">Consulter mes événements</p>
+            </div>
+          </a>
+        </div>
+
+      {% endif %}
 
     </div>
   </div>

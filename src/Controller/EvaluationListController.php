@@ -213,6 +213,7 @@ final class EvaluationListController extends AbstractController
             'period'      => $period,
             'diplomas'    => $diplomas,
             'selectedDiploma' => $diplomaId,
+            'activeSchoolYear' => $activeSchoolYear,
         ]);
     }
 

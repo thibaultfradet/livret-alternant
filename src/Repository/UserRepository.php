@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Establishment;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,6 +17,40 @@ class UserRepository extends ServiceEntityRepository
     }
 
 
+
+    public function findUsersForEstablishment(Establishment $establishment): array
+    {
+        $direct = $this->createQueryBuilder('u')
+            ->where('u.establishment = :establishment')
+            ->andWhere('u.disabledAt IS NULL')
+            ->setParameter('establishment', $establishment)
+            ->getQuery()
+            ->getResult();
+
+        $tutors = $this->createQueryBuilder('u')
+            ->join('u.tutorContracts', 'tc')
+            ->join('tc.student', 's')
+            ->join('s.classroom', 'cl')
+            ->join('cl.schoolYear', 'sy')
+            ->where('sy.establishment = :establishment')
+            ->andWhere('u.disabledAt IS NULL')
+            ->setParameter('establishment', $establishment)
+            ->distinct()
+            ->getQuery()
+            ->getResult();
+
+        $ids = array_map(fn(User $u) => $u->getId(), $direct);
+        foreach ($tutors as $tutor) {
+            if (!\in_array($tutor->getId(), $ids, true)) {
+                $direct[] = $tutor;
+                $ids[] = $tutor->getId();
+            }
+        }
+
+        usort($direct, fn(User $a, User $b) => strcmp($a->getLastName(), $b->getLastName()));
+
+        return $direct;
+    }
 
     public function findUsersExcludingOnlyTutor(): array
     {
