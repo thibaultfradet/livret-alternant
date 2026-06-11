@@ -71,4 +71,4 @@ jobs:
           php bin/console doctrine:schema:create
 
       - name: Run tests
-        run: vendor/bin/phpunit tests/Controller/ tests/ResetPasswordControllerTest.php
+        run: vendor/bin/codecept run
