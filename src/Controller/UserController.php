@@ -33,7 +33,7 @@ final class UserController extends AbstractController
         // pre-set establishment
         $user->setEstablishment($establishment);
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, ['establishment' => $establishment]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -69,77 +69,77 @@ final class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Handle tutor creation if user is a student
+            // Handle tutor assignment if user is a student
             if (in_array('ROLE_STUDENT', $roles)) {
-                $tutorEmail = $form->get('tutorEmail')->getData();
-                $tutorFirstName = $form->get('tutorFirstName')->getData();
-                $tutorLastName = $form->get('tutorLastName')->getData();
-                $tutorPhone = $form->get('tutorPhone')->getData();
-                $companyName = $form->get('companyName')->getData();
-                $companyAddress = $form->get('companyAddress')->getData();
                 $dateDebutContract = $form->get('dateDebutContract')->getData();
                 $dateFinContract = $form->get('dateFinContract')->getData();
 
-                // Only create tutor if email is provided
-                if ($tutorEmail) {
-                    // Check if tutor already exists
-                    $existingTutor = $entityManager->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
+                $tutor = null;
 
-                    if (!$existingTutor) {
-                        // Create new tutor
-                        $tutor = new User();
-                        $tutor->setFirstName($tutorFirstName);
-                        $tutor->setLastName($tutorLastName);
-                        $tutor->setEmail($tutorEmail);
-                        $tutor->setRoles(['ROLE_TUTOR']);
-                        $tutor->setPassword('');
-
-                        if ($companyName) {
-                            $tutor->setCompanyName($companyName);
-                        }
-                        if ($companyAddress) {
-                            $tutor->setCompanyAddress($companyAddress);
-                        }
-                        if ($tutorPhone) {
-                            $tutor->setPhone($tutorPhone);
-                        }
-
-                        $entityManager->persist($tutor);
-                        $entityManager->flush();
-                    } else {
-                        // Reactivate tutor if previously disabled
-                        if ($existingTutor->getDisabledAt() !== null) {
-                            $existingTutor->setDisabledAt(null);
-                        }
-
-                        // Assign ROLE_TUTOR if not already present
-                        if (!in_array('ROLE_TUTOR', $existingTutor->getRoles(), true)) {
-                            $existingTutor->setRoles(array_unique(array_merge($existingTutor->getRoles(), ['ROLE_TUTOR'])));
-                        }
-
-                        $entityManager->persist($existingTutor);
-                        $entityManager->flush();
-
-                        $tutor = $existingTutor;
+                // Priority: existing tutor selected from dropdown
+                $selectedTutor = $form->get('existingTutor')->getData();
+                if ($selectedTutor) {
+                    $tutor = $selectedTutor;
+                    if ($tutor->getDisabledAt() !== null) {
+                        $tutor->setDisabledAt(null);
                     }
+                    if (!in_array('ROLE_TUTOR', $tutor->getRoles(), true)) {
+                        $tutor->setRoles(array_unique(array_merge($tutor->getRoles(), ['ROLE_TUTOR'])));
+                    }
+                    $entityManager->persist($tutor);
+                    $entityManager->flush();
+                } else {
+                    // Fallback: create or find tutor by email
+                    $tutorEmail = $form->get('tutorEmail')->getData();
+                    if ($tutorEmail) {
+                        $tutorFirstName = $form->get('tutorFirstName')->getData();
+                        $tutorLastName = $form->get('tutorLastName')->getData();
+                        $tutorPhone = $form->get('tutorPhone')->getData();
+                        $companyName = $form->get('companyName')->getData();
+                        $companyAddress = $form->get('companyAddress')->getData();
 
-                    // Create TutorStudent relationship
+                        $existingTutor = $entityManager->getRepository(User::class)->findOneBy(['email' => $tutorEmail]);
+
+                        if (!$existingTutor) {
+                            $tutor = new User();
+                            $tutor->setFirstName($tutorFirstName);
+                            $tutor->setLastName($tutorLastName);
+                            $tutor->setEmail($tutorEmail);
+                            $tutor->setRoles(['ROLE_TUTOR']);
+                            $tutor->setPassword('');
+
+                            if ($companyName) {
+                                $tutor->setCompanyName($companyName);
+                            }
+                            if ($companyAddress) {
+                                $tutor->setCompanyAddress($companyAddress);
+                            }
+                            if ($tutorPhone) {
+                                $tutor->setPhone($tutorPhone);
+                            }
+
+                            $entityManager->persist($tutor);
+                            $entityManager->flush();
+                        } else {
+                            if ($existingTutor->getDisabledAt() !== null) {
+                                $existingTutor->setDisabledAt(null);
+                            }
+                            if (!in_array('ROLE_TUTOR', $existingTutor->getRoles(), true)) {
+                                $existingTutor->setRoles(array_unique(array_merge($existingTutor->getRoles(), ['ROLE_TUTOR'])));
+                            }
+                            $entityManager->persist($existingTutor);
+                            $entityManager->flush();
+                            $tutor = $existingTutor;
+                        }
+                    }
+                }
+
+                if ($tutor) {
                     $tutorStudent = new TutorStudent();
                     $tutorStudent->setStudent($user);
                     $tutorStudent->setTutor($tutor);
-
-                    // Set contract dates
-                    if ($dateDebutContract) {
-                        $tutorStudent->setDateDebutContract($dateDebutContract);
-                    } else {
-                        $tutorStudent->setDateDebutContract(new \DateTime());
-                    }
-
-                    if ($dateFinContract) {
-                        $tutorStudent->setDateFinContract($dateFinContract);
-                    } else {
-                        $tutorStudent->setDateFinContract((new \DateTime())->modify('+6 months'));
-                    }
+                    $tutorStudent->setDateDebutContract($dateDebutContract ?? new \DateTime());
+                    $tutorStudent->setDateFinContract($dateFinContract ?? (new \DateTime())->modify('+6 months'));
 
                     $entityManager->persist($tutorStudent);
                     $entityManager->flush();
