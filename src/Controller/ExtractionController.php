@@ -38,7 +38,7 @@ final class ExtractionController extends AbstractController
         }
 
         //get active year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
+        $activeYear = $this->resolveActiveYear($currentUser, $student, $schoolYearRepository);
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -190,16 +190,7 @@ final class ExtractionController extends AbstractController
         /** @var User $user */
 
         // Get active school year
-        $establishment = $user->getEstablishment();
-        if ($establishment) {
-            $activeYear = $schoolYearRepository->findActiveByEstablishment($establishment);
-        } else {
-            // Tutor has no establishment — derive school year from the student's classroom
-            $activeYear = $student->getClassroom()?->getSchoolYear();
-            if ($activeYear && !$activeYear->isActive()) {
-                $activeYear = null;
-            }
-        }
+        $activeYear = $this->resolveActiveYear($user, $student, $schoolYearRepository);
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -287,7 +278,7 @@ final class ExtractionController extends AbstractController
         }
 
         // Get active school year
-        $activeYear = $schoolYearRepository->findActiveByEstablishment($currentUser->getEstablishment());
+        $activeYear = $this->resolveActiveYear($currentUser, $student, $schoolYearRepository);
         if (!$activeYear) {
             throw $this->createNotFoundException('No active school year found.');
         }
@@ -343,6 +334,16 @@ final class ExtractionController extends AbstractController
         $pdfService->generatePdf($html, $filename);
 
         return new Response();
+    }
+
+    private function resolveActiveYear(User $viewer, User $student, SchoolYearRepository $repo): ?SchoolYear
+    {
+        $establishment = $viewer->getEstablishment();
+        if ($establishment) {
+            return $repo->findActiveByEstablishment($establishment);
+        }
+        $year = $student->getClassroom()?->getSchoolYear();
+        return ($year && $year->isActive()) ? $year : null;
     }
 
     private function canAccessStudent(User $viewer, User $student): bool
