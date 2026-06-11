@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue sur le Livret Alternant</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f6f8;font-family:'Segoe UI',Arial,sans-serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0"
+               style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+          {# Header #}
+          <tr>
+            <td style="background-color:#0054a6;padding:32px 40px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;">
+                Livret de l'Alternant
+              </h1>
+              <p style="margin:8px 0 0;color:#c8ddf5;font-size:14px;">
+                {{ establishment }}
+              </p>
+            </td>
+          </tr>
+
+          {# Body #}
+          <tr>
+            <td style="padding:40px;">
+
+              <p style="margin:0 0 8px;color:#6c7a89;font-size:14px;text-transform:uppercase;letter-spacing:1px;font-weight:600;">
+                Votre accès est prêt
+              </p>
+              <h2 style="margin:0 0 24px;color:#1a2b4a;font-size:26px;font-weight:700;">
+                Bonjour {{ firstName }} !
+              </h2>
+
+              <p style="margin:0 0 16px;color:#4a5568;font-size:16px;line-height:1.6;">
+                Vous avez été invité(e) à rejoindre la plateforme <strong>Livret de l'Alternant</strong> de <strong>{{ establishment }}</strong>.
+              </p>
+
+              <p style="margin:0 0 32px;color:#4a5568;font-size:16px;line-height:1.6;">
+                Pour accéder à votre espace, vous devez d'abord définir votre mot de passe en cliquant sur le bouton ci-dessous.
+                Ce lien est valable <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+              </p>
+
+              {# CTA Button #}
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding:0 0 32px;">
+                    <a href="{{ url('app_reset_password', {token: resetToken.token}) }}"
+                       style="display:inline-block;padding:16px 40px;background-color:#0054a6;color:#ffffff;text-decoration:none;border-radius:8px;font-size:16px;font-weight:600;letter-spacing:0.3px;">
+                      Définir mon mot de passe
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              {# Divider #}
+              <hr style="border:none;border-top:1px solid #e8edf2;margin:0 0 24px;">
+
+              {# Fallback note #}
+              <p style="margin:0 0 8px;color:#718096;font-size:14px;line-height:1.6;">
+                Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :
+              </p>
+              <p style="margin:0 0 24px;word-break:break-all;">
+                <a href="{{ url('app_reset_password', {token: resetToken.token}) }}"
+                   style="color:#0054a6;font-size:13px;">
+                  {{ url('app_reset_password', {token: resetToken.token}) }}
+                </a>
+              </p>
+
+              <div style="background-color:#fff8e1;border-left:4px solid #f59e0b;border-radius:4px;padding:16px;margin-bottom:0;">
+                <p style="margin:0;color:#92400e;font-size:14px;line-height:1.6;">
+                  <strong>Ce lien est à usage unique.</strong> S'il est expiré lorsque vous cliquez,
+                  rendez-vous sur la page de connexion et utilisez <strong>« Mot de passe oublié »</strong> pour en recevoir un nouveau instantanément.
+                </p>
+              </div>
+
+            </td>
+          </tr>
+
+          {# Footer #}
+          <tr>
+            <td style="background-color:#f4f6f8;padding:24px 40px;border-top:1px solid #e8edf2;">
+              <p style="margin:0;color:#a0aec0;font-size:13px;text-align:center;line-height:1.6;">
+                Cet email a été envoyé par <strong>{{ establishment }}</strong> via la plateforme Livret de l'Alternant.<br>
+                Si vous avez reçu cet email par erreur, vous pouvez l'ignorer.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
