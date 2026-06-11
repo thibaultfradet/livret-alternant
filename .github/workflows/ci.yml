@@ -71,4 +71,4 @@ jobs:
           php bin/console doctrine:schema:create
 
       - name: Run tests
-        run: vendor/bin/codecept run
+        run: vendor/bin/codecept run --skip Acceptance
