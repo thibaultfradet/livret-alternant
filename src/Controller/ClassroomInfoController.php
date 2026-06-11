@@ -52,9 +52,10 @@ final class ClassroomInfoController extends AbstractController
             $selectedId = (int) $request->query->get('student', $tutorStudents[0]->getId());
             $selected = current(array_filter($tutorStudents, fn($s) => $s->getId() === $selectedId));
 
-            // Reject attempts to view a student the tutor doesn't own
+            // Redirect to first own student when the requested one isn't theirs
             if (!$selected) {
-                throw $this->createAccessDeniedException();
+                $this->addFlash('danger', "Vous n'avez pas accès aux données de cet alternant.");
+                return $this->redirectToRoute('app_calendar_schedule', ['student' => $tutorStudents[0]->getId()]);
             }
 
             $selectedId = $selected->getId();
