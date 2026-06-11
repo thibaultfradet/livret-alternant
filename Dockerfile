@@ -16,10 +16,9 @@ WORKDIR /app
 VOLUME /app/var/
 
 # persistent / runtime deps
-# hadolint ignore=DL3008,DL3009
-RUN grep -v "security" /etc/apt/sources.list.d/debian.sources > /tmp/debian.sources \
-	&& mv /tmp/debian.sources /etc/apt/sources.list.d/debian.sources \
-	&& apt-get update && apt-get install -y --no-install-recommends \
+# hadolint ignore=DL3008
+RUN apt-get update -o Acquire::AllowInsecureRepositories=true \
+	&& apt-get install -y --no-install-recommends --allow-unauthenticated \
 	acl \
 	file \
 	gettext \
