@@ -352,7 +352,9 @@ final class ExtractionController extends AbstractController
             return true;
         }
 
-        if (in_array('ROLE_TTM', $viewer->getRoles(), true)) {
+        if (in_array('ROLE_TTM', $viewer->getRoles(), true)
+            && $viewer->getEstablishment() !== null
+            && $student->getEstablishment() === $viewer->getEstablishment()) {
             return true;
         }
 

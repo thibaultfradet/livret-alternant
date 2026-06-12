@@ -15,6 +15,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_TTM')]
 final class DiplomaController extends AbstractController
 {
+    use EstablishmentGuardTrait;
+
     #[Route('/new', name: 'app_diploma_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -50,6 +52,10 @@ final class DiplomaController extends AbstractController
     #[Route('/{id}/edit', name: 'app_diploma_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Diploma $diploma, EntityManagerInterface $entityManager): Response
     {
+        if ($redirect = $this->denyIfForeignEstablishment($diploma, 'training_parameters_diploma', 'Vous ne pouvez gérer que les diplômes de votre établissement.')) {
+            return $redirect;
+        }
+
         $form = $this->createForm(DiplomaType::class, $diploma);
         $form->handleRequest($request);
 
@@ -77,12 +83,16 @@ final class DiplomaController extends AbstractController
     }
 
 
-    #[Route('/disable/{id}', name: 'app_diploma_disable')]
-    public function disable(Diploma $diploma, EntityManagerInterface $em)
+    #[Route('/disable/{id}', name: 'app_diploma_disable', methods: ['POST'])]
+    public function disable(Request $request, Diploma $diploma, EntityManagerInterface $em)
     {
-        if (!$diploma) {
-            $this->addFlash('error', 'Le diplôme est introuvable.');
+        if (!$this->isCsrfTokenValid('disable'.$diploma->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('training_parameters_diploma');
+        }
+
+        if ($redirect = $this->denyIfForeignEstablishment($diploma, 'training_parameters_diploma', 'Vous ne pouvez gérer que les diplômes de votre établissement.')) {
+            return $redirect;
         }
 
         if ($diploma->getDisabledAt() !== null) {

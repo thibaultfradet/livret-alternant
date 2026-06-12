@@ -25,6 +25,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_TTM')]
 class ClassroomController extends AbstractController
 {
+    use EstablishmentGuardTrait;
+
 
 
     #[Route('/classroom/new', name: 'app_classroom_new', methods: ['GET', 'POST'])]
@@ -106,6 +108,10 @@ class ClassroomController extends AbstractController
             return $this->redirectToRoute('training_parameters_classroom');
         }
 
+        if ($redirect = $this->denyIfForeignEstablishment($classroom, 'training_parameters_classroom', 'Vous ne pouvez gérer que les classes de votre établissement.')) {
+            return $redirect;
+        }
+
         // Create form with a select of users who are not ROLE_STUDENT
       $form = $this->createForm(ClassroomPrincipalTeacherType::class, $classroom);
     $form->handleRequest($request);
@@ -132,9 +138,13 @@ class ClassroomController extends AbstractController
     public function files(
         Request $request, 
         Classroom $classroom, 
-        MailerInterface $mailer, 
+        MailerInterface $mailer,
         EntityManagerInterface $em
     ): Response {
+
+        if ($redirect = $this->denyIfForeignEstablishment($classroom, 'training_parameters_classroom', 'Vous ne pouvez gérer que les classes de votre établissement.')) {
+            return $redirect;
+        }
 
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/classroom/';
         // $fs = new Filesystem();
@@ -254,6 +264,10 @@ class ClassroomController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager
     ): Response {
+        if ($redirect = $this->denyIfForeignEstablishment($classroom, 'training_parameters_classroom', 'Vous ne pouvez gérer que les classes de votre établissement.')) {
+            return $redirect;
+        }
+
         // Create the form for editing classroom terms
         $form = $this->createForm(ClassroomTermsType::class, $classroom);
 

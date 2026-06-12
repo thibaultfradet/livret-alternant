@@ -57,11 +57,12 @@
                             <tr>
                                 <td class="text-start">{{ group.label }}</td>
                                 <td class="text-end">
-                                    <a href="{{ path('app_toggle_status', { type: 'group', id: group.id }) }}"
-                                       class="text-danger"
-                                       onclick="return confirm('Supprimer ce groupe ? Action irréversible.');">
-                                        Supprimer
-                                    </a>
+                                    <form class="d-inline" method="post"
+                                          action="{{ path('app_toggle_status', { type: 'group', id: group.id }) }}"
+                                          onsubmit="return confirm('Supprimer ce groupe ? Action irréversible.');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('togglegroup' ~ group.id) }}">
+                                        <button type="submit" class="btn btn-link text-danger p-0">Supprimer</button>
+                                    </form>
                                 </td>
                             </tr>
                         {% endif %}
@@ -116,11 +117,12 @@
                                     <tr>
                                         <td class="text-start">{{ skill.label }}</td>
                                         <td class="text-end">
-                                            <a href="{{ path('app_toggle_status', { type: 'skill', id: skill.id }) }}"
-                                               class="text-danger"
-                                               onclick="return confirm('Supprimer cette compétence ? Action irréversible.');">
-                                                Supprimer
-                                            </a>
+                                            <form class="d-inline" method="post"
+                                                  action="{{ path('app_toggle_status', { type: 'skill', id: skill.id }) }}"
+                                                  onsubmit="return confirm('Supprimer cette compétence ? Action irréversible.');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('toggleskill' ~ skill.id) }}">
+                                                <button type="submit" class="btn btn-link text-danger p-0">Supprimer</button>
+                                            </form>
                                         </td>
                                     </tr>
                                 {% endif %}

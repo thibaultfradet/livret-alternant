@@ -95,7 +95,7 @@
             $.ajax({
                 url: "{{ path('app_user_toggle_apprentissage', {'id': 'USER_ID'}) }}".replace('USER_ID', userId),
                 method: 'POST',
-                data: { isApprentissage: isApprentissage },
+                data: { isApprentissage: isApprentissage, _token: '{{ csrf_token('toggle_apprentissage') }}' },
                 success: function(response) {
                     if (response.success) {
                         console.log('Updated user ' + userId + ' to apprentissage=' + response.isApprentissage);

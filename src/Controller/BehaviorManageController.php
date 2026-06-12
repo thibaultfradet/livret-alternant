@@ -15,7 +15,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_TTM')]
 final class BehaviorManageController extends AbstractController
-{   
+{
+    use EstablishmentGuardTrait;
+
 
     #[Route('/behavior-manage/create', name: 'training_parameters_behavior_create', methods: ['GET', 'POST'])]
     public function create(Request $request, EntityManagerInterface $em): Response
@@ -66,13 +68,8 @@ final class BehaviorManageController extends AbstractController
     #[Route('/behavior/level/replace/{id}', name: 'app_behavior_level_replace', methods: ['GET','POST'])]
     public function replaceLevel(BehaviorLevel $level, Request $request, EntityManagerInterface $em): Response
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
-        // Check if level belongs to user's establishment via behavior criteria
-        if ($level->getBehaviorCriteria()->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Vous ne pouvez modifier que les niveaux de comportement de votre établissement.');
-            return $this->redirectToRoute('training_parameters_behavior');
+        if ($redirect = $this->denyIfForeignEstablishment($level, 'training_parameters_behavior', 'Vous ne pouvez modifier que les niveaux de comportement de votre établissement.')) {
+            return $redirect;
         }
 
         if ($level->getDisabledAt() !== null) {
@@ -113,21 +110,16 @@ final class BehaviorManageController extends AbstractController
 
 
 
-    #[Route('/behavior/manage/disable/{id}', name: 'app_behavior_disable')]
-    public function disableBehavior(BehaviorCriteria $behavior, EntityManagerInterface $em)
+    #[Route('/behavior/manage/disable/{id}', name: 'app_behavior_disable', methods: ['POST'])]
+    public function disableBehavior(Request $request, BehaviorCriteria $behavior, EntityManagerInterface $em)
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
-        // Check if behavior belongs to user's establishment
-        if ($behavior->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Vous ne pouvez modifier que les critères de comportement de votre établissement.');
+        if (!$this->isCsrfTokenValid('disable'.$behavior->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('training_parameters_behavior');
         }
 
-        if (!$behavior) {
-            $this->addFlash('error', 'Le critère de comportement est introuvable.');
-            return $this->redirectToRoute('training_parameters_behavior');
+        if ($redirect = $this->denyIfForeignEstablishment($behavior, 'training_parameters_behavior', 'Vous ne pouvez modifier que les critères de comportement de votre établissement.')) {
+            return $redirect;
         }
 
         if ($behavior->getDisabledAt() !== null) {

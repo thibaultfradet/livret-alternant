@@ -25,54 +25,71 @@ final class EvaluationListController extends AbstractController
         Security $security,
         PeriodRepository $periodRepo,
         UserRepository $userRepo,
-        SchoolYearRepository $schoolYearRepo,
         Request $request
     ): Response {
 
         /** @var User $tutor */
         $tutor = $security->getUser();
 
-        // Récupérer l'année scolaire active
-        $activeSchoolYear = $schoolYearRepo->findOneBy(['active' => true]);
-
-        // Récupérer toutes les périodes de l'année
-        $allPeriods = $periodRepo->createQueryBuilder('p')
-            ->where('p.schoolYear = :schoolYear')
-            ->orderBy('p.startDate', 'ASC')
-            ->setParameter('schoolYear', $activeSchoolYear)
-            ->getQuery()
-            ->getResult();
-
-        // Période sélectionnée ou période active par défaut
-        $period = null;
-        $periodId = $request->query->get('period');
-        if ($periodId) {
-            $period = $periodRepo->find($periodId);
-        } else {
-            $period = $periodRepo->getActivePeriod();
-        }
-
-        // Si aucune période n'est trouvée, utiliser la première disponible
-        if (!$period && !empty($allPeriods)) {
-            $period = $allPeriods[0];
-        }
-
-        // Récupérer les alternants du tuteur avec contrats actifs
         $now = new \DateTime();
-        $qb = $userRepo->createQueryBuilder('s')
+
+        // Récupérer les alternants du tuteur avec contrats actifs, dans une année scolaire active.
+        // Un tuteur peut suivre des alternants de plusieurs établissements : on agrège tous ses
+        // contrats actifs au lieu de se limiter à une seule année « active » globale.
+        // Classroom / SchoolYear / Diploma sont hydratés en une seule requête (évite les lazy loads).
+        $students = $userRepo->createQueryBuilder('s')
             ->join('s.studentContracts', 'sc')
-            ->join('s.classroom', 'c')
-            ->join('c.schoolYear', 'sy')
-            ->where('sy.id = :schoolYear')
+            ->join('s.classroom', 'c')->addSelect('c')
+            ->join('c.schoolYear', 'sy')->addSelect('sy')
+            ->join('c.diploma', 'd')->addSelect('d')
+            ->where('sy.active = :active')
             ->andWhere('sc.tutor = :tutor')
             // Vérifier que le contrat est actif (date de début <= maintenant ET date de fin >= maintenant)
             ->andWhere('(sc.dateDebutContract IS NULL OR sc.dateDebutContract <= :now)')
             ->andWhere('(sc.dateFinContract IS NULL OR sc.dateFinContract >= :now)')
-            ->setParameter('schoolYear', $activeSchoolYear)
+            ->setParameter('active', true)
             ->setParameter('tutor', $tutor)
-            ->setParameter('now', $now);
+            ->setParameter('now', $now)
+            ->orderBy('s.lastName', 'ASC')
+            ->getQuery()
+            ->getResult();
 
-        $students = $qb->orderBy('s.lastName', 'ASC')->getQuery()->getResult();
+        // Années scolaires (actives) distinctes représentées par ces alternants
+        $schoolYearsById = [];
+        foreach ($students as $student) {
+            $sy = $student->getClassroom()->getSchoolYear();
+            $schoolYearsById[$sy->getId()] = $sy;
+        }
+
+        // Périodes : toutes les périodes de ces années scolaires, en une seule requête
+        $allPeriods = $schoolYearsById
+            ? $periodRepo->createQueryBuilder('p')
+                ->where('p.schoolYear IN (:years)')
+                ->setParameter('years', array_values($schoolYearsById))
+                ->orderBy('p.startDate', 'ASC')
+                ->getQuery()
+                ->getResult()
+            : [];
+        $allPeriodsById = [];
+        foreach ($allPeriods as $p) {
+            $allPeriodsById[$p->getId()] = $p;
+        }
+
+        // Période sélectionnée, sinon période active si elle concerne le tuteur, sinon la première
+        $period = null;
+        $periodId = $request->query->get('period');
+        if ($periodId) {
+            $period = $periodRepo->find($periodId);
+        }
+        if (!$period) {
+            $activePeriod = $periodRepo->getActivePeriod();
+            if ($activePeriod && isset($allPeriodsById[$activePeriod->getId()])) {
+                $period = $activePeriod;
+            }
+        }
+        if (!$period && !empty($allPeriods)) {
+            $period = $allPeriods[0];
+        }
 
         // Construire la liste des diplômes pour le filtre (id => label)
         $diplomas = [];
@@ -92,7 +109,6 @@ final class EvaluationListController extends AbstractController
         return $this->render('evaluation/list_tutor.html.twig', [
             'students'        => $students,
             'period'          => $period,
-            'activeSchoolYear'=> $activeSchoolYear,
             'allPeriods'      => $allPeriods,
             'diplomas'        => $diplomas,
             'selectedDiploma' => $diplomaId,

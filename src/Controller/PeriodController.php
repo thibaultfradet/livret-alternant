@@ -83,11 +83,11 @@ final class PeriodController extends AbstractController
         return $this->redirectToRoute('training_parameters_period', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/disable/{id}', name: 'app_period_disable')]
-    public function disable(Period $period, EntityManagerInterface $em)
+    #[Route('/disable/{id}', name: 'app_period_disable', methods: ['POST'])]
+    public function disable(Request $request, Period $period, EntityManagerInterface $em)
     {
-        if (!$period) {
-            $this->addFlash('error', 'La période est introuvable.');
+        if (!$this->isCsrfTokenValid('disable'.$period->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('training_parameters_period');
         }
 

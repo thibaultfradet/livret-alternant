@@ -57,6 +57,7 @@ security:
         - { path: ^/school-year, roles: ROLE_TTM }
         - { path: ^/period, roles: ROLE_TTM }
         - { path: ^/users, roles: ROLE_TTM }
+        - { path: ^/import-user, roles: ROLE_TTM }
         - { path: ^/diploma, roles: ROLE_TTM }
         - { path: ^/formation-center, roles: ROLE_TTM }
         - { path: ^/establishment, roles: ROLE_TTM }
