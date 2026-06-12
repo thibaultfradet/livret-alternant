@@ -36,7 +36,13 @@
 
         <div class="text-center mb-5">
             <h1 class="fw-bold text-primary display-5">
-                Modifier un utilisateur
+                {% if userType == 'tutor' %}
+                    Modifier un tuteur
+                {% elseif userType == 'student' %}
+                    Modifier un alternant
+                {% else %}
+                    Modifier un membre de l'équipe pédagogique
+                {% endif %}
             </h1>
             <p class="text-muted">
                 {{ user.firstName }} {{ user.lastName }}
@@ -44,136 +50,194 @@
         </div>
 
         <div class="card shadow-sm">
-            <div class="card-header">
-                <ul class="nav nav-tabs card-header-tabs" id="userTypeTabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link {% if isStudent %}active{% endif %}" id="student-tab-link" data-bs-toggle="tab" href="#student" role="tab">Élève</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if not isStudent and 'ROLE_PT' in user.roles %}active{% endif %}" id="teacher-tab-link" data-bs-toggle="tab" href="#teacher" role="tab">Professeur référent</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if not isStudent and 'ROLE_PT' not in user.roles %}active{% endif %}" id="team-tab-link" data-bs-toggle="tab" href="#team" role="tab">Membre équipe pédagogique</a>
-                    </li>
-                </ul>
-            </div>
 
-            <div class="card-body">
-                {{ form_start(form) }}
-
-                {# Hidden checkboxes for role determination #}
-                <div class="d-none">
-                    {{ form_widget(form.isProfPrincipal) }}
-                    {{ form_widget(form.isTeamMember) }}
+            {% if userType == 'staff' %}
+                {# ===================== STAFF (Professeur référent / Membre équipe pédagogique) ===================== #}
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="userTypeTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'ROLE_PT' in user.roles %}active{% endif %}" id="teacher-tab-link" data-bs-toggle="tab" href="#teacher" role="tab">Professeur référent</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if 'ROLE_PT' not in user.roles %}active{% endif %}" id="team-tab-link" data-bs-toggle="tab" href="#team" role="tab">Membre équipe pédagogique</a>
+                        </li>
+                    </ul>
                 </div>
 
-                {# Common fields for all user types #}
-                <div class="row">
-                    <div class="col-md-6">
-                        {{ form_row(form.email) }}
+                <div class="card-body">
+                    {{ form_start(form) }}
+
+                    <div class="d-none">
+                        {{ form_widget(form.isProfPrincipal) }}
+                        {{ form_widget(form.isTeamMember) }}
                     </div>
-                    <div class="col-md-6 phone-field {% if isStudent or ('ROLE_PT' not in user.roles) %}d-none{% endif %}">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.email) }}
+                        </div>
+                        <div class="col-md-6 phone-field {% if 'ROLE_PT' not in user.roles %}d-none{% endif %}">
+                            {{ form_row(form.phone) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.firstName) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.lastName) }}
+                        </div>
+                    </div>
+
+                    <div class="tab-content mt-3">
+                        <div class="tab-pane fade {% if 'ROLE_PT' in user.roles %}show active{% endif %}" id="teacher" role="tabpanel">
+                            <div class="alert alert-info">
+                                Un professeur référent peut suivre les évaluations des élèves de sa classe.
+                            </div>
+                        </div>
+                        <div class="tab-pane fade {% if 'ROLE_PT' not in user.roles %}show active{% endif %}" id="team" role="tabpanel">
+                            <div class="alert alert-info">
+                                Un membre de l'équipe pédagogique peut gérer les utilisateurs et les paramètres de formation.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% elseif userType == 'student' %}
+                {# ===================== ALTERNANT ===================== #}
+                <div class="card-body">
+                    {{ form_start(form) }}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.email) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.firstName) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.lastName) }}
+                        </div>
+                    </div>
+
+                    <div class="row align-items-end">
+                        <div class="col-md-6">
+                            {{ form_row(form.classroom) }}
+                        </div>
+                        <div class="col-md-6 pb-4 d-flex align-items-center justify-content-center gap-2">
+                            <span id="labelPro" class="small fw-medium">Professionnalisation</span>
+                            {{ form_row(form.isApprentissage, {label: false, row_attr: {class: 'form-switch mb-0 contract-type-switch'}}) }}
+                            <span id="labelApp" class="small fw-medium text-muted">Apprentissage</span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h4 class="mb-3">Informations de l'entreprise</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.companyName) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.companyAddress) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.dateDebutContract) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.dateFinContract) }}
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4 mb-3">Informations du tuteur</h4>
+
+                    <div class="mb-3">
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="tutorMode" id="tutorModeNew" value="new" {% if not activeContract or not activeContract.tutor %}checked{% endif %} autocomplete="off">
+                            <label class="btn btn-outline-primary btn-sm" for="tutorModeNew">Nouveau tuteur</label>
+                            <input type="radio" class="btn-check" name="tutorMode" id="tutorModeExisting" value="existing" {% if activeContract and activeContract.tutor %}checked{% endif %} autocomplete="off">
+                            <label class="btn btn-outline-primary btn-sm" for="tutorModeExisting">Tuteur existant</label>
+                        </div>
+                    </div>
+
+                    <div id="existingTutorSection" class="{% if not activeContract or not activeContract.tutor %}d-none{% endif %}">
+                        <div class="row">
+                            <div class="col-md-12">
+                                {{ form_row(form.existingTutor) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="newTutorSection" class="{% if activeContract and activeContract.tutor %}d-none{% endif %}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorFirstName) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorLastName) }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorEmail) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.tutorPhone) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Champs présents dans UserType mais non pertinents ici : rendus cachés pour éviter une erreur de form non rendu #}
+                    <div class="d-none">
+                        {{ form_widget(form.isProfPrincipal) }}
+                        {{ form_widget(form.isTeamMember) }}
                         {{ form_row(form.phone) }}
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        {{ form_row(form.firstName) }}
+
+            {% else %}
+                {# ===================== TUTEUR ===================== #}
+                <div class="card-body">
+                    {{ form_start(form) }}
+
+                    <div class="alert alert-info">
+                        Un tuteur suit et évalue l'alternant en entreprise.
                     </div>
-                    <div class="col-md-6">
-                        {{ form_row(form.lastName) }}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.email) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.phone) }}
+                        </div>
                     </div>
-                </div>
-
-                {# Tab content for role-specific fields #}
-                <div class="tab-content mt-3">
-                    {# Student tab #}
-                    <div class="tab-pane fade {% if isStudent %}show active{% endif %}" id="student" role="tabpanel">
-                        <div class="row align-items-end">
-                            <div class="col-md-6">
-                                {{ form_row(form.classroom) }}
-                            </div>
-                            <div class="col-md-6 pb-4 d-flex align-items-center justify-content-center gap-2">
-                                <span id="labelPro" class="small fw-medium">Professionnalisation</span>
-                                {{ form_row(form.isApprentissage, {label: false, row_attr: {class: 'form-switch mb-0 contract-type-switch'}}) }}
-                                <span id="labelApp" class="small fw-medium text-muted">Apprentissage</span>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.firstName) }}
                         </div>
-
-                        <hr class="my-4">
-
-                        <h4 class="mb-3">Informations de l'entreprise</h4>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.companyName) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.companyAddress) }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                {{ form_row(form.dateDebutContract) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.dateFinContract) }}
-                            </div>
-                        </div>
-
-                        <h4 class="mt-4 mb-3">Informations du tuteur</h4>
-
-                        <div class="mb-3">
-                            <div class="btn-group" role="group">
-                                <input type="radio" class="btn-check" name="tutorMode" id="tutorModeNew" value="new" {% if not activeContract or not activeContract.tutor %}checked{% endif %} autocomplete="off">
-                                <label class="btn btn-outline-primary btn-sm" for="tutorModeNew">Nouveau tuteur</label>
-                                <input type="radio" class="btn-check" name="tutorMode" id="tutorModeExisting" value="existing" {% if activeContract and activeContract.tutor %}checked{% endif %} autocomplete="off">
-                                <label class="btn btn-outline-primary btn-sm" for="tutorModeExisting">Tuteur existant</label>
-                            </div>
-                        </div>
-
-                        <div id="existingTutorSection" class="{% if not activeContract or not activeContract.tutor %}d-none{% endif %}">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    {{ form_row(form.existingTutor) }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="newTutorSection" class="{% if activeContract and activeContract.tutor %}d-none{% endif %}">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    {{ form_row(form.tutorFirstName) }}
-                                </div>
-                                <div class="col-md-6">
-                                    {{ form_row(form.tutorLastName) }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    {{ form_row(form.tutorEmail) }}
-                                </div>
-                                <div class="col-md-6">
-                                    {{ form_row(form.tutorPhone) }}
-                                </div>
-                            </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.lastName) }}
                         </div>
                     </div>
 
-                    {# Teacher tab #}
-                    <div class="tab-pane fade {% if not isStudent and 'ROLE_PT' in user.roles %}show active{% endif %}" id="teacher" role="tabpanel">
-                        <div class="alert alert-info">
-                            Un professeur référent peut suivre les évaluations des élèves de sa classe.
-                        </div>
-                    </div>
+                    <hr class="my-4">
 
-                    {# Team member tab #}
-                    <div class="tab-pane fade {% if not isStudent and 'ROLE_PT' not in user.roles %}show active{% endif %}" id="team" role="tabpanel">
-                        <div class="alert alert-info">
-                            Un membre de l'équipe pédagogique peut gérer les utilisateurs et les paramètres de formation.
+                    <h4 class="mb-3">Informations de l'entreprise</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form_row(form.companyName) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.companyAddress) }}
                         </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
 
             <div class="card-footer d-flex justify-content-between">
                 <a href="{{ path('training_parameters_user') }}" class="btn btn-outline-secondary">
@@ -191,7 +255,7 @@
 {% endblock %}
 
 {% block javascripts_bottom %}
-<script src="{{ asset('assets/js/tom-select.complete.min.js') }}"></script>
+{% if userType == 'staff' %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const isProfPrincipal = document.getElementById('{{ form.isProfPrincipal.vars.id }}');
@@ -212,7 +276,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
+});
+</script>
+{% elseif userType == 'student' %}
+<script src="{{ asset('assets/js/tom-select.complete.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
     // Tutor mode toggle
     const tutorModeNew = document.getElementById('tutorModeNew');
     const tutorModeExisting = document.getElementById('tutorModeExisting');
@@ -270,4 +339,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+{% endif %}
 {% endblock %}
