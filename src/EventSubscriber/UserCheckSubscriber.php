@@ -41,7 +41,8 @@ class UserCheckSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (array_intersect(['ROLE_PT', 'ROLE_TTM'], $user->getRoles())) {
+        // Le MEP (ROLE_TTM) doit désormais accepter les CGU : seul ROLE_PT reste exempté.
+        if (array_intersect(['ROLE_PT'], $user->getRoles())) {
             return;
         }
 
