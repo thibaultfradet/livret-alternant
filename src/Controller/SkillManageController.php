@@ -22,6 +22,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class SkillManageController extends AbstractController
 {
+    use EstablishmentGuardTrait;
+
     public function __construct(private CsrfTokenManagerInterface $csrfTokenManager) {}
 
     #[Route('/skill-manage/{id?}', name: 'app_skill_management')]
@@ -122,18 +124,14 @@ class SkillManageController extends AbstractController
     #[Route('/skill-manage/group/{id}/rename', name: 'app_skill_group_rename', methods: ['POST'])]
     public function renameGroup(SkillGroup $group, Request $request, EntityManagerInterface $em): Response
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
         $token = new CsrfToken('rename_group_' . $group->getId(), $request->request->get('_token'));
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $group->getDiploma()->getId()]);
         }
 
-        if ($group->getDiploma()->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Action non autorisée.');
-            return $this->redirectToRoute('training_parameters_skill');
+        if ($redirect = $this->denyIfForeignEstablishment($group, 'training_parameters_skill', 'Action non autorisée.')) {
+            return $redirect;
         }
 
         $label = trim($request->request->get('label', ''));
@@ -149,18 +147,14 @@ class SkillManageController extends AbstractController
     #[Route('/skill-manage/skill/{id}/rename', name: 'app_skill_criteria_rename', methods: ['POST'])]
     public function renameCriteria(SkillCriteria $skill, Request $request, EntityManagerInterface $em): Response
     {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
         $token = new CsrfToken('rename_skill_' . $skill->getId(), $request->request->get('_token'));
         if (!$this->csrfTokenManager->isTokenValid($token)) {
             $this->addFlash('error', 'Token CSRF invalide.');
             return $this->redirectToRoute('training_parameters_skill', ['diploma_id' => $skill->getSkillGroup()->getDiploma()->getId()]);
         }
 
-        if ($skill->getSkillGroup()->getDiploma()->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Action non autorisée.');
-            return $this->redirectToRoute('training_parameters_skill');
+        if ($redirect = $this->denyIfForeignEstablishment($skill, 'training_parameters_skill', 'Action non autorisée.')) {
+            return $redirect;
         }
 
         $label = trim($request->request->get('label', ''));
@@ -174,12 +168,18 @@ class SkillManageController extends AbstractController
     }
 
     // Toggle skill or group status (no levels here)
-    #[Route('/skill-manage/{type}/{id}/toggle', name: 'app_toggle_status')]
+    #[Route('/skill-manage/{type}/{id}/toggle', name: 'app_toggle_status', methods: ['POST'])]
     public function toggleStatus(
         string $type,
         int $id,
+        Request $request,
         EntityManagerInterface $em
     ): Response {
+
+        if (!$this->isCsrfTokenValid('toggle'.$type.$id, $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+            return $this->redirectToRoute('training_parameters_skill');
+        }
 
         switch ($type) {
             case 'skill':
@@ -196,6 +196,10 @@ class SkillManageController extends AbstractController
 
         if (!$entity) {
             throw $this->createNotFoundException('Entity not found');
+        }
+
+        if ($redirect = $this->denyIfForeignEstablishment($entity, 'training_parameters_skill', 'Vous ne pouvez modifier que les compétences de votre établissement.')) {
+            return $redirect;
         }
 
         // Toggle disabledAt status
@@ -219,22 +223,19 @@ class SkillManageController extends AbstractController
 
 
     // Toggle skill level status
-    #[Route('/skill-level/{id}/toggle', name: 'app_skill_level_toggle')]
+    #[Route('/skill-level/{id}/toggle', name: 'app_skill_level_toggle', methods: ['POST'])]
     public function toggleSkillLevel(
         SkillLevel $level,
+        Request $request,
         EntityManagerInterface $em
     ): Response {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
-        // Check if level belongs to user's establishment
-        if ($level->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Vous ne pouvez modifier que les niveaux de compétence de votre établissement.');
+        if (!$this->isCsrfTokenValid('toggle_skill_level'.$level->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('app_skill_level_manage');
         }
 
-        if (!$level) {
-            throw $this->createNotFoundException('Level not found');
+        if ($redirect = $this->denyIfForeignEstablishment($level, 'app_skill_level_manage', 'Vous ne pouvez modifier que les niveaux de compétence de votre établissement.')) {
+            return $redirect;
         }
 
         // Toggle disabledAt
@@ -279,6 +280,10 @@ class SkillManageController extends AbstractController
         EntityManagerInterface $em,
         SkillLevelRepository $repository
     ): JsonResponse {
+        if (!$this->isCsrfTokenValid('reorder_skill_levels', (string) $request->headers->get('X-CSRF-Token'))) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], 403);
+        }
+
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
         $establishment = $user->getEstablishment();

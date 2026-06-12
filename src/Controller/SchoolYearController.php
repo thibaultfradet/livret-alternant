@@ -17,6 +17,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_TTM')]
 final class SchoolYearController extends AbstractController
 {
+    use EstablishmentGuardTrait;
+
 
     #[Route('/new', name: 'app_school_year_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -58,6 +60,10 @@ final class SchoolYearController extends AbstractController
     #[Route('/{id}', name: 'app_school_year_show', methods: ['GET'])]
     public function show(SchoolYear $schoolYear): Response
     {
+        if ($redirect = $this->denyIfForeignEstablishment($schoolYear, 'training_parameters_schoolYear', 'Vous ne pouvez consulter que les années scolaires de votre établissement.')) {
+            return $redirect;
+        }
+
         return $this->render('school_year/show.html.twig', [
             'school_year' => $schoolYear,
         ]);
@@ -66,14 +72,12 @@ final class SchoolYearController extends AbstractController
     #[Route('/{id}/edit', name: 'app_school_year_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, SchoolYear $schoolYear, EntityManagerInterface $entityManager): Response
     {
+        if ($redirect = $this->denyIfForeignEstablishment($schoolYear, 'training_parameters_schoolYear', 'Vous ne pouvez modifier que les années scolaires de votre établissement.')) {
+            return $redirect;
+        }
+
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
-
-        // Check if school year belongs to user's establishment
-        if ($schoolYear->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Vous ne pouvez modifier que les années scolaires de votre établissement.');
-            return $this->redirectToRoute('training_parameters_schoolYear');
-        }
 
         $form = $this->createForm(SchoolYearType::class, $schoolYear);
         $form->handleRequest($request);
@@ -116,12 +120,16 @@ final class SchoolYearController extends AbstractController
     }
 
 
-    #[Route('/disable/{id}', name: 'app_school_year_disable')]
-    public function disable(SchoolYear $schoolYear, EntityManagerInterface $em)
+    #[Route('/disable/{id}', name: 'app_school_year_disable', methods: ['POST'])]
+    public function disable(Request $request, SchoolYear $schoolYear, EntityManagerInterface $em)
     {
-        if (!$schoolYear) {
-            $this->addFlash('error', "L'année scolaire est introuvable.");
+        if (!$this->isCsrfTokenValid('disable'.$schoolYear->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
             return $this->redirectToRoute('training_parameters_schoolYear');
+        }
+
+        if ($redirect = $this->denyIfForeignEstablishment($schoolYear, 'training_parameters_schoolYear', 'Vous ne pouvez modifier que les années scolaires de votre établissement.')) {
+            return $redirect;
         }
 
         if ($schoolYear->getDisabledAt() !== null) {
@@ -143,13 +151,8 @@ final class SchoolYearController extends AbstractController
     #[Route('/{id}/cover', name: 'app_school_year_cover', methods: ['GET', 'POST'])]
     public function uploadCover(Request $request, SchoolYear $schoolYear, EntityManagerInterface $em): Response
     {
-        // Check if school year belongs to user's establishment
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-
-        if ($schoolYear->getEstablishment() !== $user->getEstablishment()) {
-            $this->addFlash('error', 'Vous ne pouvez modifier que les années scolaires de votre établissement.');
-            return $this->redirectToRoute('training_parameters_schoolYear');
+        if ($redirect = $this->denyIfForeignEstablishment($schoolYear, 'training_parameters_schoolYear', 'Vous ne pouvez modifier que les années scolaires de votre établissement.')) {
+            return $redirect;
         }
 
         $storagePath = $this->getParameter('kernel.project_dir') . '/public/uploads/covers/';
