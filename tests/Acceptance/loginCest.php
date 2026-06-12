@@ -32,7 +32,7 @@ class LoginCest
         $I->fillField('#inputPassword', 'mauvais_motdepasse');
         $I->click('form button[type=submit]');
         
-        $I->waitForText('Invalid credentials.', 5);
+        $I->waitForText('Identifiants invalides.', 5);
 
         $I->seeInCurrentUrl("/login");
     }

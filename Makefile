@@ -5,7 +5,7 @@ COMPOSER    = $(PHP_CONT) composer
 SYMFONY     = $(PHP) bin/console
 
 .DEFAULT_GOAL = help
-.PHONY: help build start stop logs sh bash vendor sf cc deploy
+.PHONY: help build start stop logs sh bash vendor sf cc migrate deploy
 
 help: ## List available commands
 	@grep -E '(^[a-zA-Z0-9_-]+:.*?##.*$$)|(^##)' $(MAKEFILE_LIST) \
@@ -45,9 +45,13 @@ sf: ## Run a Symfony command: make sf c=about
 cc: c=cache:clear ## Clear Symfony cache
 cc: sf
 
+migrate: ## Run Doctrine migrations
+	$(SYMFONY) doctrine:migrations:migrate --no-interaction --all-or-nothing
+
 ## Deployment
 
-deploy: ## Rebuild images and restart containers (migrations run via entrypoint)
+deploy: ## Rebuild images, restart containers, run migrations and clear cache
 	$(DOCKER_COMP) build --pull
 	$(DOCKER_COMP) up --detach --wait
+	$(SYMFONY) doctrine:migrations:migrate --no-interaction --all-or-nothing
 	$(SYMFONY) cache:clear

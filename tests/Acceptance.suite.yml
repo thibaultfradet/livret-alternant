@@ -10,7 +10,7 @@ modules:
                 goog:chromeOptions:
                     args: ["--lang=fr"]
         - Db:
-            dsn: 'mysql:host=database;port=3306;dbname=app'
+            dsn: 'mysql:host=database;port=3306;dbname=app_test'
             user: app
             password: password
 

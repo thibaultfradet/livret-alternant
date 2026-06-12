@@ -44,7 +44,7 @@ $runCommand('doctrine:database:drop', [
 $runCommand('doctrine:database:create', [
     '--if-not-exists' => true,
 ]);
-$runCommand('doctrine:migrations:migrate');
+$runCommand('doctrine:schema:create');
 $runCommand('doctrine:fixtures:load', [
     '--group' => ['CodeceptionFixtures'],
     '--no-interaction' => true,
