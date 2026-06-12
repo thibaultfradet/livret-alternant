@@ -6,7 +6,7 @@ use Tests\Support\AcceptanceTester;
 
 class EvaluationCest
 {
-    public function _before(AcceptanceTester $I): void
+    public function _before(): void
     {
         // Common setup if needed
     }
@@ -48,7 +48,7 @@ class EvaluationCest
         $I->amOnPage('/evaluation/ttm/17/1'); // Student 17 (no evaluations), Period 1
         $I->wait(2); // Wait for redirection and page load
         $I->seeInCurrentUrl('/'); // Redirected to home
-        $I->waitForText('Le TTM ne peut pas encore', 5);
+        $I->waitForText("L'équipe pédagogique ne peut pas encore évaluer", 5);
     }
 
     /**
@@ -68,7 +68,7 @@ class EvaluationCest
         $I->amOnPage('/evaluation/ttm/15/1'); // Student 15 (tutor eval only), Period 1
         $I->wait(2); // Wait for redirection
         $I->seeInCurrentUrl('/'); // Redirected to home
-        $I->waitForText('Le TTM ne peut pas encore évaluer', 5);
+        $I->waitForText("L'équipe pédagogique ne peut pas encore évaluer", 5);
     }
 
     /**
@@ -165,7 +165,7 @@ class EvaluationCest
         $I->scrollTo('#submit-evaluation');
         $I->wait(1);
         $I->click('#submit-evaluation');
-        $I->waitForText('Évaluation TTM enregistrée avec succès', 5);
+        $I->waitForText("Évaluation de l'équipe pédagogique enregistrée avec succès !", 5);
 
         // === PHASE 4: VERIFICATION IN EVALUATION VISUALIZER ===
         $I->amOnPage('/evaluation-visualizer');
@@ -174,7 +174,7 @@ class EvaluationCest
         $I->scrollTo('//tr[contains(., "Student FlowTest")]');
         $I->see('Student FlowTest');
 
-        $I->seeNumberOfElements('//tr[contains(., "Student FlowTest")]//span[@class="text-success"]', 3);
+        $I->seeNumberOfElements('//tr[contains(., "Student FlowTest")]//*[@class="text-success"]', 3);
     }
 
     /**
@@ -242,6 +242,6 @@ class EvaluationCest
         $I->amOnPage('/evaluation/ttm/16/1'); // Student 16, Period 1 (already has TTM evaluation)
         $I->wait(2); // Wait for redirection and alert rendering
         $I->seeInCurrentUrl('/'); // Redirected to home
-        $I->waitForText('Une évaluation TTM a déjà été réalisée', 10);
+        $I->waitForText('Une évaluation a déjà été réalisée pour cet alternant', 10);
     }
 }
