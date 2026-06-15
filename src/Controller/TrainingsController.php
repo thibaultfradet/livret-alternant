@@ -34,11 +34,11 @@ class TrainingsController extends AbstractController
     {
         // List of parameter routes in display order
         $routes = [
-            'training_parameters_classroom',
             'training_parameters_diploma',
-            'training_parameters_period',
             'training_parameters_schoolYear',
+            'training_parameters_period',
             'training_parameters_behavior',
+            'training_parameters_classroom',
             'training_parameters_user',
         ];
 

@@ -1,22 +1,8 @@
 <ul class="nav nav-pills card-header-pills d-print-none" role="tablist">
      <li class="nav-item" role="presentation">
-        <a href="{{ path('training_parameters_classroom') }}"
-           class="nav-link {{ (currentTab == 'classroom') ? 'active' : '' }}">
-            Les classes
-        </a>
-    </li>
-
-    <li class="nav-item" role="presentation">
         <a href="{{ path('training_parameters_diploma') }}"
            class="nav-link {{ (currentTab == 'diploma') ? 'active' : '' }}">
             Les diplômes
-        </a>
-    </li>
-
-    <li class="nav-item" role="presentation">
-        <a href="{{ path('training_parameters_period') }}"
-           class="nav-link {{ (currentTab == 'period') ? 'active' : '' }}">
-            Les périodes
         </a>
     </li>
 
@@ -28,9 +14,23 @@
     </li>
 
     <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_period') }}"
+           class="nav-link {{ (currentTab == 'period') ? 'active' : '' }}">
+            Les périodes
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
         <a href="{{ path('training_parameters_behavior') }}"
            class="nav-link {{ (currentTab == 'behavior') ? 'active' : '' }}">
             Les comportements
+        </a>
+    </li>
+
+    <li class="nav-item" role="presentation">
+        <a href="{{ path('training_parameters_classroom') }}"
+           class="nav-link {{ (currentTab == 'classroom') ? 'active' : '' }}">
+            Les classes
         </a>
     </li>
 
