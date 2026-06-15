@@ -25,9 +25,9 @@
     <div class="card">
       <div class="card-body">
         <form method="get" class="row g-3 align-items-end">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <label for="period" class="form-label fw-semibold">Période</label>
-            <select name="period" id="period" class="form-select">
+            <select name="period" id="period" class="form-select" onchange="this.form.submit()">
               {% for p in periods %}
                 <option value="{{ p.id }}" {% if selectedPeriod and p.id == selectedPeriod.id %}selected{% endif %}>
                   {{ p.periodNumber }} ({{ p.startDate|date('d/m/Y') }} - {{ p.endDate|date('d/m/Y') }})
@@ -36,9 +36,9 @@
             </select>
           </div>
 
-          <div class="col-md-4">
+          <div class="col-md-6">
             <label for="classroom" class="form-label fw-semibold">Classe</label>
-            <select name="classroom" id="classroom" class="form-select">
+            <select name="classroom" id="classroom" class="form-select" onchange="this.form.submit()">
               <option value="" {% if not selectedClassroom %}selected{% endif %}>Toutes</option>
               {% for c in classrooms %}
                 <option value="{{ c.id }}" {% if selectedClassroom and c.id == selectedClassroom.id %}selected{% endif %}>
@@ -46,16 +46,6 @@
                 </option>
               {% endfor %}
             </select>
-          </div>
-
-          <div class="col-md-4">
-            <button type="submit" class="btn btn-primary w-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter me-1" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M4 4h16v2l-6 7v5l-4 2v-7l-6-7z" />
-              </svg>
-              Filtrer
-            </button>
           </div>
         </form>
       </div>
