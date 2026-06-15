@@ -19,6 +19,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
+use SymfonyCasts\Bundle\ResetPassword\Exception\TooManyPasswordRequestsException;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
 #[IsGranted('ROLE_TTM')]
@@ -281,6 +282,7 @@ class TrainingsController extends AbstractController
 
         $sent = 0;
         $errors = 0;
+        $rateLimited = 0;
 
         foreach ($userIds as $userId) {
             $user = $candidateMap[$userId] ?? null;
@@ -299,11 +301,14 @@ class TrainingsController extends AbstractController
                     ->context([
                         'resetToken' => $resetToken,
                         'firstName' => $user->getFirstName(),
+                        'lastName' => $user->getLastName(),
                         'establishment' => $establishmentName,
                     ]);
 
                 $this->mailer->send($email);
                 $sent++;
+            } catch (TooManyPasswordRequestsException $e) {
+                $rateLimited++;
             } catch (ResetPasswordExceptionInterface $e) {
                 $errors++;
             }
@@ -312,8 +317,11 @@ class TrainingsController extends AbstractController
         if ($sent > 0) {
             $this->addFlash('success', $sent . ' email(s) de bienvenue envoyé(s) avec succès.');
         }
+        if ($rateLimited > 0) {
+            $this->addFlash('warning', $rateLimited . ' email(s) n\'ont pas pu être envoyés : trop de mails déjà envoyés à la même personne, limite atteinte. Veuillez patienter avant de réessayer.');
+        }
         if ($errors > 0) {
-            $this->addFlash('warning', $errors . ' email(s) n\'ont pas pu être envoyés (token déjà actif ou autre erreur).');
+            $this->addFlash('warning', $errors . ' email(s) n\'ont pas pu être envoyés (lien déjà actif ou autre erreur).');
         }
 
         return $this->redirectToRoute('training_parameters_user');
