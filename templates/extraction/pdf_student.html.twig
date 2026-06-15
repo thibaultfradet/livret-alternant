@@ -337,10 +337,10 @@
     <div class="page-break"></div>
 
     {# --- Équipe pédagogique ---#}
-    <div class="section-body" style="border:1px solid var(--common-blue-beaupeyrat); border-radius:4px; margin-bottom:10px;">
+    <div class="section-body media-section" style="border:1px solid var(--common-blue-beaupeyrat); border-radius:4px; margin-bottom:10px;">
         <div class="section-header bg-beaupeyrat">4. Équipe pédagogique</div>
         {% if ttmPath %}
-            <img src="file://{{ ttmPath }}" style="width:100%;" alt="Equipe pédagogique">
+            <img src="file://{{ ttmPath }}" alt="Equipe pédagogique">
         {% else %}
             <div style="padding:20px; text-align:center; color:#6c757d; background-color:#f8f9fa; border:1px solid #e9ecef; border-radius:4px;">
                 Aucun fichier mis en ligne
@@ -410,14 +410,16 @@
 
     {# --- Informations pédagogiques ---#}
     <h2>II. Informations pédagogiques</h2>
-    <div class="section-header bg-beaupeyrat">Calendrier d'alternance</div>
-    {% if calendarPath %}
-        <img src="file://{{ calendarPath }}" style="width:100%;" alt="Calendrier">
-    {% else %}
-        <div style="padding:20px; text-align:center; color:#6c757d; background-color:#f8f9fa; border:1px solid #e9ecef; border-radius:4px;">
-            Aucun fichier mis en ligne
-        </div>
-    {% endif %}
+    <div class="media-section">
+        <div class="section-header bg-beaupeyrat">Calendrier d'alternance</div>
+        {% if calendarPath %}
+            <img src="file://{{ calendarPath }}" alt="Calendrier">
+        {% else %}
+            <div style="padding:20px; text-align:center; color:#6c757d; background-color:#f8f9fa; border:1px solid #e9ecef; border-radius:4px;">
+                Aucun fichier mis en ligne
+            </div>
+        {% endif %}
+    </div>
 
     {# --- Suivi de la formation / évaluations ---#}
     <h2>III. Suivi de la formation</h2>
