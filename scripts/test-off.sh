@@ -1,18 +1,21 @@
 #!/bin/bash
 set -e
 
-COMPOSE_FILE="compose.override.yaml"
-ENTRYPOINT_FILE="frankenphp/docker-entrypoint.sh"
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+COMPOSE_FILE="$PROJECT_ROOT/compose.override.yaml"
+ENTRYPOINT_FILE="$PROJECT_ROOT/frankenphp/docker-entrypoint.sh"
 
 # Check if already in dev mode
 if grep -q '# APP_ENV: "${APP_ENV:-dev}"' "$COMPOSE_FILE"; then
     echo "[test-off] Déjà en mode dev."
 else
-    python3 - << 'PYEOF'
+    python3 - "$PROJECT_ROOT" << 'PYEOF'
 import sys
 
+project_root = sys.argv[1]
+
 # compose.override.yaml : revenir au commentaire dev
-f = "compose.override.yaml"
+f = f"{project_root}/compose.override.yaml"
 c = open(f).read()
 if 'APP_ENV: "test"' in c:
     c = c.replace('APP_ENV: "test"', '# APP_ENV: "${APP_ENV:-dev}"')
@@ -23,7 +26,7 @@ else:
     sys.exit(1)
 
 # docker-entrypoint.sh : retirer le guard APP_ENV != test
-f = "frankenphp/docker-entrypoint.sh"
+f = f"{project_root}/frankenphp/docker-entrypoint.sh"
 c = open(f).read()
 old = 'if [ "$APP_ENV" != "test" ] && [ "$(find ./migrations -iname'
 new = 'if [ "$(find ./migrations -iname'
@@ -38,6 +41,6 @@ PYEOF
 fi
 
 echo "[test-off] Redémarrage des conteneurs..."
-docker compose up --detach --wait
+docker compose -f "$PROJECT_ROOT/compose.yaml" -f "$COMPOSE_FILE" up --detach --wait
 
 echo "[test-off] Retour en mode dev."

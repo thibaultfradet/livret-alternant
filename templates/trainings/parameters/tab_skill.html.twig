@@ -104,13 +104,19 @@
                             <div class="modal fade" id="renameGroupModal{{ group.id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
-                                        <form method="POST" action="{{ path('app_skill_group_rename', { id: group.id }) }}">
+                                        <form method="POST" action="{{ path('app_skill_group_rename', { id: group.id }) }}"
+                                              onsubmit="return confirm('Confirmez-vous le renommage de ce groupe ? Cela modifiera aussi les évaluations déjà enregistrées.');">
                                             <input type="hidden" name="_token" value="{{ csrf_token('rename_group_' ~ group.id) }}">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Modifier le groupe</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
+                                                <div class="alert alert-warning" role="alert">
+                                                    Ne renommez ce groupe que pour corriger une faute d'orthographe.
+                                                    S'il s'agit d'un groupe différent, supprimez celui-ci et créez-en un nouveau :
+                                                    renommer modifie aussi les évaluations déjà enregistrées des alternants précédents.
+                                                </div>
                                                 <div class="mb-3">
                                                     <label class="form-label">Libellé</label>
                                                     <input type="text" name="label" class="form-control"
@@ -200,13 +206,19 @@
                                     <div class="modal fade" id="renameSkillModal{{ skill.id }}" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
-                                                <form method="POST" action="{{ path('app_skill_criteria_rename', { id: skill.id }) }}">
+                                                <form method="POST" action="{{ path('app_skill_criteria_rename', { id: skill.id }) }}"
+                                                      onsubmit="return confirm('Confirmez-vous le renommage de cette compétence ? Cela modifiera aussi les évaluations déjà enregistrées.');">
                                                     <input type="hidden" name="_token" value="{{ csrf_token('rename_skill_' ~ skill.id) }}">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">Modifier la compétence</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body">
+                                                        <div class="alert alert-warning" role="alert">
+                                                            Ne renommez cette compétence que pour corriger une faute d'orthographe.
+                                                            S'il s'agit d'une compétence différente, supprimez celle-ci et créez-en une nouvelle :
+                                                            renommer modifie aussi les évaluations déjà enregistrées des alternants précédents.
+                                                        </div>
                                                         <div class="mb-3">
                                                             <label class="form-label">Libellé</label>
                                                             <input type="text" name="label" class="form-control"

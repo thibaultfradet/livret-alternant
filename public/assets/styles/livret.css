@@ -136,6 +136,22 @@ body.cover-page-body {
     margin: 0 auto;
 }
 
+/* Keep a section header and its image together on the same page,
+   and bound the image height so it never gets pushed to the next page. */
+.media-section {
+    page-break-inside: avoid;
+}
+
+.media-section img,
+.section-body img {
+    max-width: 100%;
+    max-height: 620px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
 /* --- Bordures custom --- */
 .bg-beaupeyrat {
     color: #fff;

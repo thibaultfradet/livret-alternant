@@ -82,6 +82,10 @@ class ClassroomController extends AbstractController
             $em->persist($classroom);
             $em->flush();
 
+            // Grant ROLE_PT to the principal teacher selected at creation, if any
+            $this->syncPrincipalTeacherRoles(null, $classroom->getPrincipalTeacher(), $em);
+            $em->flush();
+
             $this->addFlash('success', 'Classe créée avec succès.');
             return $this->redirectToRoute('training_parameters_classroom');
         }
@@ -112,12 +116,19 @@ class ClassroomController extends AbstractController
             return $redirect;
         }
 
+        // Keep track of the teacher currently assigned before the form overrides it
+        $previousTeacher = $classroom->getPrincipalTeacher();
+
         // Create form with a select of users who are not ROLE_STUDENT
       $form = $this->createForm(ClassroomPrincipalTeacherType::class, $classroom);
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
         $em->persist($classroom);
+        $em->flush();
+
+        // Add ROLE_PT to the new teacher / remove it from the replaced one if needed
+        $this->syncPrincipalTeacherRoles($previousTeacher, $classroom->getPrincipalTeacher(), $em);
         $em->flush();
 
         $this->addFlash('success', 'Professeur principal mis à jour.');
@@ -290,5 +301,36 @@ class ClassroomController extends AbstractController
             'classroom' => $classroom,
             'form' => $form->createView(),
         ]);
+    }
+
+
+    /**
+     * Synchronise le rôle ROLE_PT lors d'un changement de professeur principal d'une classe.
+     *
+     * - Le professeur nouvellement sélectionné reçoit ROLE_PT, sans écraser ses autres rôles.
+     * - Le professeur remplacé perd ROLE_PT uniquement s'il n'est plus professeur principal
+     *   d'aucune autre classe ; ses autres rôles (ROLE_TTM, ROLE_ADMIN…) sont conservés.
+     *
+     * Doit être appelée après le flush du changement de professeur principal de la classe,
+     * afin que le comptage des autres classes reflète l'état à jour.
+     */
+    private function syncPrincipalTeacherRoles(?User $previous, ?User $current, EntityManagerInterface $em): void
+    {
+        if ($previous === $current) {
+            return;
+        }
+
+        // New teacher: add ROLE_PT while preserving existing roles
+        if ($current !== null) {
+            $current->addRole('ROLE_PT');
+        }
+
+        // Replaced teacher: drop ROLE_PT only if no longer principal teacher of any other class
+        if ($previous !== null) {
+            $stillPrincipal = $em->getRepository(Classroom::class)->count(['principalTeacher' => $previous]);
+            if ($stillPrincipal === 0) {
+                $previous->removeRole('ROLE_PT');
+            }
+        }
     }
 }

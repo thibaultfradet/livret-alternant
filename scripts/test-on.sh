@@ -1,18 +1,21 @@
 #!/bin/bash
 set -e
 
-COMPOSE_FILE="compose.override.yaml"
-ENTRYPOINT_FILE="frankenphp/docker-entrypoint.sh"
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+COMPOSE_FILE="$PROJECT_ROOT/compose.override.yaml"
+ENTRYPOINT_FILE="$PROJECT_ROOT/frankenphp/docker-entrypoint.sh"
 
 # Check if already in test mode
 if grep -q 'APP_ENV: "test"' "$COMPOSE_FILE"; then
     echo "[test-on] Déjà en mode test."
 else
-    python3 - << 'PYEOF'
+    python3 - "$PROJECT_ROOT" << 'PYEOF'
 import sys
 
+project_root = sys.argv[1]
+
 # compose.override.yaml : activer APP_ENV=test
-f = "compose.override.yaml"
+f = f"{project_root}/compose.override.yaml"
 c = open(f).read()
 if '# APP_ENV: "${APP_ENV:-dev}"' in c:
     c = c.replace('# APP_ENV: "${APP_ENV:-dev}"', 'APP_ENV: "test"')
@@ -23,7 +26,7 @@ else:
     sys.exit(1)
 
 # docker-entrypoint.sh : ajouter le guard APP_ENV != test pour les migrations
-f = "frankenphp/docker-entrypoint.sh"
+f = f"{project_root}/frankenphp/docker-entrypoint.sh"
 c = open(f).read()
 old = 'if [ "$(find ./migrations -iname'
 new = 'if [ "$APP_ENV" != "test" ] && [ "$(find ./migrations -iname'
@@ -40,7 +43,7 @@ PYEOF
 fi
 
 echo "[test-on] Redémarrage des conteneurs..."
-docker compose up --detach --wait
+docker compose -f "$PROJECT_ROOT/compose.yaml" -f "$COMPOSE_FILE" up --detach --wait
 
 echo "[test-on] Lancement des tests d'acceptation..."
-docker compose exec php vendor/bin/codecept run Acceptance --steps
+docker compose -f "$PROJECT_ROOT/compose.yaml" -f "$COMPOSE_FILE" exec php vendor/bin/codecept run Acceptance --steps
