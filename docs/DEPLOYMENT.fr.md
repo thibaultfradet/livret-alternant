@@ -15,20 +15,21 @@
 
 ## Commandes de demarrage (prod vs dev)
 
-Le projet utilise deux fichiers Compose :
+Le projet utilise trois fichiers Compose :
 
-- `compose.yaml` : la base (services `php` et `database`)
-- `compose.override.yaml` : surcharges et outils **uniquement dev** (`mailer`/Mailpit, `phpmyadmin`, `selenium`)
+- `compose.yaml` : la base (services `php` et `database`). Le service `php` n'y a aucune cible de build.
+- `compose.override.yaml` : surcharges et outils **uniquement dev** (`mailer`/Mailpit, `phpmyadmin`, `selenium`), build `frankenphp_dev`.
+- `compose.prod.yaml` : surcharge **production** : build `frankenphp_prod` + secrets (`APP_SECRET`, cles Mercure).
 
-Docker Compose fusionne automatiquement l'override quand il est present. Il ne faut donc PAS le charger en production.
+Docker Compose fusionne automatiquement `compose.override.yaml` quand il est present. En production il faut donc charger explicitement `compose.prod.yaml` a la place de l'override.
 
 ### Production
 
 ```bash
-docker compose -f compose.yaml up -d --build
+docker compose -f compose.yaml -f compose.prod.yaml up -d --build
 ```
 
-Le `-f compose.yaml` force l'usage de la seule base et ignore `compose.override.yaml`. Seuls `php` et `database` sont demarres.
+Cette commande ignore `compose.override.yaml` et applique la surcharge prod : seuls `php` (build `frankenphp_prod`) et `database` sont demarres. Sans `-f compose.prod.yaml`, le service `php` n'a aucune cible de build et l'image de production ne peut pas etre construite.
 
 ### Developpement
 
@@ -36,9 +37,9 @@ Le `-f compose.yaml` force l'usage de la seule base et ignore `compose.override.
 docker compose up -d
 ```
 
-Sans option `-f`, Compose fusionne `compose.yaml` + `compose.override.yaml` : on obtient `php` (build dev + Xdebug), `database`, `mailer`, `phpmyadmin` et `selenium`.
+Sans option `-f`, Compose fusionne `compose.yaml` + `compose.override.yaml` : on obtient `php` (build `frankenphp_dev` + Xdebug), `database`, `mailer`, `phpmyadmin` et `selenium`.
 
-> **Attention Makefile** : les cibles `make start`, `make build` et `make deploy` utilisent `docker compose` sans `-f compose.yaml`. Telles quelles, elles fusionnent l'override et relanceraient les services dev en prod. Pour un demarrage prod isole, utiliser la commande explicite ci-dessus ou adapter le Makefile (`DOCKER_COMP = docker compose -f compose.yaml`).
+> **Attention Makefile** : les cibles `make start`, `make build` et `make deploy` utilisent `docker compose` sans option `-f`. Telles quelles, elles fusionnent l'override dev et n'appliquent pas `compose.prod.yaml`. Pour la prod, utiliser la commande explicite ci-dessus ou adapter le Makefile (`DOCKER_COMP = docker compose -f compose.yaml -f compose.prod.yaml`).
 
 ---
 
