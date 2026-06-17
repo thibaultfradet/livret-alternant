@@ -60,26 +60,6 @@ services:
       - database_data:/var/lib/mysql:rw
 ###< doctrine/doctrine-bundle ###
 
-
-### phpmyadmin ###
-  phpmyadmin:
-      image: phpmyadmin/phpmyadmin
-      container_name: phpmyadmin
-      restart: always
-      environment:
-        PMA_HOST: database
-        MYSQL_ROOT_PASSWORD: root_password
-      ports:
-        - "8081:80"
-###> phpmyadmin ###
-  selenium:
-    container_name: selenium
-    image: selenium/standalone-chromium
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    volumes:
-      - '/dev/shm:/dev/shm'
-
 volumes:
   caddy_data:
   caddy_config:
