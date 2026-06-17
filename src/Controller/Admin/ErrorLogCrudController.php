@@ -7,6 +7,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
@@ -60,15 +61,11 @@ class ErrorLogCrudController extends AbstractCrudController
             TextField::new('url', 'URL complète'),
             TextField::new('userEmail', 'Email utilisateur'),
             IntegerField::new('userId', 'ID utilisateur'),
-            TextField::new('userRoles', 'Rôles')
-                ->formatValue(static fn ($v) => is_array($v) ? implode(', ', $v) : '-'),
+            ArrayField::new('userRoles', 'Rôles'),
             TextareaField::new('errorMessage', 'Message d\'erreur')
                 ->setNumOfRows(4)
                 ->setDisabled(true),
-            TextareaField::new('requestPayload', 'Payload')
-                ->setNumOfRows(6)
-                ->setDisabled(true)
-                ->formatValue(static fn ($v) => is_array($v) ? json_encode($v, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '-'),
+            ArrayField::new('requestPayload', 'Payload'),
             TextareaField::new('stackTrace', 'Stack trace')
                 ->setNumOfRows(20)
                 ->setDisabled(true),
